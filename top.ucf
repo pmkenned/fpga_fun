@@ -1,0 +1,114 @@
+NET clk     LOC=T9;
+
+NET addr<0>             LOC=L5;
+NET addr<1>             LOC=N3;
+NET addr<2>             LOC=M4;
+NET addr<3>             LOC=M3;
+NET addr<4>             LOC=L4;
+NET addr<5>             LOC=G4;
+NET addr<6>             LOC=F3;
+NET addr<7>             LOC=F4;
+NET addr<8>             LOC=E3;
+NET addr<9>             LOC=E4;
+NET addr<10>            LOC=G5;
+NET addr<11>            LOC=H3;
+NET addr<12>            LOC=H4;
+NET addr<13>            LOC=J4;
+NET addr<14>            LOC=J3;
+NET addr<15>            LOC=K3;
+NET addr<16>            LOC=K5;
+NET addr<17>            LOC=L3;
+
+NET oe_l                LOC=K4;
+NET we_l                LOC=G3;
+
+NET data1<0>            LOC=N7;
+NET data1<1>            LOC=T8;
+NET data1<2>            LOC=R6;
+NET data1<3>            LOC=T5;
+NET data1<4>            LOC=R5;
+NET data1<5>            LOC=C2;
+NET data1<6>            LOC=C1;
+NET data1<7>            LOC=B1;
+NET data1<8>            LOC=D3;
+NET data1<9>            LOC=P8;
+NET data1<10>           LOC=F2;
+NET data1<11>           LOC=H1;
+NET data1<12>           LOC=J2;
+NET data1<13>           LOC=L2;
+NET data1<14>           LOC=P1;
+NET data1<15>           LOC=R1;
+NET ce1_l               LOC=P7;
+NET ub1_l               LOC=T4;
+NET lb1_l               LOC=P6;
+
+NET data2<0>            LOC=P2;
+NET data2<1>            LOC=N2;
+NET data2<2>            LOC=M2;
+NET data2<3>            LOC=K1;
+NET data2<4>            LOC=J1;
+NET data2<5>            LOC=G2;
+NET data2<6>            LOC=E1;
+NET data2<7>            LOC=D1;
+NET data2<8>            LOC=D2;
+NET data2<9>            LOC=E2;
+NET data2<10>           LOC=G1;
+NET data2<11>           LOC=F5;
+NET data2<12>           LOC=C3;
+NET data2<13>           LOC=K2;
+NET data2<14>           LOC=M1;
+NET data2<15>           LOC=N1;
+NET ce2_l               LOC=N5;
+NET ub2_l               LOC=R4;
+NET lb2_l               LOC=P5;
+
+NET ss_abcdefg_l<0>     LOC=E14;
+NET ss_abcdefg_l<1>     LOC=G13;
+NET ss_abcdefg_l<2>     LOC=N15;
+NET ss_abcdefg_l<3>     LOC=P15;
+NET ss_abcdefg_l<4>     LOC=R16;
+NET ss_abcdefg_l<5>     LOC=F13;
+NET ss_abcdefg_l<6>     LOC=N16;
+NET ss_dp_l             LOC=P16;
+NET ss_sel_l<0>         LOC=D14;
+NET ss_sel_l<1>         LOC=G14;
+NET ss_sel_l<2>         LOC=F14;
+NET ss_sel_l<3>         LOC=E13;
+
+NET sws<0>              LOC=F12;
+NET sws<1>              LOC=G12;
+NET sws<2>              LOC=H14;
+NET sws<3>              LOC=H13;
+NET sws<4>              LOC=J14;
+NET sws<5>              LOC=J13;
+NET sws<6>              LOC=K14;
+NET sws<7>              LOC=K13;
+
+NET btns<0>             LOC=M13;
+NET btns<1>             LOC=M14;
+NET btns<2>             LOC=L13;
+NET btns<3>             LOC=L14;
+
+NET leds<0>             LOC=K12;
+NET leds<1>             LOC=P14;
+NET leds<2>             LOC=L12;
+NET leds<3>             LOC=N14;
+NET leds<4>             LOC=P13;
+NET leds<5>             LOC=N12;
+NET leds<6>             LOC=P12;
+NET leds<7>             LOC=P11;
+
+NET vga_rgb<0>          LOC=R12;
+NET vga_rgb<0>          LOC=T12;
+NET vga_rgb<0>          LOC=R11;
+
+NET vga_hs_l            LOC=R9;
+NET vga_vs_l            LOC=T10;
+
+NET ps2_data            LOC=M15;
+NET ps2_clk             LOC=M16;
+
+NET rs232_rxd           LOC=T13;
+NET rs232_txd           LOC=R13;
+NET rs232_rxd_a         LOC=N10;
+NET rs232_txd_a         LOC=T14;
