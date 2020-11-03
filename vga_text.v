@@ -1,0 +1,5261 @@
+`timescale 1ns / 1ps
+`default_nettype none
+
+module vga_text(
+    input wire clk,
+    input wire rst,
+
+    input wire [9:0] vga_col,
+    input wire [8:0] vga_row,
+    input wire vga_display,
+    output wire [2:0] vga_rgb,
+
+    // sram interface
+    output wire [17:0] addr,
+    output wire oe_l,
+    output wire we_l,
+    inout wire [15:0] data1,
+    output wire ce1_l,
+    output wire ub1_l,
+    output wire lb1_l,
+    inout wire [15:0] data2,
+    output wire ce2_l,
+    output wire ub2_l,
+    output wire lb2_l
+);
+
+    reg px;
+
+    wire [4:0] char_row;
+    wire [6:0] char_col;
+    wire [3:0] char_px_row;
+    wire [2:0] char_px_col;
+    wire [7:0] char;
+
+    assign char_row = vga_row[8:4];
+    assign char_col = vga_col[9:3];
+    assign char_px_row = vga_row[3:0];
+    assign char_px_col = vga_col[2:0];
+
+    assign addr = { 8'b0, char_row, char_col[6:2] };
+
+    assign oe_l = (vga_display && char_col[1:0] == 0 && char_px_col == 0) ? 1'b0 : 1'b1;
+    assign we_l = 1'b1;
+    assign ce1_l = 1'b0;
+    assign ce2_l = 1'b0;
+    assign ub1_l = 1'b0;
+    assign lb1_l = 1'b0;
+    assign ub2_l = 1'b0;
+    assign lb2_l = 1'b0;
+
+    reg [7:0] char_reg [0:3];
+
+    always @(posedge clk, posedge rst) begin
+        if(rst) begin
+            char_reg[0] <= 8'b0;
+            char_reg[1] <= 8'b0;
+            char_reg[2] <= 8'b0;
+            char_reg[3] <= 8'b0;
+        end else if (~oe_l) begin
+            char_reg[0] <= data1[15:8];
+            char_reg[1] <= data1[7:0];
+            char_reg[2] <= data2[15:8];
+            char_reg[3] <= data2[7:0];
+        end
+    end
+
+    assign char = char_reg[char_col[1:0]];
+
+    wire [0:7] char_0x20_0;
+    wire [0:7] char_0x20_1;
+    wire [0:7] char_0x20_2;
+    wire [0:7] char_0x20_3;
+    wire [0:7] char_0x20_4;
+    wire [0:7] char_0x20_5;
+    wire [0:7] char_0x20_6;
+    wire [0:7] char_0x20_7;
+    wire [0:7] char_0x20_8;
+    wire [0:7] char_0x20_9;
+    wire [0:7] char_0x20_10;
+    wire [0:7] char_0x20_11;
+    wire [0:7] char_0x20_12;
+    wire [0:7] char_0x20_13;
+    wire [0:7] char_0x20_14;
+    wire [0:7] char_0x20_15;
+
+    assign char_0x20_0 = 8'b00000000;
+    assign char_0x20_1 = 8'b00000000;
+    assign char_0x20_2 = 8'b00000000;
+    assign char_0x20_3 = 8'b00000000;
+    assign char_0x20_4 = 8'b00000000;
+    assign char_0x20_5 = 8'b00000000;
+    assign char_0x20_6 = 8'b00000000;
+    assign char_0x20_7 = 8'b00000000;
+    assign char_0x20_8 = 8'b00000000;
+    assign char_0x20_9 = 8'b00000000;
+    assign char_0x20_10 = 8'b00000000;
+    assign char_0x20_11 = 8'b00000000;
+    assign char_0x20_12 = 8'b00000000;
+    assign char_0x20_13 = 8'b00000000;
+    assign char_0x20_14 = 8'b00000000;
+    assign char_0x20_15 = 8'b00000000;
+
+    wire [0:7] char_0x21_0;
+    wire [0:7] char_0x21_1;
+    wire [0:7] char_0x21_2;
+    wire [0:7] char_0x21_3;
+    wire [0:7] char_0x21_4;
+    wire [0:7] char_0x21_5;
+    wire [0:7] char_0x21_6;
+    wire [0:7] char_0x21_7;
+    wire [0:7] char_0x21_8;
+    wire [0:7] char_0x21_9;
+    wire [0:7] char_0x21_10;
+    wire [0:7] char_0x21_11;
+    wire [0:7] char_0x21_12;
+    wire [0:7] char_0x21_13;
+    wire [0:7] char_0x21_14;
+    wire [0:7] char_0x21_15;
+
+    assign char_0x21_0 = 8'b00000000;
+    assign char_0x21_1 = 8'b00000000;
+    assign char_0x21_2 = 8'b00011000;
+    assign char_0x21_3 = 8'b00111100;
+    assign char_0x21_4 = 8'b00111100;
+    assign char_0x21_5 = 8'b00111100;
+    assign char_0x21_6 = 8'b00011000;
+    assign char_0x21_7 = 8'b00011000;
+    assign char_0x21_8 = 8'b00011000;
+    assign char_0x21_9 = 8'b00000000;
+    assign char_0x21_10 = 8'b00011000;
+    assign char_0x21_11 = 8'b00011000;
+    assign char_0x21_12 = 8'b00000000;
+    assign char_0x21_13 = 8'b00000000;
+    assign char_0x21_14 = 8'b00000000;
+    assign char_0x21_15 = 8'b00000000;
+
+    wire [0:7] char_0x22_0;
+    wire [0:7] char_0x22_1;
+    wire [0:7] char_0x22_2;
+    wire [0:7] char_0x22_3;
+    wire [0:7] char_0x22_4;
+    wire [0:7] char_0x22_5;
+    wire [0:7] char_0x22_6;
+    wire [0:7] char_0x22_7;
+    wire [0:7] char_0x22_8;
+    wire [0:7] char_0x22_9;
+    wire [0:7] char_0x22_10;
+    wire [0:7] char_0x22_11;
+    wire [0:7] char_0x22_12;
+    wire [0:7] char_0x22_13;
+    wire [0:7] char_0x22_14;
+    wire [0:7] char_0x22_15;
+
+    assign char_0x22_0 = 8'b00000000;
+    assign char_0x22_1 = 8'b01100110;
+    assign char_0x22_2 = 8'b01100110;
+    assign char_0x22_3 = 8'b01100110;
+    assign char_0x22_4 = 8'b00100100;
+    assign char_0x22_5 = 8'b00000000;
+    assign char_0x22_6 = 8'b00000000;
+    assign char_0x22_7 = 8'b00000000;
+    assign char_0x22_8 = 8'b00000000;
+    assign char_0x22_9 = 8'b00000000;
+    assign char_0x22_10 = 8'b00000000;
+    assign char_0x22_11 = 8'b00000000;
+    assign char_0x22_12 = 8'b00000000;
+    assign char_0x22_13 = 8'b00000000;
+    assign char_0x22_14 = 8'b00000000;
+    assign char_0x22_15 = 8'b00000000;
+
+    wire [0:7] char_0x23_0;
+    wire [0:7] char_0x23_1;
+    wire [0:7] char_0x23_2;
+    wire [0:7] char_0x23_3;
+    wire [0:7] char_0x23_4;
+    wire [0:7] char_0x23_5;
+    wire [0:7] char_0x23_6;
+    wire [0:7] char_0x23_7;
+    wire [0:7] char_0x23_8;
+    wire [0:7] char_0x23_9;
+    wire [0:7] char_0x23_10;
+    wire [0:7] char_0x23_11;
+    wire [0:7] char_0x23_12;
+    wire [0:7] char_0x23_13;
+    wire [0:7] char_0x23_14;
+    wire [0:7] char_0x23_15;
+
+    assign char_0x23_0 = 8'b00000000;
+    assign char_0x23_1 = 8'b00000000;
+    assign char_0x23_2 = 8'b00000000;
+    assign char_0x23_3 = 8'b01101100;
+    assign char_0x23_4 = 8'b01101100;
+    assign char_0x23_5 = 8'b11111110;
+    assign char_0x23_6 = 8'b01101100;
+    assign char_0x23_7 = 8'b01101100;
+    assign char_0x23_8 = 8'b01101100;
+    assign char_0x23_9 = 8'b11111110;
+    assign char_0x23_10 = 8'b01101100;
+    assign char_0x23_11 = 8'b01101100;
+    assign char_0x23_12 = 8'b00000000;
+    assign char_0x23_13 = 8'b00000000;
+    assign char_0x23_14 = 8'b00000000;
+    assign char_0x23_15 = 8'b00000000;
+
+    wire [0:7] char_0x24_0;
+    wire [0:7] char_0x24_1;
+    wire [0:7] char_0x24_2;
+    wire [0:7] char_0x24_3;
+    wire [0:7] char_0x24_4;
+    wire [0:7] char_0x24_5;
+    wire [0:7] char_0x24_6;
+    wire [0:7] char_0x24_7;
+    wire [0:7] char_0x24_8;
+    wire [0:7] char_0x24_9;
+    wire [0:7] char_0x24_10;
+    wire [0:7] char_0x24_11;
+    wire [0:7] char_0x24_12;
+    wire [0:7] char_0x24_13;
+    wire [0:7] char_0x24_14;
+    wire [0:7] char_0x24_15;
+
+    assign char_0x24_0 = 8'b00011000;
+    assign char_0x24_1 = 8'b00011000;
+    assign char_0x24_2 = 8'b01111100;
+    assign char_0x24_3 = 8'b11000110;
+    assign char_0x24_4 = 8'b11000010;
+    assign char_0x24_5 = 8'b11000000;
+    assign char_0x24_6 = 8'b01111100;
+    assign char_0x24_7 = 8'b00000110;
+    assign char_0x24_8 = 8'b00000110;
+    assign char_0x24_9 = 8'b10000110;
+    assign char_0x24_10 = 8'b11000110;
+    assign char_0x24_11 = 8'b01111100;
+    assign char_0x24_12 = 8'b00011000;
+    assign char_0x24_13 = 8'b00011000;
+    assign char_0x24_14 = 8'b00000000;
+    assign char_0x24_15 = 8'b00000000;
+
+    wire [0:7] char_0x25_0;
+    wire [0:7] char_0x25_1;
+    wire [0:7] char_0x25_2;
+    wire [0:7] char_0x25_3;
+    wire [0:7] char_0x25_4;
+    wire [0:7] char_0x25_5;
+    wire [0:7] char_0x25_6;
+    wire [0:7] char_0x25_7;
+    wire [0:7] char_0x25_8;
+    wire [0:7] char_0x25_9;
+    wire [0:7] char_0x25_10;
+    wire [0:7] char_0x25_11;
+    wire [0:7] char_0x25_12;
+    wire [0:7] char_0x25_13;
+    wire [0:7] char_0x25_14;
+    wire [0:7] char_0x25_15;
+
+    assign char_0x25_0 = 8'b00000000;
+    assign char_0x25_1 = 8'b00000000;
+    assign char_0x25_2 = 8'b00000000;
+    assign char_0x25_3 = 8'b00000000;
+    assign char_0x25_4 = 8'b11000010;
+    assign char_0x25_5 = 8'b11000110;
+    assign char_0x25_6 = 8'b00001100;
+    assign char_0x25_7 = 8'b00011000;
+    assign char_0x25_8 = 8'b00110000;
+    assign char_0x25_9 = 8'b01100000;
+    assign char_0x25_10 = 8'b11000110;
+    assign char_0x25_11 = 8'b10000110;
+    assign char_0x25_12 = 8'b00000000;
+    assign char_0x25_13 = 8'b00000000;
+    assign char_0x25_14 = 8'b00000000;
+    assign char_0x25_15 = 8'b00000000;
+
+    wire [0:7] char_0x26_0;
+    wire [0:7] char_0x26_1;
+    wire [0:7] char_0x26_2;
+    wire [0:7] char_0x26_3;
+    wire [0:7] char_0x26_4;
+    wire [0:7] char_0x26_5;
+    wire [0:7] char_0x26_6;
+    wire [0:7] char_0x26_7;
+    wire [0:7] char_0x26_8;
+    wire [0:7] char_0x26_9;
+    wire [0:7] char_0x26_10;
+    wire [0:7] char_0x26_11;
+    wire [0:7] char_0x26_12;
+    wire [0:7] char_0x26_13;
+    wire [0:7] char_0x26_14;
+    wire [0:7] char_0x26_15;
+
+    assign char_0x26_0 = 8'b00000000;
+    assign char_0x26_1 = 8'b00000000;
+    assign char_0x26_2 = 8'b00111000;
+    assign char_0x26_3 = 8'b01101100;
+    assign char_0x26_4 = 8'b01101100;
+    assign char_0x26_5 = 8'b00111000;
+    assign char_0x26_6 = 8'b01110110;
+    assign char_0x26_7 = 8'b11011100;
+    assign char_0x26_8 = 8'b11001100;
+    assign char_0x26_9 = 8'b11001100;
+    assign char_0x26_10 = 8'b11001100;
+    assign char_0x26_11 = 8'b01110110;
+    assign char_0x26_12 = 8'b00000000;
+    assign char_0x26_13 = 8'b00000000;
+    assign char_0x26_14 = 8'b00000000;
+    assign char_0x26_15 = 8'b00000000;
+
+    wire [0:7] char_0x27_0;
+    wire [0:7] char_0x27_1;
+    wire [0:7] char_0x27_2;
+    wire [0:7] char_0x27_3;
+    wire [0:7] char_0x27_4;
+    wire [0:7] char_0x27_5;
+    wire [0:7] char_0x27_6;
+    wire [0:7] char_0x27_7;
+    wire [0:7] char_0x27_8;
+    wire [0:7] char_0x27_9;
+    wire [0:7] char_0x27_10;
+    wire [0:7] char_0x27_11;
+    wire [0:7] char_0x27_12;
+    wire [0:7] char_0x27_13;
+    wire [0:7] char_0x27_14;
+    wire [0:7] char_0x27_15;
+
+    assign char_0x27_0 = 8'b00000000;
+    assign char_0x27_1 = 8'b00110000;
+    assign char_0x27_2 = 8'b00110000;
+    assign char_0x27_3 = 8'b00110000;
+    assign char_0x27_4 = 8'b01100000;
+    assign char_0x27_5 = 8'b00000000;
+    assign char_0x27_6 = 8'b00000000;
+    assign char_0x27_7 = 8'b00000000;
+    assign char_0x27_8 = 8'b00000000;
+    assign char_0x27_9 = 8'b00000000;
+    assign char_0x27_10 = 8'b00000000;
+    assign char_0x27_11 = 8'b00000000;
+    assign char_0x27_12 = 8'b00000000;
+    assign char_0x27_13 = 8'b00000000;
+    assign char_0x27_14 = 8'b00000000;
+    assign char_0x27_15 = 8'b00000000;
+
+    wire [0:7] char_0x28_0;
+    wire [0:7] char_0x28_1;
+    wire [0:7] char_0x28_2;
+    wire [0:7] char_0x28_3;
+    wire [0:7] char_0x28_4;
+    wire [0:7] char_0x28_5;
+    wire [0:7] char_0x28_6;
+    wire [0:7] char_0x28_7;
+    wire [0:7] char_0x28_8;
+    wire [0:7] char_0x28_9;
+    wire [0:7] char_0x28_10;
+    wire [0:7] char_0x28_11;
+    wire [0:7] char_0x28_12;
+    wire [0:7] char_0x28_13;
+    wire [0:7] char_0x28_14;
+    wire [0:7] char_0x28_15;
+
+    assign char_0x28_0 = 8'b00000000;
+    assign char_0x28_1 = 8'b00000000;
+    assign char_0x28_2 = 8'b00001100;
+    assign char_0x28_3 = 8'b00011000;
+    assign char_0x28_4 = 8'b00110000;
+    assign char_0x28_5 = 8'b00110000;
+    assign char_0x28_6 = 8'b00110000;
+    assign char_0x28_7 = 8'b00110000;
+    assign char_0x28_8 = 8'b00110000;
+    assign char_0x28_9 = 8'b00110000;
+    assign char_0x28_10 = 8'b00011000;
+    assign char_0x28_11 = 8'b00001100;
+    assign char_0x28_12 = 8'b00000000;
+    assign char_0x28_13 = 8'b00000000;
+    assign char_0x28_14 = 8'b00000000;
+    assign char_0x28_15 = 8'b00000000;
+
+    wire [0:7] char_0x29_0;
+    wire [0:7] char_0x29_1;
+    wire [0:7] char_0x29_2;
+    wire [0:7] char_0x29_3;
+    wire [0:7] char_0x29_4;
+    wire [0:7] char_0x29_5;
+    wire [0:7] char_0x29_6;
+    wire [0:7] char_0x29_7;
+    wire [0:7] char_0x29_8;
+    wire [0:7] char_0x29_9;
+    wire [0:7] char_0x29_10;
+    wire [0:7] char_0x29_11;
+    wire [0:7] char_0x29_12;
+    wire [0:7] char_0x29_13;
+    wire [0:7] char_0x29_14;
+    wire [0:7] char_0x29_15;
+
+    assign char_0x29_0 = 8'b00000000;
+    assign char_0x29_1 = 8'b00000000;
+    assign char_0x29_2 = 8'b00110000;
+    assign char_0x29_3 = 8'b00011000;
+    assign char_0x29_4 = 8'b00001100;
+    assign char_0x29_5 = 8'b00001100;
+    assign char_0x29_6 = 8'b00001100;
+    assign char_0x29_7 = 8'b00001100;
+    assign char_0x29_8 = 8'b00001100;
+    assign char_0x29_9 = 8'b00001100;
+    assign char_0x29_10 = 8'b00011000;
+    assign char_0x29_11 = 8'b00110000;
+    assign char_0x29_12 = 8'b00000000;
+    assign char_0x29_13 = 8'b00000000;
+    assign char_0x29_14 = 8'b00000000;
+    assign char_0x29_15 = 8'b00000000;
+
+    wire [0:7] char_0x2a_0;
+    wire [0:7] char_0x2a_1;
+    wire [0:7] char_0x2a_2;
+    wire [0:7] char_0x2a_3;
+    wire [0:7] char_0x2a_4;
+    wire [0:7] char_0x2a_5;
+    wire [0:7] char_0x2a_6;
+    wire [0:7] char_0x2a_7;
+    wire [0:7] char_0x2a_8;
+    wire [0:7] char_0x2a_9;
+    wire [0:7] char_0x2a_10;
+    wire [0:7] char_0x2a_11;
+    wire [0:7] char_0x2a_12;
+    wire [0:7] char_0x2a_13;
+    wire [0:7] char_0x2a_14;
+    wire [0:7] char_0x2a_15;
+
+    assign char_0x2a_0 = 8'b00000000;
+    assign char_0x2a_1 = 8'b00000000;
+    assign char_0x2a_2 = 8'b00000000;
+    assign char_0x2a_3 = 8'b00000000;
+    assign char_0x2a_4 = 8'b00000000;
+    assign char_0x2a_5 = 8'b01100110;
+    assign char_0x2a_6 = 8'b00111100;
+    assign char_0x2a_7 = 8'b11111111;
+    assign char_0x2a_8 = 8'b00111100;
+    assign char_0x2a_9 = 8'b01100110;
+    assign char_0x2a_10 = 8'b00000000;
+    assign char_0x2a_11 = 8'b00000000;
+    assign char_0x2a_12 = 8'b00000000;
+    assign char_0x2a_13 = 8'b00000000;
+    assign char_0x2a_14 = 8'b00000000;
+    assign char_0x2a_15 = 8'b00000000;
+
+    wire [0:7] char_0x2b_0;
+    wire [0:7] char_0x2b_1;
+    wire [0:7] char_0x2b_2;
+    wire [0:7] char_0x2b_3;
+    wire [0:7] char_0x2b_4;
+    wire [0:7] char_0x2b_5;
+    wire [0:7] char_0x2b_6;
+    wire [0:7] char_0x2b_7;
+    wire [0:7] char_0x2b_8;
+    wire [0:7] char_0x2b_9;
+    wire [0:7] char_0x2b_10;
+    wire [0:7] char_0x2b_11;
+    wire [0:7] char_0x2b_12;
+    wire [0:7] char_0x2b_13;
+    wire [0:7] char_0x2b_14;
+    wire [0:7] char_0x2b_15;
+
+    assign char_0x2b_0 = 8'b00000000;
+    assign char_0x2b_1 = 8'b00000000;
+    assign char_0x2b_2 = 8'b00000000;
+    assign char_0x2b_3 = 8'b00000000;
+    assign char_0x2b_4 = 8'b00000000;
+    assign char_0x2b_5 = 8'b00011000;
+    assign char_0x2b_6 = 8'b00011000;
+    assign char_0x2b_7 = 8'b01111110;
+    assign char_0x2b_8 = 8'b00011000;
+    assign char_0x2b_9 = 8'b00011000;
+    assign char_0x2b_10 = 8'b00000000;
+    assign char_0x2b_11 = 8'b00000000;
+    assign char_0x2b_12 = 8'b00000000;
+    assign char_0x2b_13 = 8'b00000000;
+    assign char_0x2b_14 = 8'b00000000;
+    assign char_0x2b_15 = 8'b00000000;
+
+    wire [0:7] char_0x2c_0;
+    wire [0:7] char_0x2c_1;
+    wire [0:7] char_0x2c_2;
+    wire [0:7] char_0x2c_3;
+    wire [0:7] char_0x2c_4;
+    wire [0:7] char_0x2c_5;
+    wire [0:7] char_0x2c_6;
+    wire [0:7] char_0x2c_7;
+    wire [0:7] char_0x2c_8;
+    wire [0:7] char_0x2c_9;
+    wire [0:7] char_0x2c_10;
+    wire [0:7] char_0x2c_11;
+    wire [0:7] char_0x2c_12;
+    wire [0:7] char_0x2c_13;
+    wire [0:7] char_0x2c_14;
+    wire [0:7] char_0x2c_15;
+
+    assign char_0x2c_0 = 8'b00000000;
+    assign char_0x2c_1 = 8'b00000000;
+    assign char_0x2c_2 = 8'b00000000;
+    assign char_0x2c_3 = 8'b00000000;
+    assign char_0x2c_4 = 8'b00000000;
+    assign char_0x2c_5 = 8'b00000000;
+    assign char_0x2c_6 = 8'b00000000;
+    assign char_0x2c_7 = 8'b00000000;
+    assign char_0x2c_8 = 8'b00000000;
+    assign char_0x2c_9 = 8'b00011000;
+    assign char_0x2c_10 = 8'b00011000;
+    assign char_0x2c_11 = 8'b00011000;
+    assign char_0x2c_12 = 8'b00110000;
+    assign char_0x2c_13 = 8'b00000000;
+    assign char_0x2c_14 = 8'b00000000;
+    assign char_0x2c_15 = 8'b00000000;
+
+    wire [0:7] char_0x2d_0;
+    wire [0:7] char_0x2d_1;
+    wire [0:7] char_0x2d_2;
+    wire [0:7] char_0x2d_3;
+    wire [0:7] char_0x2d_4;
+    wire [0:7] char_0x2d_5;
+    wire [0:7] char_0x2d_6;
+    wire [0:7] char_0x2d_7;
+    wire [0:7] char_0x2d_8;
+    wire [0:7] char_0x2d_9;
+    wire [0:7] char_0x2d_10;
+    wire [0:7] char_0x2d_11;
+    wire [0:7] char_0x2d_12;
+    wire [0:7] char_0x2d_13;
+    wire [0:7] char_0x2d_14;
+    wire [0:7] char_0x2d_15;
+
+    assign char_0x2d_0 = 8'b00000000;
+    assign char_0x2d_1 = 8'b00000000;
+    assign char_0x2d_2 = 8'b00000000;
+    assign char_0x2d_3 = 8'b00000000;
+    assign char_0x2d_4 = 8'b00000000;
+    assign char_0x2d_5 = 8'b00000000;
+    assign char_0x2d_6 = 8'b00000000;
+    assign char_0x2d_7 = 8'b11111110;
+    assign char_0x2d_8 = 8'b00000000;
+    assign char_0x2d_9 = 8'b00000000;
+    assign char_0x2d_10 = 8'b00000000;
+    assign char_0x2d_11 = 8'b00000000;
+    assign char_0x2d_12 = 8'b00000000;
+    assign char_0x2d_13 = 8'b00000000;
+    assign char_0x2d_14 = 8'b00000000;
+    assign char_0x2d_15 = 8'b00000000;
+
+    wire [0:7] char_0x2e_0;
+    wire [0:7] char_0x2e_1;
+    wire [0:7] char_0x2e_2;
+    wire [0:7] char_0x2e_3;
+    wire [0:7] char_0x2e_4;
+    wire [0:7] char_0x2e_5;
+    wire [0:7] char_0x2e_6;
+    wire [0:7] char_0x2e_7;
+    wire [0:7] char_0x2e_8;
+    wire [0:7] char_0x2e_9;
+    wire [0:7] char_0x2e_10;
+    wire [0:7] char_0x2e_11;
+    wire [0:7] char_0x2e_12;
+    wire [0:7] char_0x2e_13;
+    wire [0:7] char_0x2e_14;
+    wire [0:7] char_0x2e_15;
+
+    assign char_0x2e_0 = 8'b00000000;
+    assign char_0x2e_1 = 8'b00000000;
+    assign char_0x2e_2 = 8'b00000000;
+    assign char_0x2e_3 = 8'b00000000;
+    assign char_0x2e_4 = 8'b00000000;
+    assign char_0x2e_5 = 8'b00000000;
+    assign char_0x2e_6 = 8'b00000000;
+    assign char_0x2e_7 = 8'b00000000;
+    assign char_0x2e_8 = 8'b00000000;
+    assign char_0x2e_9 = 8'b00000000;
+    assign char_0x2e_10 = 8'b00011000;
+    assign char_0x2e_11 = 8'b00011000;
+    assign char_0x2e_12 = 8'b00000000;
+    assign char_0x2e_13 = 8'b00000000;
+    assign char_0x2e_14 = 8'b00000000;
+    assign char_0x2e_15 = 8'b00000000;
+
+    wire [0:7] char_0x2f_0;
+    wire [0:7] char_0x2f_1;
+    wire [0:7] char_0x2f_2;
+    wire [0:7] char_0x2f_3;
+    wire [0:7] char_0x2f_4;
+    wire [0:7] char_0x2f_5;
+    wire [0:7] char_0x2f_6;
+    wire [0:7] char_0x2f_7;
+    wire [0:7] char_0x2f_8;
+    wire [0:7] char_0x2f_9;
+    wire [0:7] char_0x2f_10;
+    wire [0:7] char_0x2f_11;
+    wire [0:7] char_0x2f_12;
+    wire [0:7] char_0x2f_13;
+    wire [0:7] char_0x2f_14;
+    wire [0:7] char_0x2f_15;
+
+    assign char_0x2f_0 = 8'b00000000;
+    assign char_0x2f_1 = 8'b00000000;
+    assign char_0x2f_2 = 8'b00000000;
+    assign char_0x2f_3 = 8'b00000000;
+    assign char_0x2f_4 = 8'b00000010;
+    assign char_0x2f_5 = 8'b00000110;
+    assign char_0x2f_6 = 8'b00001100;
+    assign char_0x2f_7 = 8'b00011000;
+    assign char_0x2f_8 = 8'b00110000;
+    assign char_0x2f_9 = 8'b01100000;
+    assign char_0x2f_10 = 8'b11000000;
+    assign char_0x2f_11 = 8'b10000000;
+    assign char_0x2f_12 = 8'b00000000;
+    assign char_0x2f_13 = 8'b00000000;
+    assign char_0x2f_14 = 8'b00000000;
+    assign char_0x2f_15 = 8'b00000000;
+
+    wire [0:7] char_0x30_0;
+    wire [0:7] char_0x30_1;
+    wire [0:7] char_0x30_2;
+    wire [0:7] char_0x30_3;
+    wire [0:7] char_0x30_4;
+    wire [0:7] char_0x30_5;
+    wire [0:7] char_0x30_6;
+    wire [0:7] char_0x30_7;
+    wire [0:7] char_0x30_8;
+    wire [0:7] char_0x30_9;
+    wire [0:7] char_0x30_10;
+    wire [0:7] char_0x30_11;
+    wire [0:7] char_0x30_12;
+    wire [0:7] char_0x30_13;
+    wire [0:7] char_0x30_14;
+    wire [0:7] char_0x30_15;
+
+    assign char_0x30_0 = 8'b00000000;
+    assign char_0x30_1 = 8'b00000000;
+    assign char_0x30_2 = 8'b00111000;
+    assign char_0x30_3 = 8'b01101100;
+    assign char_0x30_4 = 8'b11000110;
+    assign char_0x30_5 = 8'b11000110;
+    assign char_0x30_6 = 8'b11010110;
+    assign char_0x30_7 = 8'b11010110;
+    assign char_0x30_8 = 8'b11000110;
+    assign char_0x30_9 = 8'b11000110;
+    assign char_0x30_10 = 8'b01101100;
+    assign char_0x30_11 = 8'b00111000;
+    assign char_0x30_12 = 8'b00000000;
+    assign char_0x30_13 = 8'b00000000;
+    assign char_0x30_14 = 8'b00000000;
+    assign char_0x30_15 = 8'b00000000;
+
+    wire [0:7] char_0x31_0;
+    wire [0:7] char_0x31_1;
+    wire [0:7] char_0x31_2;
+    wire [0:7] char_0x31_3;
+    wire [0:7] char_0x31_4;
+    wire [0:7] char_0x31_5;
+    wire [0:7] char_0x31_6;
+    wire [0:7] char_0x31_7;
+    wire [0:7] char_0x31_8;
+    wire [0:7] char_0x31_9;
+    wire [0:7] char_0x31_10;
+    wire [0:7] char_0x31_11;
+    wire [0:7] char_0x31_12;
+    wire [0:7] char_0x31_13;
+    wire [0:7] char_0x31_14;
+    wire [0:7] char_0x31_15;
+
+    assign char_0x31_0 = 8'b00000000;
+    assign char_0x31_1 = 8'b00000000;
+    assign char_0x31_2 = 8'b00011000;
+    assign char_0x31_3 = 8'b00111000;
+    assign char_0x31_4 = 8'b01111000;
+    assign char_0x31_5 = 8'b00011000;
+    assign char_0x31_6 = 8'b00011000;
+    assign char_0x31_7 = 8'b00011000;
+    assign char_0x31_8 = 8'b00011000;
+    assign char_0x31_9 = 8'b00011000;
+    assign char_0x31_10 = 8'b00011000;
+    assign char_0x31_11 = 8'b01111110;
+    assign char_0x31_12 = 8'b00000000;
+    assign char_0x31_13 = 8'b00000000;
+    assign char_0x31_14 = 8'b00000000;
+    assign char_0x31_15 = 8'b00000000;
+
+    wire [0:7] char_0x32_0;
+    wire [0:7] char_0x32_1;
+    wire [0:7] char_0x32_2;
+    wire [0:7] char_0x32_3;
+    wire [0:7] char_0x32_4;
+    wire [0:7] char_0x32_5;
+    wire [0:7] char_0x32_6;
+    wire [0:7] char_0x32_7;
+    wire [0:7] char_0x32_8;
+    wire [0:7] char_0x32_9;
+    wire [0:7] char_0x32_10;
+    wire [0:7] char_0x32_11;
+    wire [0:7] char_0x32_12;
+    wire [0:7] char_0x32_13;
+    wire [0:7] char_0x32_14;
+    wire [0:7] char_0x32_15;
+
+    assign char_0x32_0 = 8'b00000000;
+    assign char_0x32_1 = 8'b00000000;
+    assign char_0x32_2 = 8'b01111100;
+    assign char_0x32_3 = 8'b11000110;
+    assign char_0x32_4 = 8'b00000110;
+    assign char_0x32_5 = 8'b00001100;
+    assign char_0x32_6 = 8'b00011000;
+    assign char_0x32_7 = 8'b00110000;
+    assign char_0x32_8 = 8'b01100000;
+    assign char_0x32_9 = 8'b11000000;
+    assign char_0x32_10 = 8'b11000110;
+    assign char_0x32_11 = 8'b11111110;
+    assign char_0x32_12 = 8'b00000000;
+    assign char_0x32_13 = 8'b00000000;
+    assign char_0x32_14 = 8'b00000000;
+    assign char_0x32_15 = 8'b00000000;
+
+    wire [0:7] char_0x33_0;
+    wire [0:7] char_0x33_1;
+    wire [0:7] char_0x33_2;
+    wire [0:7] char_0x33_3;
+    wire [0:7] char_0x33_4;
+    wire [0:7] char_0x33_5;
+    wire [0:7] char_0x33_6;
+    wire [0:7] char_0x33_7;
+    wire [0:7] char_0x33_8;
+    wire [0:7] char_0x33_9;
+    wire [0:7] char_0x33_10;
+    wire [0:7] char_0x33_11;
+    wire [0:7] char_0x33_12;
+    wire [0:7] char_0x33_13;
+    wire [0:7] char_0x33_14;
+    wire [0:7] char_0x33_15;
+
+    assign char_0x33_0 = 8'b00000000;
+    assign char_0x33_1 = 8'b00000000;
+    assign char_0x33_2 = 8'b01111100;
+    assign char_0x33_3 = 8'b11000110;
+    assign char_0x33_4 = 8'b00000110;
+    assign char_0x33_5 = 8'b00000110;
+    assign char_0x33_6 = 8'b00111100;
+    assign char_0x33_7 = 8'b00000110;
+    assign char_0x33_8 = 8'b00000110;
+    assign char_0x33_9 = 8'b00000110;
+    assign char_0x33_10 = 8'b11000110;
+    assign char_0x33_11 = 8'b01111100;
+    assign char_0x33_12 = 8'b00000000;
+    assign char_0x33_13 = 8'b00000000;
+    assign char_0x33_14 = 8'b00000000;
+    assign char_0x33_15 = 8'b00000000;
+
+    wire [0:7] char_0x34_0;
+    wire [0:7] char_0x34_1;
+    wire [0:7] char_0x34_2;
+    wire [0:7] char_0x34_3;
+    wire [0:7] char_0x34_4;
+    wire [0:7] char_0x34_5;
+    wire [0:7] char_0x34_6;
+    wire [0:7] char_0x34_7;
+    wire [0:7] char_0x34_8;
+    wire [0:7] char_0x34_9;
+    wire [0:7] char_0x34_10;
+    wire [0:7] char_0x34_11;
+    wire [0:7] char_0x34_12;
+    wire [0:7] char_0x34_13;
+    wire [0:7] char_0x34_14;
+    wire [0:7] char_0x34_15;
+
+    assign char_0x34_0 = 8'b00000000;
+    assign char_0x34_1 = 8'b00000000;
+    assign char_0x34_2 = 8'b00001100;
+    assign char_0x34_3 = 8'b00011100;
+    assign char_0x34_4 = 8'b00111100;
+    assign char_0x34_5 = 8'b01101100;
+    assign char_0x34_6 = 8'b11001100;
+    assign char_0x34_7 = 8'b11111110;
+    assign char_0x34_8 = 8'b00001100;
+    assign char_0x34_9 = 8'b00001100;
+    assign char_0x34_10 = 8'b00001100;
+    assign char_0x34_11 = 8'b00011110;
+    assign char_0x34_12 = 8'b00000000;
+    assign char_0x34_13 = 8'b00000000;
+    assign char_0x34_14 = 8'b00000000;
+    assign char_0x34_15 = 8'b00000000;
+
+    wire [0:7] char_0x35_0;
+    wire [0:7] char_0x35_1;
+    wire [0:7] char_0x35_2;
+    wire [0:7] char_0x35_3;
+    wire [0:7] char_0x35_4;
+    wire [0:7] char_0x35_5;
+    wire [0:7] char_0x35_6;
+    wire [0:7] char_0x35_7;
+    wire [0:7] char_0x35_8;
+    wire [0:7] char_0x35_9;
+    wire [0:7] char_0x35_10;
+    wire [0:7] char_0x35_11;
+    wire [0:7] char_0x35_12;
+    wire [0:7] char_0x35_13;
+    wire [0:7] char_0x35_14;
+    wire [0:7] char_0x35_15;
+
+    assign char_0x35_0 = 8'b00000000;
+    assign char_0x35_1 = 8'b00000000;
+    assign char_0x35_2 = 8'b11111110;
+    assign char_0x35_3 = 8'b11000000;
+    assign char_0x35_4 = 8'b11000000;
+    assign char_0x35_5 = 8'b11000000;
+    assign char_0x35_6 = 8'b11111100;
+    assign char_0x35_7 = 8'b00000110;
+    assign char_0x35_8 = 8'b00000110;
+    assign char_0x35_9 = 8'b00000110;
+    assign char_0x35_10 = 8'b11000110;
+    assign char_0x35_11 = 8'b01111100;
+    assign char_0x35_12 = 8'b00000000;
+    assign char_0x35_13 = 8'b00000000;
+    assign char_0x35_14 = 8'b00000000;
+    assign char_0x35_15 = 8'b00000000;
+
+    wire [0:7] char_0x36_0;
+    wire [0:7] char_0x36_1;
+    wire [0:7] char_0x36_2;
+    wire [0:7] char_0x36_3;
+    wire [0:7] char_0x36_4;
+    wire [0:7] char_0x36_5;
+    wire [0:7] char_0x36_6;
+    wire [0:7] char_0x36_7;
+    wire [0:7] char_0x36_8;
+    wire [0:7] char_0x36_9;
+    wire [0:7] char_0x36_10;
+    wire [0:7] char_0x36_11;
+    wire [0:7] char_0x36_12;
+    wire [0:7] char_0x36_13;
+    wire [0:7] char_0x36_14;
+    wire [0:7] char_0x36_15;
+
+    assign char_0x36_0 = 8'b00000000;
+    assign char_0x36_1 = 8'b00000000;
+    assign char_0x36_2 = 8'b00111000;
+    assign char_0x36_3 = 8'b01100000;
+    assign char_0x36_4 = 8'b11000000;
+    assign char_0x36_5 = 8'b11000000;
+    assign char_0x36_6 = 8'b11111100;
+    assign char_0x36_7 = 8'b11000110;
+    assign char_0x36_8 = 8'b11000110;
+    assign char_0x36_9 = 8'b11000110;
+    assign char_0x36_10 = 8'b11000110;
+    assign char_0x36_11 = 8'b01111100;
+    assign char_0x36_12 = 8'b00000000;
+    assign char_0x36_13 = 8'b00000000;
+    assign char_0x36_14 = 8'b00000000;
+    assign char_0x36_15 = 8'b00000000;
+
+    wire [0:7] char_0x37_0;
+    wire [0:7] char_0x37_1;
+    wire [0:7] char_0x37_2;
+    wire [0:7] char_0x37_3;
+    wire [0:7] char_0x37_4;
+    wire [0:7] char_0x37_5;
+    wire [0:7] char_0x37_6;
+    wire [0:7] char_0x37_7;
+    wire [0:7] char_0x37_8;
+    wire [0:7] char_0x37_9;
+    wire [0:7] char_0x37_10;
+    wire [0:7] char_0x37_11;
+    wire [0:7] char_0x37_12;
+    wire [0:7] char_0x37_13;
+    wire [0:7] char_0x37_14;
+    wire [0:7] char_0x37_15;
+
+    assign char_0x37_0 = 8'b00000000;
+    assign char_0x37_1 = 8'b00000000;
+    assign char_0x37_2 = 8'b11111110;
+    assign char_0x37_3 = 8'b11000110;
+    assign char_0x37_4 = 8'b00000110;
+    assign char_0x37_5 = 8'b00000110;
+    assign char_0x37_6 = 8'b00001100;
+    assign char_0x37_7 = 8'b00011000;
+    assign char_0x37_8 = 8'b00110000;
+    assign char_0x37_9 = 8'b00110000;
+    assign char_0x37_10 = 8'b00110000;
+    assign char_0x37_11 = 8'b00110000;
+    assign char_0x37_12 = 8'b00000000;
+    assign char_0x37_13 = 8'b00000000;
+    assign char_0x37_14 = 8'b00000000;
+    assign char_0x37_15 = 8'b00000000;
+
+    wire [0:7] char_0x38_0;
+    wire [0:7] char_0x38_1;
+    wire [0:7] char_0x38_2;
+    wire [0:7] char_0x38_3;
+    wire [0:7] char_0x38_4;
+    wire [0:7] char_0x38_5;
+    wire [0:7] char_0x38_6;
+    wire [0:7] char_0x38_7;
+    wire [0:7] char_0x38_8;
+    wire [0:7] char_0x38_9;
+    wire [0:7] char_0x38_10;
+    wire [0:7] char_0x38_11;
+    wire [0:7] char_0x38_12;
+    wire [0:7] char_0x38_13;
+    wire [0:7] char_0x38_14;
+    wire [0:7] char_0x38_15;
+
+    assign char_0x38_0 = 8'b00000000;
+    assign char_0x38_1 = 8'b00000000;
+    assign char_0x38_2 = 8'b01111100;
+    assign char_0x38_3 = 8'b11000110;
+    assign char_0x38_4 = 8'b11000110;
+    assign char_0x38_5 = 8'b11000110;
+    assign char_0x38_6 = 8'b01111100;
+    assign char_0x38_7 = 8'b11000110;
+    assign char_0x38_8 = 8'b11000110;
+    assign char_0x38_9 = 8'b11000110;
+    assign char_0x38_10 = 8'b11000110;
+    assign char_0x38_11 = 8'b01111100;
+    assign char_0x38_12 = 8'b00000000;
+    assign char_0x38_13 = 8'b00000000;
+    assign char_0x38_14 = 8'b00000000;
+    assign char_0x38_15 = 8'b00000000;
+
+    wire [0:7] char_0x39_0;
+    wire [0:7] char_0x39_1;
+    wire [0:7] char_0x39_2;
+    wire [0:7] char_0x39_3;
+    wire [0:7] char_0x39_4;
+    wire [0:7] char_0x39_5;
+    wire [0:7] char_0x39_6;
+    wire [0:7] char_0x39_7;
+    wire [0:7] char_0x39_8;
+    wire [0:7] char_0x39_9;
+    wire [0:7] char_0x39_10;
+    wire [0:7] char_0x39_11;
+    wire [0:7] char_0x39_12;
+    wire [0:7] char_0x39_13;
+    wire [0:7] char_0x39_14;
+    wire [0:7] char_0x39_15;
+
+    assign char_0x39_0 = 8'b00000000;
+    assign char_0x39_1 = 8'b00000000;
+    assign char_0x39_2 = 8'b01111100;
+    assign char_0x39_3 = 8'b11000110;
+    assign char_0x39_4 = 8'b11000110;
+    assign char_0x39_5 = 8'b11000110;
+    assign char_0x39_6 = 8'b01111110;
+    assign char_0x39_7 = 8'b00000110;
+    assign char_0x39_8 = 8'b00000110;
+    assign char_0x39_9 = 8'b00000110;
+    assign char_0x39_10 = 8'b00001100;
+    assign char_0x39_11 = 8'b01111000;
+    assign char_0x39_12 = 8'b00000000;
+    assign char_0x39_13 = 8'b00000000;
+    assign char_0x39_14 = 8'b00000000;
+    assign char_0x39_15 = 8'b00000000;
+
+    wire [0:7] char_0x3a_0;
+    wire [0:7] char_0x3a_1;
+    wire [0:7] char_0x3a_2;
+    wire [0:7] char_0x3a_3;
+    wire [0:7] char_0x3a_4;
+    wire [0:7] char_0x3a_5;
+    wire [0:7] char_0x3a_6;
+    wire [0:7] char_0x3a_7;
+    wire [0:7] char_0x3a_8;
+    wire [0:7] char_0x3a_9;
+    wire [0:7] char_0x3a_10;
+    wire [0:7] char_0x3a_11;
+    wire [0:7] char_0x3a_12;
+    wire [0:7] char_0x3a_13;
+    wire [0:7] char_0x3a_14;
+    wire [0:7] char_0x3a_15;
+
+    assign char_0x3a_0 = 8'b00000000;
+    assign char_0x3a_1 = 8'b00000000;
+    assign char_0x3a_2 = 8'b00000000;
+    assign char_0x3a_3 = 8'b00000000;
+    assign char_0x3a_4 = 8'b00011000;
+    assign char_0x3a_5 = 8'b00011000;
+    assign char_0x3a_6 = 8'b00000000;
+    assign char_0x3a_7 = 8'b00000000;
+    assign char_0x3a_8 = 8'b00000000;
+    assign char_0x3a_9 = 8'b00011000;
+    assign char_0x3a_10 = 8'b00011000;
+    assign char_0x3a_11 = 8'b00000000;
+    assign char_0x3a_12 = 8'b00000000;
+    assign char_0x3a_13 = 8'b00000000;
+    assign char_0x3a_14 = 8'b00000000;
+    assign char_0x3a_15 = 8'b00000000;
+
+    wire [0:7] char_0x3b_0;
+    wire [0:7] char_0x3b_1;
+    wire [0:7] char_0x3b_2;
+    wire [0:7] char_0x3b_3;
+    wire [0:7] char_0x3b_4;
+    wire [0:7] char_0x3b_5;
+    wire [0:7] char_0x3b_6;
+    wire [0:7] char_0x3b_7;
+    wire [0:7] char_0x3b_8;
+    wire [0:7] char_0x3b_9;
+    wire [0:7] char_0x3b_10;
+    wire [0:7] char_0x3b_11;
+    wire [0:7] char_0x3b_12;
+    wire [0:7] char_0x3b_13;
+    wire [0:7] char_0x3b_14;
+    wire [0:7] char_0x3b_15;
+
+    assign char_0x3b_0 = 8'b00000000;
+    assign char_0x3b_1 = 8'b00000000;
+    assign char_0x3b_2 = 8'b00000000;
+    assign char_0x3b_3 = 8'b00000000;
+    assign char_0x3b_4 = 8'b00011000;
+    assign char_0x3b_5 = 8'b00011000;
+    assign char_0x3b_6 = 8'b00000000;
+    assign char_0x3b_7 = 8'b00000000;
+    assign char_0x3b_8 = 8'b00000000;
+    assign char_0x3b_9 = 8'b00011000;
+    assign char_0x3b_10 = 8'b00011000;
+    assign char_0x3b_11 = 8'b00110000;
+    assign char_0x3b_12 = 8'b00000000;
+    assign char_0x3b_13 = 8'b00000000;
+    assign char_0x3b_14 = 8'b00000000;
+    assign char_0x3b_15 = 8'b00000000;
+
+    wire [0:7] char_0x3c_0;
+    wire [0:7] char_0x3c_1;
+    wire [0:7] char_0x3c_2;
+    wire [0:7] char_0x3c_3;
+    wire [0:7] char_0x3c_4;
+    wire [0:7] char_0x3c_5;
+    wire [0:7] char_0x3c_6;
+    wire [0:7] char_0x3c_7;
+    wire [0:7] char_0x3c_8;
+    wire [0:7] char_0x3c_9;
+    wire [0:7] char_0x3c_10;
+    wire [0:7] char_0x3c_11;
+    wire [0:7] char_0x3c_12;
+    wire [0:7] char_0x3c_13;
+    wire [0:7] char_0x3c_14;
+    wire [0:7] char_0x3c_15;
+
+    assign char_0x3c_0 = 8'b00000000;
+    assign char_0x3c_1 = 8'b00000000;
+    assign char_0x3c_2 = 8'b00000000;
+    assign char_0x3c_3 = 8'b00000110;
+    assign char_0x3c_4 = 8'b00001100;
+    assign char_0x3c_5 = 8'b00011000;
+    assign char_0x3c_6 = 8'b00110000;
+    assign char_0x3c_7 = 8'b01100000;
+    assign char_0x3c_8 = 8'b00110000;
+    assign char_0x3c_9 = 8'b00011000;
+    assign char_0x3c_10 = 8'b00001100;
+    assign char_0x3c_11 = 8'b00000110;
+    assign char_0x3c_12 = 8'b00000000;
+    assign char_0x3c_13 = 8'b00000000;
+    assign char_0x3c_14 = 8'b00000000;
+    assign char_0x3c_15 = 8'b00000000;
+
+    wire [0:7] char_0x3d_0;
+    wire [0:7] char_0x3d_1;
+    wire [0:7] char_0x3d_2;
+    wire [0:7] char_0x3d_3;
+    wire [0:7] char_0x3d_4;
+    wire [0:7] char_0x3d_5;
+    wire [0:7] char_0x3d_6;
+    wire [0:7] char_0x3d_7;
+    wire [0:7] char_0x3d_8;
+    wire [0:7] char_0x3d_9;
+    wire [0:7] char_0x3d_10;
+    wire [0:7] char_0x3d_11;
+    wire [0:7] char_0x3d_12;
+    wire [0:7] char_0x3d_13;
+    wire [0:7] char_0x3d_14;
+    wire [0:7] char_0x3d_15;
+
+    assign char_0x3d_0 = 8'b00000000;
+    assign char_0x3d_1 = 8'b00000000;
+    assign char_0x3d_2 = 8'b00000000;
+    assign char_0x3d_3 = 8'b00000000;
+    assign char_0x3d_4 = 8'b00000000;
+    assign char_0x3d_5 = 8'b01111110;
+    assign char_0x3d_6 = 8'b00000000;
+    assign char_0x3d_7 = 8'b00000000;
+    assign char_0x3d_8 = 8'b01111110;
+    assign char_0x3d_9 = 8'b00000000;
+    assign char_0x3d_10 = 8'b00000000;
+    assign char_0x3d_11 = 8'b00000000;
+    assign char_0x3d_12 = 8'b00000000;
+    assign char_0x3d_13 = 8'b00000000;
+    assign char_0x3d_14 = 8'b00000000;
+    assign char_0x3d_15 = 8'b00000000;
+
+    wire [0:7] char_0x3e_0;
+    wire [0:7] char_0x3e_1;
+    wire [0:7] char_0x3e_2;
+    wire [0:7] char_0x3e_3;
+    wire [0:7] char_0x3e_4;
+    wire [0:7] char_0x3e_5;
+    wire [0:7] char_0x3e_6;
+    wire [0:7] char_0x3e_7;
+    wire [0:7] char_0x3e_8;
+    wire [0:7] char_0x3e_9;
+    wire [0:7] char_0x3e_10;
+    wire [0:7] char_0x3e_11;
+    wire [0:7] char_0x3e_12;
+    wire [0:7] char_0x3e_13;
+    wire [0:7] char_0x3e_14;
+    wire [0:7] char_0x3e_15;
+
+    assign char_0x3e_0 = 8'b00000000;
+    assign char_0x3e_1 = 8'b00000000;
+    assign char_0x3e_2 = 8'b00000000;
+    assign char_0x3e_3 = 8'b01100000;
+    assign char_0x3e_4 = 8'b00110000;
+    assign char_0x3e_5 = 8'b00011000;
+    assign char_0x3e_6 = 8'b00001100;
+    assign char_0x3e_7 = 8'b00000110;
+    assign char_0x3e_8 = 8'b00001100;
+    assign char_0x3e_9 = 8'b00011000;
+    assign char_0x3e_10 = 8'b00110000;
+    assign char_0x3e_11 = 8'b01100000;
+    assign char_0x3e_12 = 8'b00000000;
+    assign char_0x3e_13 = 8'b00000000;
+    assign char_0x3e_14 = 8'b00000000;
+    assign char_0x3e_15 = 8'b00000000;
+
+    wire [0:7] char_0x3f_0;
+    wire [0:7] char_0x3f_1;
+    wire [0:7] char_0x3f_2;
+    wire [0:7] char_0x3f_3;
+    wire [0:7] char_0x3f_4;
+    wire [0:7] char_0x3f_5;
+    wire [0:7] char_0x3f_6;
+    wire [0:7] char_0x3f_7;
+    wire [0:7] char_0x3f_8;
+    wire [0:7] char_0x3f_9;
+    wire [0:7] char_0x3f_10;
+    wire [0:7] char_0x3f_11;
+    wire [0:7] char_0x3f_12;
+    wire [0:7] char_0x3f_13;
+    wire [0:7] char_0x3f_14;
+    wire [0:7] char_0x3f_15;
+
+    assign char_0x3f_0 = 8'b00000000;
+    assign char_0x3f_1 = 8'b00000000;
+    assign char_0x3f_2 = 8'b01111100;
+    assign char_0x3f_3 = 8'b11000110;
+    assign char_0x3f_4 = 8'b11000110;
+    assign char_0x3f_5 = 8'b00001100;
+    assign char_0x3f_6 = 8'b00011000;
+    assign char_0x3f_7 = 8'b00011000;
+    assign char_0x3f_8 = 8'b00011000;
+    assign char_0x3f_9 = 8'b00000000;
+    assign char_0x3f_10 = 8'b00011000;
+    assign char_0x3f_11 = 8'b00011000;
+    assign char_0x3f_12 = 8'b00000000;
+    assign char_0x3f_13 = 8'b00000000;
+    assign char_0x3f_14 = 8'b00000000;
+    assign char_0x3f_15 = 8'b00000000;
+
+    wire [0:7] char_0x40_0;
+    wire [0:7] char_0x40_1;
+    wire [0:7] char_0x40_2;
+    wire [0:7] char_0x40_3;
+    wire [0:7] char_0x40_4;
+    wire [0:7] char_0x40_5;
+    wire [0:7] char_0x40_6;
+    wire [0:7] char_0x40_7;
+    wire [0:7] char_0x40_8;
+    wire [0:7] char_0x40_9;
+    wire [0:7] char_0x40_10;
+    wire [0:7] char_0x40_11;
+    wire [0:7] char_0x40_12;
+    wire [0:7] char_0x40_13;
+    wire [0:7] char_0x40_14;
+    wire [0:7] char_0x40_15;
+
+    assign char_0x40_0 = 8'b00000000;
+    assign char_0x40_1 = 8'b00000000;
+    assign char_0x40_2 = 8'b00000000;
+    assign char_0x40_3 = 8'b01111100;
+    assign char_0x40_4 = 8'b11000110;
+    assign char_0x40_5 = 8'b11000110;
+    assign char_0x40_6 = 8'b11011110;
+    assign char_0x40_7 = 8'b11011110;
+    assign char_0x40_8 = 8'b11011110;
+    assign char_0x40_9 = 8'b11011100;
+    assign char_0x40_10 = 8'b11000000;
+    assign char_0x40_11 = 8'b01111100;
+    assign char_0x40_12 = 8'b00000000;
+    assign char_0x40_13 = 8'b00000000;
+    assign char_0x40_14 = 8'b00000000;
+    assign char_0x40_15 = 8'b00000000;
+
+    wire [0:7] char_0x41_0;
+    wire [0:7] char_0x41_1;
+    wire [0:7] char_0x41_2;
+    wire [0:7] char_0x41_3;
+    wire [0:7] char_0x41_4;
+    wire [0:7] char_0x41_5;
+    wire [0:7] char_0x41_6;
+    wire [0:7] char_0x41_7;
+    wire [0:7] char_0x41_8;
+    wire [0:7] char_0x41_9;
+    wire [0:7] char_0x41_10;
+    wire [0:7] char_0x41_11;
+    wire [0:7] char_0x41_12;
+    wire [0:7] char_0x41_13;
+    wire [0:7] char_0x41_14;
+    wire [0:7] char_0x41_15;
+
+    assign char_0x41_0 = 8'b00000000;
+    assign char_0x41_1 = 8'b00000000;
+    assign char_0x41_2 = 8'b00010000;
+    assign char_0x41_3 = 8'b00111000;
+    assign char_0x41_4 = 8'b01101100;
+    assign char_0x41_5 = 8'b11000110;
+    assign char_0x41_6 = 8'b11000110;
+    assign char_0x41_7 = 8'b11111110;
+    assign char_0x41_8 = 8'b11000110;
+    assign char_0x41_9 = 8'b11000110;
+    assign char_0x41_10 = 8'b11000110;
+    assign char_0x41_11 = 8'b11000110;
+    assign char_0x41_12 = 8'b00000000;
+    assign char_0x41_13 = 8'b00000000;
+    assign char_0x41_14 = 8'b00000000;
+    assign char_0x41_15 = 8'b00000000;
+
+    wire [0:7] char_0x42_0;
+    wire [0:7] char_0x42_1;
+    wire [0:7] char_0x42_2;
+    wire [0:7] char_0x42_3;
+    wire [0:7] char_0x42_4;
+    wire [0:7] char_0x42_5;
+    wire [0:7] char_0x42_6;
+    wire [0:7] char_0x42_7;
+    wire [0:7] char_0x42_8;
+    wire [0:7] char_0x42_9;
+    wire [0:7] char_0x42_10;
+    wire [0:7] char_0x42_11;
+    wire [0:7] char_0x42_12;
+    wire [0:7] char_0x42_13;
+    wire [0:7] char_0x42_14;
+    wire [0:7] char_0x42_15;
+
+    assign char_0x42_0 = 8'b00000000;
+    assign char_0x42_1 = 8'b00000000;
+    assign char_0x42_2 = 8'b11111100;
+    assign char_0x42_3 = 8'b01100110;
+    assign char_0x42_4 = 8'b01100110;
+    assign char_0x42_5 = 8'b01100110;
+    assign char_0x42_6 = 8'b01111100;
+    assign char_0x42_7 = 8'b01100110;
+    assign char_0x42_8 = 8'b01100110;
+    assign char_0x42_9 = 8'b01100110;
+    assign char_0x42_10 = 8'b01100110;
+    assign char_0x42_11 = 8'b11111100;
+    assign char_0x42_12 = 8'b00000000;
+    assign char_0x42_13 = 8'b00000000;
+    assign char_0x42_14 = 8'b00000000;
+    assign char_0x42_15 = 8'b00000000;
+
+    wire [0:7] char_0x43_0;
+    wire [0:7] char_0x43_1;
+    wire [0:7] char_0x43_2;
+    wire [0:7] char_0x43_3;
+    wire [0:7] char_0x43_4;
+    wire [0:7] char_0x43_5;
+    wire [0:7] char_0x43_6;
+    wire [0:7] char_0x43_7;
+    wire [0:7] char_0x43_8;
+    wire [0:7] char_0x43_9;
+    wire [0:7] char_0x43_10;
+    wire [0:7] char_0x43_11;
+    wire [0:7] char_0x43_12;
+    wire [0:7] char_0x43_13;
+    wire [0:7] char_0x43_14;
+    wire [0:7] char_0x43_15;
+
+    assign char_0x43_0 = 8'b00000000;
+    assign char_0x43_1 = 8'b00000000;
+    assign char_0x43_2 = 8'b00111100;
+    assign char_0x43_3 = 8'b01100110;
+    assign char_0x43_4 = 8'b11000010;
+    assign char_0x43_5 = 8'b11000000;
+    assign char_0x43_6 = 8'b11000000;
+    assign char_0x43_7 = 8'b11000000;
+    assign char_0x43_8 = 8'b11000000;
+    assign char_0x43_9 = 8'b11000010;
+    assign char_0x43_10 = 8'b01100110;
+    assign char_0x43_11 = 8'b00111100;
+    assign char_0x43_12 = 8'b00000000;
+    assign char_0x43_13 = 8'b00000000;
+    assign char_0x43_14 = 8'b00000000;
+    assign char_0x43_15 = 8'b00000000;
+
+    wire [0:7] char_0x44_0;
+    wire [0:7] char_0x44_1;
+    wire [0:7] char_0x44_2;
+    wire [0:7] char_0x44_3;
+    wire [0:7] char_0x44_4;
+    wire [0:7] char_0x44_5;
+    wire [0:7] char_0x44_6;
+    wire [0:7] char_0x44_7;
+    wire [0:7] char_0x44_8;
+    wire [0:7] char_0x44_9;
+    wire [0:7] char_0x44_10;
+    wire [0:7] char_0x44_11;
+    wire [0:7] char_0x44_12;
+    wire [0:7] char_0x44_13;
+    wire [0:7] char_0x44_14;
+    wire [0:7] char_0x44_15;
+
+    assign char_0x44_0 = 8'b00000000;
+    assign char_0x44_1 = 8'b00000000;
+    assign char_0x44_2 = 8'b11111000;
+    assign char_0x44_3 = 8'b01101100;
+    assign char_0x44_4 = 8'b01100110;
+    assign char_0x44_5 = 8'b01100110;
+    assign char_0x44_6 = 8'b01100110;
+    assign char_0x44_7 = 8'b01100110;
+    assign char_0x44_8 = 8'b01100110;
+    assign char_0x44_9 = 8'b01100110;
+    assign char_0x44_10 = 8'b01101100;
+    assign char_0x44_11 = 8'b11111000;
+    assign char_0x44_12 = 8'b00000000;
+    assign char_0x44_13 = 8'b00000000;
+    assign char_0x44_14 = 8'b00000000;
+    assign char_0x44_15 = 8'b00000000;
+
+    wire [0:7] char_0x45_0;
+    wire [0:7] char_0x45_1;
+    wire [0:7] char_0x45_2;
+    wire [0:7] char_0x45_3;
+    wire [0:7] char_0x45_4;
+    wire [0:7] char_0x45_5;
+    wire [0:7] char_0x45_6;
+    wire [0:7] char_0x45_7;
+    wire [0:7] char_0x45_8;
+    wire [0:7] char_0x45_9;
+    wire [0:7] char_0x45_10;
+    wire [0:7] char_0x45_11;
+    wire [0:7] char_0x45_12;
+    wire [0:7] char_0x45_13;
+    wire [0:7] char_0x45_14;
+    wire [0:7] char_0x45_15;
+
+    assign char_0x45_0 = 8'b00000000;
+    assign char_0x45_1 = 8'b00000000;
+    assign char_0x45_2 = 8'b11111110;
+    assign char_0x45_3 = 8'b01100110;
+    assign char_0x45_4 = 8'b01100010;
+    assign char_0x45_5 = 8'b01101000;
+    assign char_0x45_6 = 8'b01111000;
+    assign char_0x45_7 = 8'b01101000;
+    assign char_0x45_8 = 8'b01100000;
+    assign char_0x45_9 = 8'b01100010;
+    assign char_0x45_10 = 8'b01100110;
+    assign char_0x45_11 = 8'b11111110;
+    assign char_0x45_12 = 8'b00000000;
+    assign char_0x45_13 = 8'b00000000;
+    assign char_0x45_14 = 8'b00000000;
+    assign char_0x45_15 = 8'b00000000;
+
+    wire [0:7] char_0x46_0;
+    wire [0:7] char_0x46_1;
+    wire [0:7] char_0x46_2;
+    wire [0:7] char_0x46_3;
+    wire [0:7] char_0x46_4;
+    wire [0:7] char_0x46_5;
+    wire [0:7] char_0x46_6;
+    wire [0:7] char_0x46_7;
+    wire [0:7] char_0x46_8;
+    wire [0:7] char_0x46_9;
+    wire [0:7] char_0x46_10;
+    wire [0:7] char_0x46_11;
+    wire [0:7] char_0x46_12;
+    wire [0:7] char_0x46_13;
+    wire [0:7] char_0x46_14;
+    wire [0:7] char_0x46_15;
+
+    assign char_0x46_0 = 8'b00000000;
+    assign char_0x46_1 = 8'b00000000;
+    assign char_0x46_2 = 8'b11111110;
+    assign char_0x46_3 = 8'b01100110;
+    assign char_0x46_4 = 8'b01100010;
+    assign char_0x46_5 = 8'b01101000;
+    assign char_0x46_6 = 8'b01111000;
+    assign char_0x46_7 = 8'b01101000;
+    assign char_0x46_8 = 8'b01100000;
+    assign char_0x46_9 = 8'b01100000;
+    assign char_0x46_10 = 8'b01100000;
+    assign char_0x46_11 = 8'b11110000;
+    assign char_0x46_12 = 8'b00000000;
+    assign char_0x46_13 = 8'b00000000;
+    assign char_0x46_14 = 8'b00000000;
+    assign char_0x46_15 = 8'b00000000;
+
+    wire [0:7] char_0x47_0;
+    wire [0:7] char_0x47_1;
+    wire [0:7] char_0x47_2;
+    wire [0:7] char_0x47_3;
+    wire [0:7] char_0x47_4;
+    wire [0:7] char_0x47_5;
+    wire [0:7] char_0x47_6;
+    wire [0:7] char_0x47_7;
+    wire [0:7] char_0x47_8;
+    wire [0:7] char_0x47_9;
+    wire [0:7] char_0x47_10;
+    wire [0:7] char_0x47_11;
+    wire [0:7] char_0x47_12;
+    wire [0:7] char_0x47_13;
+    wire [0:7] char_0x47_14;
+    wire [0:7] char_0x47_15;
+
+    assign char_0x47_0 = 8'b00000000;
+    assign char_0x47_1 = 8'b00000000;
+    assign char_0x47_2 = 8'b00111100;
+    assign char_0x47_3 = 8'b01100110;
+    assign char_0x47_4 = 8'b11000010;
+    assign char_0x47_5 = 8'b11000000;
+    assign char_0x47_6 = 8'b11000000;
+    assign char_0x47_7 = 8'b11011110;
+    assign char_0x47_8 = 8'b11000110;
+    assign char_0x47_9 = 8'b11000110;
+    assign char_0x47_10 = 8'b01100110;
+    assign char_0x47_11 = 8'b00111010;
+    assign char_0x47_12 = 8'b00000000;
+    assign char_0x47_13 = 8'b00000000;
+    assign char_0x47_14 = 8'b00000000;
+    assign char_0x47_15 = 8'b00000000;
+
+    wire [0:7] char_0x48_0;
+    wire [0:7] char_0x48_1;
+    wire [0:7] char_0x48_2;
+    wire [0:7] char_0x48_3;
+    wire [0:7] char_0x48_4;
+    wire [0:7] char_0x48_5;
+    wire [0:7] char_0x48_6;
+    wire [0:7] char_0x48_7;
+    wire [0:7] char_0x48_8;
+    wire [0:7] char_0x48_9;
+    wire [0:7] char_0x48_10;
+    wire [0:7] char_0x48_11;
+    wire [0:7] char_0x48_12;
+    wire [0:7] char_0x48_13;
+    wire [0:7] char_0x48_14;
+    wire [0:7] char_0x48_15;
+
+    assign char_0x48_0 = 8'b00000000;
+    assign char_0x48_1 = 8'b00000000;
+    assign char_0x48_2 = 8'b11000110;
+    assign char_0x48_3 = 8'b11000110;
+    assign char_0x48_4 = 8'b11000110;
+    assign char_0x48_5 = 8'b11000110;
+    assign char_0x48_6 = 8'b11111110;
+    assign char_0x48_7 = 8'b11000110;
+    assign char_0x48_8 = 8'b11000110;
+    assign char_0x48_9 = 8'b11000110;
+    assign char_0x48_10 = 8'b11000110;
+    assign char_0x48_11 = 8'b11000110;
+    assign char_0x48_12 = 8'b00000000;
+    assign char_0x48_13 = 8'b00000000;
+    assign char_0x48_14 = 8'b00000000;
+    assign char_0x48_15 = 8'b00000000;
+
+    wire [0:7] char_0x49_0;
+    wire [0:7] char_0x49_1;
+    wire [0:7] char_0x49_2;
+    wire [0:7] char_0x49_3;
+    wire [0:7] char_0x49_4;
+    wire [0:7] char_0x49_5;
+    wire [0:7] char_0x49_6;
+    wire [0:7] char_0x49_7;
+    wire [0:7] char_0x49_8;
+    wire [0:7] char_0x49_9;
+    wire [0:7] char_0x49_10;
+    wire [0:7] char_0x49_11;
+    wire [0:7] char_0x49_12;
+    wire [0:7] char_0x49_13;
+    wire [0:7] char_0x49_14;
+    wire [0:7] char_0x49_15;
+
+    assign char_0x49_0 = 8'b00000000;
+    assign char_0x49_1 = 8'b00000000;
+    assign char_0x49_2 = 8'b00111100;
+    assign char_0x49_3 = 8'b00011000;
+    assign char_0x49_4 = 8'b00011000;
+    assign char_0x49_5 = 8'b00011000;
+    assign char_0x49_6 = 8'b00011000;
+    assign char_0x49_7 = 8'b00011000;
+    assign char_0x49_8 = 8'b00011000;
+    assign char_0x49_9 = 8'b00011000;
+    assign char_0x49_10 = 8'b00011000;
+    assign char_0x49_11 = 8'b00111100;
+    assign char_0x49_12 = 8'b00000000;
+    assign char_0x49_13 = 8'b00000000;
+    assign char_0x49_14 = 8'b00000000;
+    assign char_0x49_15 = 8'b00000000;
+
+    wire [0:7] char_0x4a_0;
+    wire [0:7] char_0x4a_1;
+    wire [0:7] char_0x4a_2;
+    wire [0:7] char_0x4a_3;
+    wire [0:7] char_0x4a_4;
+    wire [0:7] char_0x4a_5;
+    wire [0:7] char_0x4a_6;
+    wire [0:7] char_0x4a_7;
+    wire [0:7] char_0x4a_8;
+    wire [0:7] char_0x4a_9;
+    wire [0:7] char_0x4a_10;
+    wire [0:7] char_0x4a_11;
+    wire [0:7] char_0x4a_12;
+    wire [0:7] char_0x4a_13;
+    wire [0:7] char_0x4a_14;
+    wire [0:7] char_0x4a_15;
+
+    assign char_0x4a_0 = 8'b00000000;
+    assign char_0x4a_1 = 8'b00000000;
+    assign char_0x4a_2 = 8'b00011110;
+    assign char_0x4a_3 = 8'b00001100;
+    assign char_0x4a_4 = 8'b00001100;
+    assign char_0x4a_5 = 8'b00001100;
+    assign char_0x4a_6 = 8'b00001100;
+    assign char_0x4a_7 = 8'b00001100;
+    assign char_0x4a_8 = 8'b11001100;
+    assign char_0x4a_9 = 8'b11001100;
+    assign char_0x4a_10 = 8'b11001100;
+    assign char_0x4a_11 = 8'b01111000;
+    assign char_0x4a_12 = 8'b00000000;
+    assign char_0x4a_13 = 8'b00000000;
+    assign char_0x4a_14 = 8'b00000000;
+    assign char_0x4a_15 = 8'b00000000;
+
+    wire [0:7] char_0x4b_0;
+    wire [0:7] char_0x4b_1;
+    wire [0:7] char_0x4b_2;
+    wire [0:7] char_0x4b_3;
+    wire [0:7] char_0x4b_4;
+    wire [0:7] char_0x4b_5;
+    wire [0:7] char_0x4b_6;
+    wire [0:7] char_0x4b_7;
+    wire [0:7] char_0x4b_8;
+    wire [0:7] char_0x4b_9;
+    wire [0:7] char_0x4b_10;
+    wire [0:7] char_0x4b_11;
+    wire [0:7] char_0x4b_12;
+    wire [0:7] char_0x4b_13;
+    wire [0:7] char_0x4b_14;
+    wire [0:7] char_0x4b_15;
+
+    assign char_0x4b_0 = 8'b00000000;
+    assign char_0x4b_1 = 8'b00000000;
+    assign char_0x4b_2 = 8'b11100110;
+    assign char_0x4b_3 = 8'b01100110;
+    assign char_0x4b_4 = 8'b01100110;
+    assign char_0x4b_5 = 8'b01101100;
+    assign char_0x4b_6 = 8'b01111000;
+    assign char_0x4b_7 = 8'b01111000;
+    assign char_0x4b_8 = 8'b01101100;
+    assign char_0x4b_9 = 8'b01100110;
+    assign char_0x4b_10 = 8'b01100110;
+    assign char_0x4b_11 = 8'b11100110;
+    assign char_0x4b_12 = 8'b00000000;
+    assign char_0x4b_13 = 8'b00000000;
+    assign char_0x4b_14 = 8'b00000000;
+    assign char_0x4b_15 = 8'b00000000;
+
+    wire [0:7] char_0x4c_0;
+    wire [0:7] char_0x4c_1;
+    wire [0:7] char_0x4c_2;
+    wire [0:7] char_0x4c_3;
+    wire [0:7] char_0x4c_4;
+    wire [0:7] char_0x4c_5;
+    wire [0:7] char_0x4c_6;
+    wire [0:7] char_0x4c_7;
+    wire [0:7] char_0x4c_8;
+    wire [0:7] char_0x4c_9;
+    wire [0:7] char_0x4c_10;
+    wire [0:7] char_0x4c_11;
+    wire [0:7] char_0x4c_12;
+    wire [0:7] char_0x4c_13;
+    wire [0:7] char_0x4c_14;
+    wire [0:7] char_0x4c_15;
+
+    assign char_0x4c_0 = 8'b00000000;
+    assign char_0x4c_1 = 8'b00000000;
+    assign char_0x4c_2 = 8'b11110000;
+    assign char_0x4c_3 = 8'b01100000;
+    assign char_0x4c_4 = 8'b01100000;
+    assign char_0x4c_5 = 8'b01100000;
+    assign char_0x4c_6 = 8'b01100000;
+    assign char_0x4c_7 = 8'b01100000;
+    assign char_0x4c_8 = 8'b01100000;
+    assign char_0x4c_9 = 8'b01100010;
+    assign char_0x4c_10 = 8'b01100110;
+    assign char_0x4c_11 = 8'b11111110;
+    assign char_0x4c_12 = 8'b00000000;
+    assign char_0x4c_13 = 8'b00000000;
+    assign char_0x4c_14 = 8'b00000000;
+    assign char_0x4c_15 = 8'b00000000;
+
+    wire [0:7] char_0x4d_0;
+    wire [0:7] char_0x4d_1;
+    wire [0:7] char_0x4d_2;
+    wire [0:7] char_0x4d_3;
+    wire [0:7] char_0x4d_4;
+    wire [0:7] char_0x4d_5;
+    wire [0:7] char_0x4d_6;
+    wire [0:7] char_0x4d_7;
+    wire [0:7] char_0x4d_8;
+    wire [0:7] char_0x4d_9;
+    wire [0:7] char_0x4d_10;
+    wire [0:7] char_0x4d_11;
+    wire [0:7] char_0x4d_12;
+    wire [0:7] char_0x4d_13;
+    wire [0:7] char_0x4d_14;
+    wire [0:7] char_0x4d_15;
+
+    assign char_0x4d_0 = 8'b00000000;
+    assign char_0x4d_1 = 8'b00000000;
+    assign char_0x4d_2 = 8'b11000110;
+    assign char_0x4d_3 = 8'b11101110;
+    assign char_0x4d_4 = 8'b11111110;
+    assign char_0x4d_5 = 8'b11111110;
+    assign char_0x4d_6 = 8'b11010110;
+    assign char_0x4d_7 = 8'b11000110;
+    assign char_0x4d_8 = 8'b11000110;
+    assign char_0x4d_9 = 8'b11000110;
+    assign char_0x4d_10 = 8'b11000110;
+    assign char_0x4d_11 = 8'b11000110;
+    assign char_0x4d_12 = 8'b00000000;
+    assign char_0x4d_13 = 8'b00000000;
+    assign char_0x4d_14 = 8'b00000000;
+    assign char_0x4d_15 = 8'b00000000;
+
+    wire [0:7] char_0x4e_0;
+    wire [0:7] char_0x4e_1;
+    wire [0:7] char_0x4e_2;
+    wire [0:7] char_0x4e_3;
+    wire [0:7] char_0x4e_4;
+    wire [0:7] char_0x4e_5;
+    wire [0:7] char_0x4e_6;
+    wire [0:7] char_0x4e_7;
+    wire [0:7] char_0x4e_8;
+    wire [0:7] char_0x4e_9;
+    wire [0:7] char_0x4e_10;
+    wire [0:7] char_0x4e_11;
+    wire [0:7] char_0x4e_12;
+    wire [0:7] char_0x4e_13;
+    wire [0:7] char_0x4e_14;
+    wire [0:7] char_0x4e_15;
+
+    assign char_0x4e_0 = 8'b00000000;
+    assign char_0x4e_1 = 8'b00000000;
+    assign char_0x4e_2 = 8'b11000110;
+    assign char_0x4e_3 = 8'b11100110;
+    assign char_0x4e_4 = 8'b11110110;
+    assign char_0x4e_5 = 8'b11111110;
+    assign char_0x4e_6 = 8'b11011110;
+    assign char_0x4e_7 = 8'b11001110;
+    assign char_0x4e_8 = 8'b11000110;
+    assign char_0x4e_9 = 8'b11000110;
+    assign char_0x4e_10 = 8'b11000110;
+    assign char_0x4e_11 = 8'b11000110;
+    assign char_0x4e_12 = 8'b00000000;
+    assign char_0x4e_13 = 8'b00000000;
+    assign char_0x4e_14 = 8'b00000000;
+    assign char_0x4e_15 = 8'b00000000;
+
+    wire [0:7] char_0x4f_0;
+    wire [0:7] char_0x4f_1;
+    wire [0:7] char_0x4f_2;
+    wire [0:7] char_0x4f_3;
+    wire [0:7] char_0x4f_4;
+    wire [0:7] char_0x4f_5;
+    wire [0:7] char_0x4f_6;
+    wire [0:7] char_0x4f_7;
+    wire [0:7] char_0x4f_8;
+    wire [0:7] char_0x4f_9;
+    wire [0:7] char_0x4f_10;
+    wire [0:7] char_0x4f_11;
+    wire [0:7] char_0x4f_12;
+    wire [0:7] char_0x4f_13;
+    wire [0:7] char_0x4f_14;
+    wire [0:7] char_0x4f_15;
+
+    assign char_0x4f_0 = 8'b00000000;
+    assign char_0x4f_1 = 8'b00000000;
+    assign char_0x4f_2 = 8'b01111100;
+    assign char_0x4f_3 = 8'b11000110;
+    assign char_0x4f_4 = 8'b11000110;
+    assign char_0x4f_5 = 8'b11000110;
+    assign char_0x4f_6 = 8'b11000110;
+    assign char_0x4f_7 = 8'b11000110;
+    assign char_0x4f_8 = 8'b11000110;
+    assign char_0x4f_9 = 8'b11000110;
+    assign char_0x4f_10 = 8'b11000110;
+    assign char_0x4f_11 = 8'b01111100;
+    assign char_0x4f_12 = 8'b00000000;
+    assign char_0x4f_13 = 8'b00000000;
+    assign char_0x4f_14 = 8'b00000000;
+    assign char_0x4f_15 = 8'b00000000;
+
+    wire [0:7] char_0x50_0;
+    wire [0:7] char_0x50_1;
+    wire [0:7] char_0x50_2;
+    wire [0:7] char_0x50_3;
+    wire [0:7] char_0x50_4;
+    wire [0:7] char_0x50_5;
+    wire [0:7] char_0x50_6;
+    wire [0:7] char_0x50_7;
+    wire [0:7] char_0x50_8;
+    wire [0:7] char_0x50_9;
+    wire [0:7] char_0x50_10;
+    wire [0:7] char_0x50_11;
+    wire [0:7] char_0x50_12;
+    wire [0:7] char_0x50_13;
+    wire [0:7] char_0x50_14;
+    wire [0:7] char_0x50_15;
+
+    assign char_0x50_0 = 8'b00000000;
+    assign char_0x50_1 = 8'b00000000;
+    assign char_0x50_2 = 8'b11111100;
+    assign char_0x50_3 = 8'b01100110;
+    assign char_0x50_4 = 8'b01100110;
+    assign char_0x50_5 = 8'b01100110;
+    assign char_0x50_6 = 8'b01111100;
+    assign char_0x50_7 = 8'b01100000;
+    assign char_0x50_8 = 8'b01100000;
+    assign char_0x50_9 = 8'b01100000;
+    assign char_0x50_10 = 8'b01100000;
+    assign char_0x50_11 = 8'b11110000;
+    assign char_0x50_12 = 8'b00000000;
+    assign char_0x50_13 = 8'b00000000;
+    assign char_0x50_14 = 8'b00000000;
+    assign char_0x50_15 = 8'b00000000;
+
+    wire [0:7] char_0x51_0;
+    wire [0:7] char_0x51_1;
+    wire [0:7] char_0x51_2;
+    wire [0:7] char_0x51_3;
+    wire [0:7] char_0x51_4;
+    wire [0:7] char_0x51_5;
+    wire [0:7] char_0x51_6;
+    wire [0:7] char_0x51_7;
+    wire [0:7] char_0x51_8;
+    wire [0:7] char_0x51_9;
+    wire [0:7] char_0x51_10;
+    wire [0:7] char_0x51_11;
+    wire [0:7] char_0x51_12;
+    wire [0:7] char_0x51_13;
+    wire [0:7] char_0x51_14;
+    wire [0:7] char_0x51_15;
+
+    assign char_0x51_0 = 8'b00000000;
+    assign char_0x51_1 = 8'b00000000;
+    assign char_0x51_2 = 8'b01111100;
+    assign char_0x51_3 = 8'b11000110;
+    assign char_0x51_4 = 8'b11000110;
+    assign char_0x51_5 = 8'b11000110;
+    assign char_0x51_6 = 8'b11000110;
+    assign char_0x51_7 = 8'b11000110;
+    assign char_0x51_8 = 8'b11000110;
+    assign char_0x51_9 = 8'b11010110;
+    assign char_0x51_10 = 8'b11011110;
+    assign char_0x51_11 = 8'b01111100;
+    assign char_0x51_12 = 8'b00001100;
+    assign char_0x51_13 = 8'b00001110;
+    assign char_0x51_14 = 8'b00000000;
+    assign char_0x51_15 = 8'b00000000;
+
+    wire [0:7] char_0x52_0;
+    wire [0:7] char_0x52_1;
+    wire [0:7] char_0x52_2;
+    wire [0:7] char_0x52_3;
+    wire [0:7] char_0x52_4;
+    wire [0:7] char_0x52_5;
+    wire [0:7] char_0x52_6;
+    wire [0:7] char_0x52_7;
+    wire [0:7] char_0x52_8;
+    wire [0:7] char_0x52_9;
+    wire [0:7] char_0x52_10;
+    wire [0:7] char_0x52_11;
+    wire [0:7] char_0x52_12;
+    wire [0:7] char_0x52_13;
+    wire [0:7] char_0x52_14;
+    wire [0:7] char_0x52_15;
+
+    assign char_0x52_0 = 8'b00000000;
+    assign char_0x52_1 = 8'b00000000;
+    assign char_0x52_2 = 8'b11111100;
+    assign char_0x52_3 = 8'b01100110;
+    assign char_0x52_4 = 8'b01100110;
+    assign char_0x52_5 = 8'b01100110;
+    assign char_0x52_6 = 8'b01111100;
+    assign char_0x52_7 = 8'b01101100;
+    assign char_0x52_8 = 8'b01100110;
+    assign char_0x52_9 = 8'b01100110;
+    assign char_0x52_10 = 8'b01100110;
+    assign char_0x52_11 = 8'b11100110;
+    assign char_0x52_12 = 8'b00000000;
+    assign char_0x52_13 = 8'b00000000;
+    assign char_0x52_14 = 8'b00000000;
+    assign char_0x52_15 = 8'b00000000;
+
+    wire [0:7] char_0x53_0;
+    wire [0:7] char_0x53_1;
+    wire [0:7] char_0x53_2;
+    wire [0:7] char_0x53_3;
+    wire [0:7] char_0x53_4;
+    wire [0:7] char_0x53_5;
+    wire [0:7] char_0x53_6;
+    wire [0:7] char_0x53_7;
+    wire [0:7] char_0x53_8;
+    wire [0:7] char_0x53_9;
+    wire [0:7] char_0x53_10;
+    wire [0:7] char_0x53_11;
+    wire [0:7] char_0x53_12;
+    wire [0:7] char_0x53_13;
+    wire [0:7] char_0x53_14;
+    wire [0:7] char_0x53_15;
+
+    assign char_0x53_0 = 8'b00000000;
+    assign char_0x53_1 = 8'b00000000;
+    assign char_0x53_2 = 8'b01111100;
+    assign char_0x53_3 = 8'b11000110;
+    assign char_0x53_4 = 8'b11000110;
+    assign char_0x53_5 = 8'b01100000;
+    assign char_0x53_6 = 8'b00111000;
+    assign char_0x53_7 = 8'b00001100;
+    assign char_0x53_8 = 8'b00000110;
+    assign char_0x53_9 = 8'b11000110;
+    assign char_0x53_10 = 8'b11000110;
+    assign char_0x53_11 = 8'b01111100;
+    assign char_0x53_12 = 8'b00000000;
+    assign char_0x53_13 = 8'b00000000;
+    assign char_0x53_14 = 8'b00000000;
+    assign char_0x53_15 = 8'b00000000;
+
+    wire [0:7] char_0x54_0;
+    wire [0:7] char_0x54_1;
+    wire [0:7] char_0x54_2;
+    wire [0:7] char_0x54_3;
+    wire [0:7] char_0x54_4;
+    wire [0:7] char_0x54_5;
+    wire [0:7] char_0x54_6;
+    wire [0:7] char_0x54_7;
+    wire [0:7] char_0x54_8;
+    wire [0:7] char_0x54_9;
+    wire [0:7] char_0x54_10;
+    wire [0:7] char_0x54_11;
+    wire [0:7] char_0x54_12;
+    wire [0:7] char_0x54_13;
+    wire [0:7] char_0x54_14;
+    wire [0:7] char_0x54_15;
+
+    assign char_0x54_0 = 8'b00000000;
+    assign char_0x54_1 = 8'b00000000;
+    assign char_0x54_2 = 8'b01111110;
+    assign char_0x54_3 = 8'b01111110;
+    assign char_0x54_4 = 8'b01011010;
+    assign char_0x54_5 = 8'b00011000;
+    assign char_0x54_6 = 8'b00011000;
+    assign char_0x54_7 = 8'b00011000;
+    assign char_0x54_8 = 8'b00011000;
+    assign char_0x54_9 = 8'b00011000;
+    assign char_0x54_10 = 8'b00011000;
+    assign char_0x54_11 = 8'b00111100;
+    assign char_0x54_12 = 8'b00000000;
+    assign char_0x54_13 = 8'b00000000;
+    assign char_0x54_14 = 8'b00000000;
+    assign char_0x54_15 = 8'b00000000;
+
+    wire [0:7] char_0x55_0;
+    wire [0:7] char_0x55_1;
+    wire [0:7] char_0x55_2;
+    wire [0:7] char_0x55_3;
+    wire [0:7] char_0x55_4;
+    wire [0:7] char_0x55_5;
+    wire [0:7] char_0x55_6;
+    wire [0:7] char_0x55_7;
+    wire [0:7] char_0x55_8;
+    wire [0:7] char_0x55_9;
+    wire [0:7] char_0x55_10;
+    wire [0:7] char_0x55_11;
+    wire [0:7] char_0x55_12;
+    wire [0:7] char_0x55_13;
+    wire [0:7] char_0x55_14;
+    wire [0:7] char_0x55_15;
+
+    assign char_0x55_0 = 8'b00000000;
+    assign char_0x55_1 = 8'b00000000;
+    assign char_0x55_2 = 8'b11000110;
+    assign char_0x55_3 = 8'b11000110;
+    assign char_0x55_4 = 8'b11000110;
+    assign char_0x55_5 = 8'b11000110;
+    assign char_0x55_6 = 8'b11000110;
+    assign char_0x55_7 = 8'b11000110;
+    assign char_0x55_8 = 8'b11000110;
+    assign char_0x55_9 = 8'b11000110;
+    assign char_0x55_10 = 8'b11000110;
+    assign char_0x55_11 = 8'b01111100;
+    assign char_0x55_12 = 8'b00000000;
+    assign char_0x55_13 = 8'b00000000;
+    assign char_0x55_14 = 8'b00000000;
+    assign char_0x55_15 = 8'b00000000;
+
+    wire [0:7] char_0x56_0;
+    wire [0:7] char_0x56_1;
+    wire [0:7] char_0x56_2;
+    wire [0:7] char_0x56_3;
+    wire [0:7] char_0x56_4;
+    wire [0:7] char_0x56_5;
+    wire [0:7] char_0x56_6;
+    wire [0:7] char_0x56_7;
+    wire [0:7] char_0x56_8;
+    wire [0:7] char_0x56_9;
+    wire [0:7] char_0x56_10;
+    wire [0:7] char_0x56_11;
+    wire [0:7] char_0x56_12;
+    wire [0:7] char_0x56_13;
+    wire [0:7] char_0x56_14;
+    wire [0:7] char_0x56_15;
+
+    assign char_0x56_0 = 8'b00000000;
+    assign char_0x56_1 = 8'b00000000;
+    assign char_0x56_2 = 8'b11000110;
+    assign char_0x56_3 = 8'b11000110;
+    assign char_0x56_4 = 8'b11000110;
+    assign char_0x56_5 = 8'b11000110;
+    assign char_0x56_6 = 8'b11000110;
+    assign char_0x56_7 = 8'b11000110;
+    assign char_0x56_8 = 8'b11000110;
+    assign char_0x56_9 = 8'b01101100;
+    assign char_0x56_10 = 8'b00111000;
+    assign char_0x56_11 = 8'b00010000;
+    assign char_0x56_12 = 8'b00000000;
+    assign char_0x56_13 = 8'b00000000;
+    assign char_0x56_14 = 8'b00000000;
+    assign char_0x56_15 = 8'b00000000;
+
+    wire [0:7] char_0x57_0;
+    wire [0:7] char_0x57_1;
+    wire [0:7] char_0x57_2;
+    wire [0:7] char_0x57_3;
+    wire [0:7] char_0x57_4;
+    wire [0:7] char_0x57_5;
+    wire [0:7] char_0x57_6;
+    wire [0:7] char_0x57_7;
+    wire [0:7] char_0x57_8;
+    wire [0:7] char_0x57_9;
+    wire [0:7] char_0x57_10;
+    wire [0:7] char_0x57_11;
+    wire [0:7] char_0x57_12;
+    wire [0:7] char_0x57_13;
+    wire [0:7] char_0x57_14;
+    wire [0:7] char_0x57_15;
+
+    assign char_0x57_0 = 8'b00000000;
+    assign char_0x57_1 = 8'b00000000;
+    assign char_0x57_2 = 8'b11000110;
+    assign char_0x57_3 = 8'b11000110;
+    assign char_0x57_4 = 8'b11000110;
+    assign char_0x57_5 = 8'b11000110;
+    assign char_0x57_6 = 8'b11010110;
+    assign char_0x57_7 = 8'b11010110;
+    assign char_0x57_8 = 8'b11010110;
+    assign char_0x57_9 = 8'b11111110;
+    assign char_0x57_10 = 8'b11101110;
+    assign char_0x57_11 = 8'b01101100;
+    assign char_0x57_12 = 8'b00000000;
+    assign char_0x57_13 = 8'b00000000;
+    assign char_0x57_14 = 8'b00000000;
+    assign char_0x57_15 = 8'b00000000;
+
+    wire [0:7] char_0x58_0;
+    wire [0:7] char_0x58_1;
+    wire [0:7] char_0x58_2;
+    wire [0:7] char_0x58_3;
+    wire [0:7] char_0x58_4;
+    wire [0:7] char_0x58_5;
+    wire [0:7] char_0x58_6;
+    wire [0:7] char_0x58_7;
+    wire [0:7] char_0x58_8;
+    wire [0:7] char_0x58_9;
+    wire [0:7] char_0x58_10;
+    wire [0:7] char_0x58_11;
+    wire [0:7] char_0x58_12;
+    wire [0:7] char_0x58_13;
+    wire [0:7] char_0x58_14;
+    wire [0:7] char_0x58_15;
+
+    assign char_0x58_0 = 8'b00000000;
+    assign char_0x58_1 = 8'b00000000;
+    assign char_0x58_2 = 8'b11000110;
+    assign char_0x58_3 = 8'b11000110;
+    assign char_0x58_4 = 8'b01101100;
+    assign char_0x58_5 = 8'b01111100;
+    assign char_0x58_6 = 8'b00111000;
+    assign char_0x58_7 = 8'b00111000;
+    assign char_0x58_8 = 8'b01111100;
+    assign char_0x58_9 = 8'b01101100;
+    assign char_0x58_10 = 8'b11000110;
+    assign char_0x58_11 = 8'b11000110;
+    assign char_0x58_12 = 8'b00000000;
+    assign char_0x58_13 = 8'b00000000;
+    assign char_0x58_14 = 8'b00000000;
+    assign char_0x58_15 = 8'b00000000;
+
+    wire [0:7] char_0x59_0;
+    wire [0:7] char_0x59_1;
+    wire [0:7] char_0x59_2;
+    wire [0:7] char_0x59_3;
+    wire [0:7] char_0x59_4;
+    wire [0:7] char_0x59_5;
+    wire [0:7] char_0x59_6;
+    wire [0:7] char_0x59_7;
+    wire [0:7] char_0x59_8;
+    wire [0:7] char_0x59_9;
+    wire [0:7] char_0x59_10;
+    wire [0:7] char_0x59_11;
+    wire [0:7] char_0x59_12;
+    wire [0:7] char_0x59_13;
+    wire [0:7] char_0x59_14;
+    wire [0:7] char_0x59_15;
+
+    assign char_0x59_0 = 8'b00000000;
+    assign char_0x59_1 = 8'b00000000;
+    assign char_0x59_2 = 8'b01100110;
+    assign char_0x59_3 = 8'b01100110;
+    assign char_0x59_4 = 8'b01100110;
+    assign char_0x59_5 = 8'b01100110;
+    assign char_0x59_6 = 8'b00111100;
+    assign char_0x59_7 = 8'b00011000;
+    assign char_0x59_8 = 8'b00011000;
+    assign char_0x59_9 = 8'b00011000;
+    assign char_0x59_10 = 8'b00011000;
+    assign char_0x59_11 = 8'b00111100;
+    assign char_0x59_12 = 8'b00000000;
+    assign char_0x59_13 = 8'b00000000;
+    assign char_0x59_14 = 8'b00000000;
+    assign char_0x59_15 = 8'b00000000;
+
+    wire [0:7] char_0x5a_0;
+    wire [0:7] char_0x5a_1;
+    wire [0:7] char_0x5a_2;
+    wire [0:7] char_0x5a_3;
+    wire [0:7] char_0x5a_4;
+    wire [0:7] char_0x5a_5;
+    wire [0:7] char_0x5a_6;
+    wire [0:7] char_0x5a_7;
+    wire [0:7] char_0x5a_8;
+    wire [0:7] char_0x5a_9;
+    wire [0:7] char_0x5a_10;
+    wire [0:7] char_0x5a_11;
+    wire [0:7] char_0x5a_12;
+    wire [0:7] char_0x5a_13;
+    wire [0:7] char_0x5a_14;
+    wire [0:7] char_0x5a_15;
+
+    assign char_0x5a_0 = 8'b00000000;
+    assign char_0x5a_1 = 8'b00000000;
+    assign char_0x5a_2 = 8'b11111110;
+    assign char_0x5a_3 = 8'b11000110;
+    assign char_0x5a_4 = 8'b10000110;
+    assign char_0x5a_5 = 8'b00001100;
+    assign char_0x5a_6 = 8'b00011000;
+    assign char_0x5a_7 = 8'b00110000;
+    assign char_0x5a_8 = 8'b01100000;
+    assign char_0x5a_9 = 8'b11000010;
+    assign char_0x5a_10 = 8'b11000110;
+    assign char_0x5a_11 = 8'b11111110;
+    assign char_0x5a_12 = 8'b00000000;
+    assign char_0x5a_13 = 8'b00000000;
+    assign char_0x5a_14 = 8'b00000000;
+    assign char_0x5a_15 = 8'b00000000;
+
+    wire [0:7] char_0x5b_0;
+    wire [0:7] char_0x5b_1;
+    wire [0:7] char_0x5b_2;
+    wire [0:7] char_0x5b_3;
+    wire [0:7] char_0x5b_4;
+    wire [0:7] char_0x5b_5;
+    wire [0:7] char_0x5b_6;
+    wire [0:7] char_0x5b_7;
+    wire [0:7] char_0x5b_8;
+    wire [0:7] char_0x5b_9;
+    wire [0:7] char_0x5b_10;
+    wire [0:7] char_0x5b_11;
+    wire [0:7] char_0x5b_12;
+    wire [0:7] char_0x5b_13;
+    wire [0:7] char_0x5b_14;
+    wire [0:7] char_0x5b_15;
+
+    assign char_0x5b_0 = 8'b00000000;
+    assign char_0x5b_1 = 8'b00000000;
+    assign char_0x5b_2 = 8'b00111100;
+    assign char_0x5b_3 = 8'b00110000;
+    assign char_0x5b_4 = 8'b00110000;
+    assign char_0x5b_5 = 8'b00110000;
+    assign char_0x5b_6 = 8'b00110000;
+    assign char_0x5b_7 = 8'b00110000;
+    assign char_0x5b_8 = 8'b00110000;
+    assign char_0x5b_9 = 8'b00110000;
+    assign char_0x5b_10 = 8'b00110000;
+    assign char_0x5b_11 = 8'b00111100;
+    assign char_0x5b_12 = 8'b00000000;
+    assign char_0x5b_13 = 8'b00000000;
+    assign char_0x5b_14 = 8'b00000000;
+    assign char_0x5b_15 = 8'b00000000;
+
+    wire [0:7] char_0x5c_0;
+    wire [0:7] char_0x5c_1;
+    wire [0:7] char_0x5c_2;
+    wire [0:7] char_0x5c_3;
+    wire [0:7] char_0x5c_4;
+    wire [0:7] char_0x5c_5;
+    wire [0:7] char_0x5c_6;
+    wire [0:7] char_0x5c_7;
+    wire [0:7] char_0x5c_8;
+    wire [0:7] char_0x5c_9;
+    wire [0:7] char_0x5c_10;
+    wire [0:7] char_0x5c_11;
+    wire [0:7] char_0x5c_12;
+    wire [0:7] char_0x5c_13;
+    wire [0:7] char_0x5c_14;
+    wire [0:7] char_0x5c_15;
+
+    assign char_0x5c_0 = 8'b00000000;
+    assign char_0x5c_1 = 8'b00000000;
+    assign char_0x5c_2 = 8'b00000000;
+    assign char_0x5c_3 = 8'b10000000;
+    assign char_0x5c_4 = 8'b11000000;
+    assign char_0x5c_5 = 8'b11100000;
+    assign char_0x5c_6 = 8'b01110000;
+    assign char_0x5c_7 = 8'b00111000;
+    assign char_0x5c_8 = 8'b00011100;
+    assign char_0x5c_9 = 8'b00001110;
+    assign char_0x5c_10 = 8'b00000110;
+    assign char_0x5c_11 = 8'b00000010;
+    assign char_0x5c_12 = 8'b00000000;
+    assign char_0x5c_13 = 8'b00000000;
+    assign char_0x5c_14 = 8'b00000000;
+    assign char_0x5c_15 = 8'b00000000;
+
+    wire [0:7] char_0x5d_0;
+    wire [0:7] char_0x5d_1;
+    wire [0:7] char_0x5d_2;
+    wire [0:7] char_0x5d_3;
+    wire [0:7] char_0x5d_4;
+    wire [0:7] char_0x5d_5;
+    wire [0:7] char_0x5d_6;
+    wire [0:7] char_0x5d_7;
+    wire [0:7] char_0x5d_8;
+    wire [0:7] char_0x5d_9;
+    wire [0:7] char_0x5d_10;
+    wire [0:7] char_0x5d_11;
+    wire [0:7] char_0x5d_12;
+    wire [0:7] char_0x5d_13;
+    wire [0:7] char_0x5d_14;
+    wire [0:7] char_0x5d_15;
+
+    assign char_0x5d_0 = 8'b00000000;
+    assign char_0x5d_1 = 8'b00000000;
+    assign char_0x5d_2 = 8'b00111100;
+    assign char_0x5d_3 = 8'b00001100;
+    assign char_0x5d_4 = 8'b00001100;
+    assign char_0x5d_5 = 8'b00001100;
+    assign char_0x5d_6 = 8'b00001100;
+    assign char_0x5d_7 = 8'b00001100;
+    assign char_0x5d_8 = 8'b00001100;
+    assign char_0x5d_9 = 8'b00001100;
+    assign char_0x5d_10 = 8'b00001100;
+    assign char_0x5d_11 = 8'b00111100;
+    assign char_0x5d_12 = 8'b00000000;
+    assign char_0x5d_13 = 8'b00000000;
+    assign char_0x5d_14 = 8'b00000000;
+    assign char_0x5d_15 = 8'b00000000;
+
+    wire [0:7] char_0x5e_0;
+    wire [0:7] char_0x5e_1;
+    wire [0:7] char_0x5e_2;
+    wire [0:7] char_0x5e_3;
+    wire [0:7] char_0x5e_4;
+    wire [0:7] char_0x5e_5;
+    wire [0:7] char_0x5e_6;
+    wire [0:7] char_0x5e_7;
+    wire [0:7] char_0x5e_8;
+    wire [0:7] char_0x5e_9;
+    wire [0:7] char_0x5e_10;
+    wire [0:7] char_0x5e_11;
+    wire [0:7] char_0x5e_12;
+    wire [0:7] char_0x5e_13;
+    wire [0:7] char_0x5e_14;
+    wire [0:7] char_0x5e_15;
+
+    assign char_0x5e_0 = 8'b00010000;
+    assign char_0x5e_1 = 8'b00111000;
+    assign char_0x5e_2 = 8'b01101100;
+    assign char_0x5e_3 = 8'b11000110;
+    assign char_0x5e_4 = 8'b00000000;
+    assign char_0x5e_5 = 8'b00000000;
+    assign char_0x5e_6 = 8'b00000000;
+    assign char_0x5e_7 = 8'b00000000;
+    assign char_0x5e_8 = 8'b00000000;
+    assign char_0x5e_9 = 8'b00000000;
+    assign char_0x5e_10 = 8'b00000000;
+    assign char_0x5e_11 = 8'b00000000;
+    assign char_0x5e_12 = 8'b00000000;
+    assign char_0x5e_13 = 8'b00000000;
+    assign char_0x5e_14 = 8'b00000000;
+    assign char_0x5e_15 = 8'b00000000;
+
+    wire [0:7] char_0x5f_0;
+    wire [0:7] char_0x5f_1;
+    wire [0:7] char_0x5f_2;
+    wire [0:7] char_0x5f_3;
+    wire [0:7] char_0x5f_4;
+    wire [0:7] char_0x5f_5;
+    wire [0:7] char_0x5f_6;
+    wire [0:7] char_0x5f_7;
+    wire [0:7] char_0x5f_8;
+    wire [0:7] char_0x5f_9;
+    wire [0:7] char_0x5f_10;
+    wire [0:7] char_0x5f_11;
+    wire [0:7] char_0x5f_12;
+    wire [0:7] char_0x5f_13;
+    wire [0:7] char_0x5f_14;
+    wire [0:7] char_0x5f_15;
+
+    assign char_0x5f_0 = 8'b00000000;
+    assign char_0x5f_1 = 8'b00000000;
+    assign char_0x5f_2 = 8'b00000000;
+    assign char_0x5f_3 = 8'b00000000;
+    assign char_0x5f_4 = 8'b00000000;
+    assign char_0x5f_5 = 8'b00000000;
+    assign char_0x5f_6 = 8'b00000000;
+    assign char_0x5f_7 = 8'b00000000;
+    assign char_0x5f_8 = 8'b00000000;
+    assign char_0x5f_9 = 8'b00000000;
+    assign char_0x5f_10 = 8'b00000000;
+    assign char_0x5f_11 = 8'b00000000;
+    assign char_0x5f_12 = 8'b00000000;
+    assign char_0x5f_13 = 8'b11111111;
+    assign char_0x5f_14 = 8'b00000000;
+    assign char_0x5f_15 = 8'b00000000;
+
+    wire [0:7] char_0x60_0;
+    wire [0:7] char_0x60_1;
+    wire [0:7] char_0x60_2;
+    wire [0:7] char_0x60_3;
+    wire [0:7] char_0x60_4;
+    wire [0:7] char_0x60_5;
+    wire [0:7] char_0x60_6;
+    wire [0:7] char_0x60_7;
+    wire [0:7] char_0x60_8;
+    wire [0:7] char_0x60_9;
+    wire [0:7] char_0x60_10;
+    wire [0:7] char_0x60_11;
+    wire [0:7] char_0x60_12;
+    wire [0:7] char_0x60_13;
+    wire [0:7] char_0x60_14;
+    wire [0:7] char_0x60_15;
+
+    assign char_0x60_0 = 8'b00110000;
+    assign char_0x60_1 = 8'b00110000;
+    assign char_0x60_2 = 8'b00011000;
+    assign char_0x60_3 = 8'b00000000;
+    assign char_0x60_4 = 8'b00000000;
+    assign char_0x60_5 = 8'b00000000;
+    assign char_0x60_6 = 8'b00000000;
+    assign char_0x60_7 = 8'b00000000;
+    assign char_0x60_8 = 8'b00000000;
+    assign char_0x60_9 = 8'b00000000;
+    assign char_0x60_10 = 8'b00000000;
+    assign char_0x60_11 = 8'b00000000;
+    assign char_0x60_12 = 8'b00000000;
+    assign char_0x60_13 = 8'b00000000;
+    assign char_0x60_14 = 8'b00000000;
+    assign char_0x60_15 = 8'b00000000;
+
+    wire [0:7] char_0x61_0;
+    wire [0:7] char_0x61_1;
+    wire [0:7] char_0x61_2;
+    wire [0:7] char_0x61_3;
+    wire [0:7] char_0x61_4;
+    wire [0:7] char_0x61_5;
+    wire [0:7] char_0x61_6;
+    wire [0:7] char_0x61_7;
+    wire [0:7] char_0x61_8;
+    wire [0:7] char_0x61_9;
+    wire [0:7] char_0x61_10;
+    wire [0:7] char_0x61_11;
+    wire [0:7] char_0x61_12;
+    wire [0:7] char_0x61_13;
+    wire [0:7] char_0x61_14;
+    wire [0:7] char_0x61_15;
+
+    assign char_0x61_0 = 8'b00000000;
+    assign char_0x61_1 = 8'b00000000;
+    assign char_0x61_2 = 8'b00000000;
+    assign char_0x61_3 = 8'b00000000;
+    assign char_0x61_4 = 8'b00000000;
+    assign char_0x61_5 = 8'b01111000;
+    assign char_0x61_6 = 8'b00001100;
+    assign char_0x61_7 = 8'b01111100;
+    assign char_0x61_8 = 8'b11001100;
+    assign char_0x61_9 = 8'b11001100;
+    assign char_0x61_10 = 8'b11001100;
+    assign char_0x61_11 = 8'b01110110;
+    assign char_0x61_12 = 8'b00000000;
+    assign char_0x61_13 = 8'b00000000;
+    assign char_0x61_14 = 8'b00000000;
+    assign char_0x61_15 = 8'b00000000;
+
+    wire [0:7] char_0x62_0;
+    wire [0:7] char_0x62_1;
+    wire [0:7] char_0x62_2;
+    wire [0:7] char_0x62_3;
+    wire [0:7] char_0x62_4;
+    wire [0:7] char_0x62_5;
+    wire [0:7] char_0x62_6;
+    wire [0:7] char_0x62_7;
+    wire [0:7] char_0x62_8;
+    wire [0:7] char_0x62_9;
+    wire [0:7] char_0x62_10;
+    wire [0:7] char_0x62_11;
+    wire [0:7] char_0x62_12;
+    wire [0:7] char_0x62_13;
+    wire [0:7] char_0x62_14;
+    wire [0:7] char_0x62_15;
+
+    assign char_0x62_0 = 8'b00000000;
+    assign char_0x62_1 = 8'b00000000;
+    assign char_0x62_2 = 8'b11100000;
+    assign char_0x62_3 = 8'b01100000;
+    assign char_0x62_4 = 8'b01100000;
+    assign char_0x62_5 = 8'b01111000;
+    assign char_0x62_6 = 8'b01101100;
+    assign char_0x62_7 = 8'b01100110;
+    assign char_0x62_8 = 8'b01100110;
+    assign char_0x62_9 = 8'b01100110;
+    assign char_0x62_10 = 8'b01100110;
+    assign char_0x62_11 = 8'b01111100;
+    assign char_0x62_12 = 8'b00000000;
+    assign char_0x62_13 = 8'b00000000;
+    assign char_0x62_14 = 8'b00000000;
+    assign char_0x62_15 = 8'b00000000;
+
+    wire [0:7] char_0x63_0;
+    wire [0:7] char_0x63_1;
+    wire [0:7] char_0x63_2;
+    wire [0:7] char_0x63_3;
+    wire [0:7] char_0x63_4;
+    wire [0:7] char_0x63_5;
+    wire [0:7] char_0x63_6;
+    wire [0:7] char_0x63_7;
+    wire [0:7] char_0x63_8;
+    wire [0:7] char_0x63_9;
+    wire [0:7] char_0x63_10;
+    wire [0:7] char_0x63_11;
+    wire [0:7] char_0x63_12;
+    wire [0:7] char_0x63_13;
+    wire [0:7] char_0x63_14;
+    wire [0:7] char_0x63_15;
+
+    assign char_0x63_0 = 8'b00000000;
+    assign char_0x63_1 = 8'b00000000;
+    assign char_0x63_2 = 8'b00000000;
+    assign char_0x63_3 = 8'b00000000;
+    assign char_0x63_4 = 8'b00000000;
+    assign char_0x63_5 = 8'b01111100;
+    assign char_0x63_6 = 8'b11000110;
+    assign char_0x63_7 = 8'b11000000;
+    assign char_0x63_8 = 8'b11000000;
+    assign char_0x63_9 = 8'b11000000;
+    assign char_0x63_10 = 8'b11000110;
+    assign char_0x63_11 = 8'b01111100;
+    assign char_0x63_12 = 8'b00000000;
+    assign char_0x63_13 = 8'b00000000;
+    assign char_0x63_14 = 8'b00000000;
+    assign char_0x63_15 = 8'b00000000;
+
+    wire [0:7] char_0x64_0;
+    wire [0:7] char_0x64_1;
+    wire [0:7] char_0x64_2;
+    wire [0:7] char_0x64_3;
+    wire [0:7] char_0x64_4;
+    wire [0:7] char_0x64_5;
+    wire [0:7] char_0x64_6;
+    wire [0:7] char_0x64_7;
+    wire [0:7] char_0x64_8;
+    wire [0:7] char_0x64_9;
+    wire [0:7] char_0x64_10;
+    wire [0:7] char_0x64_11;
+    wire [0:7] char_0x64_12;
+    wire [0:7] char_0x64_13;
+    wire [0:7] char_0x64_14;
+    wire [0:7] char_0x64_15;
+
+    assign char_0x64_0 = 8'b00000000;
+    assign char_0x64_1 = 8'b00000000;
+    assign char_0x64_2 = 8'b00011100;
+    assign char_0x64_3 = 8'b00001100;
+    assign char_0x64_4 = 8'b00001100;
+    assign char_0x64_5 = 8'b00111100;
+    assign char_0x64_6 = 8'b01101100;
+    assign char_0x64_7 = 8'b11001100;
+    assign char_0x64_8 = 8'b11001100;
+    assign char_0x64_9 = 8'b11001100;
+    assign char_0x64_10 = 8'b11001100;
+    assign char_0x64_11 = 8'b01110110;
+    assign char_0x64_12 = 8'b00000000;
+    assign char_0x64_13 = 8'b00000000;
+    assign char_0x64_14 = 8'b00000000;
+    assign char_0x64_15 = 8'b00000000;
+
+    wire [0:7] char_0x65_0;
+    wire [0:7] char_0x65_1;
+    wire [0:7] char_0x65_2;
+    wire [0:7] char_0x65_3;
+    wire [0:7] char_0x65_4;
+    wire [0:7] char_0x65_5;
+    wire [0:7] char_0x65_6;
+    wire [0:7] char_0x65_7;
+    wire [0:7] char_0x65_8;
+    wire [0:7] char_0x65_9;
+    wire [0:7] char_0x65_10;
+    wire [0:7] char_0x65_11;
+    wire [0:7] char_0x65_12;
+    wire [0:7] char_0x65_13;
+    wire [0:7] char_0x65_14;
+    wire [0:7] char_0x65_15;
+
+    assign char_0x65_0 = 8'b00000000;
+    assign char_0x65_1 = 8'b00000000;
+    assign char_0x65_2 = 8'b00000000;
+    assign char_0x65_3 = 8'b00000000;
+    assign char_0x65_4 = 8'b00000000;
+    assign char_0x65_5 = 8'b01111100;
+    assign char_0x65_6 = 8'b11000110;
+    assign char_0x65_7 = 8'b11111110;
+    assign char_0x65_8 = 8'b11000000;
+    assign char_0x65_9 = 8'b11000000;
+    assign char_0x65_10 = 8'b11000110;
+    assign char_0x65_11 = 8'b01111100;
+    assign char_0x65_12 = 8'b00000000;
+    assign char_0x65_13 = 8'b00000000;
+    assign char_0x65_14 = 8'b00000000;
+    assign char_0x65_15 = 8'b00000000;
+
+    wire [0:7] char_0x66_0;
+    wire [0:7] char_0x66_1;
+    wire [0:7] char_0x66_2;
+    wire [0:7] char_0x66_3;
+    wire [0:7] char_0x66_4;
+    wire [0:7] char_0x66_5;
+    wire [0:7] char_0x66_6;
+    wire [0:7] char_0x66_7;
+    wire [0:7] char_0x66_8;
+    wire [0:7] char_0x66_9;
+    wire [0:7] char_0x66_10;
+    wire [0:7] char_0x66_11;
+    wire [0:7] char_0x66_12;
+    wire [0:7] char_0x66_13;
+    wire [0:7] char_0x66_14;
+    wire [0:7] char_0x66_15;
+
+    assign char_0x66_0 = 8'b00000000;
+    assign char_0x66_1 = 8'b00000000;
+    assign char_0x66_2 = 8'b00111000;
+    assign char_0x66_3 = 8'b01101100;
+    assign char_0x66_4 = 8'b01100100;
+    assign char_0x66_5 = 8'b01100000;
+    assign char_0x66_6 = 8'b11110000;
+    assign char_0x66_7 = 8'b01100000;
+    assign char_0x66_8 = 8'b01100000;
+    assign char_0x66_9 = 8'b01100000;
+    assign char_0x66_10 = 8'b01100000;
+    assign char_0x66_11 = 8'b11110000;
+    assign char_0x66_12 = 8'b00000000;
+    assign char_0x66_13 = 8'b00000000;
+    assign char_0x66_14 = 8'b00000000;
+    assign char_0x66_15 = 8'b00000000;
+
+    wire [0:7] char_0x67_0;
+    wire [0:7] char_0x67_1;
+    wire [0:7] char_0x67_2;
+    wire [0:7] char_0x67_3;
+    wire [0:7] char_0x67_4;
+    wire [0:7] char_0x67_5;
+    wire [0:7] char_0x67_6;
+    wire [0:7] char_0x67_7;
+    wire [0:7] char_0x67_8;
+    wire [0:7] char_0x67_9;
+    wire [0:7] char_0x67_10;
+    wire [0:7] char_0x67_11;
+    wire [0:7] char_0x67_12;
+    wire [0:7] char_0x67_13;
+    wire [0:7] char_0x67_14;
+    wire [0:7] char_0x67_15;
+
+    assign char_0x67_0 = 8'b00000000;
+    assign char_0x67_1 = 8'b00000000;
+    assign char_0x67_2 = 8'b00000000;
+    assign char_0x67_3 = 8'b00000000;
+    assign char_0x67_4 = 8'b00000000;
+    assign char_0x67_5 = 8'b01110110;
+    assign char_0x67_6 = 8'b11001100;
+    assign char_0x67_7 = 8'b11001100;
+    assign char_0x67_8 = 8'b11001100;
+    assign char_0x67_9 = 8'b11001100;
+    assign char_0x67_10 = 8'b11001100;
+    assign char_0x67_11 = 8'b01111100;
+    assign char_0x67_12 = 8'b00001100;
+    assign char_0x67_13 = 8'b11001100;
+    assign char_0x67_14 = 8'b01111000;
+    assign char_0x67_15 = 8'b00000000;
+
+    wire [0:7] char_0x68_0;
+    wire [0:7] char_0x68_1;
+    wire [0:7] char_0x68_2;
+    wire [0:7] char_0x68_3;
+    wire [0:7] char_0x68_4;
+    wire [0:7] char_0x68_5;
+    wire [0:7] char_0x68_6;
+    wire [0:7] char_0x68_7;
+    wire [0:7] char_0x68_8;
+    wire [0:7] char_0x68_9;
+    wire [0:7] char_0x68_10;
+    wire [0:7] char_0x68_11;
+    wire [0:7] char_0x68_12;
+    wire [0:7] char_0x68_13;
+    wire [0:7] char_0x68_14;
+    wire [0:7] char_0x68_15;
+
+    assign char_0x68_0 = 8'b00000000;
+    assign char_0x68_1 = 8'b00000000;
+    assign char_0x68_2 = 8'b11100000;
+    assign char_0x68_3 = 8'b01100000;
+    assign char_0x68_4 = 8'b01100000;
+    assign char_0x68_5 = 8'b01101100;
+    assign char_0x68_6 = 8'b01110110;
+    assign char_0x68_7 = 8'b01100110;
+    assign char_0x68_8 = 8'b01100110;
+    assign char_0x68_9 = 8'b01100110;
+    assign char_0x68_10 = 8'b01100110;
+    assign char_0x68_11 = 8'b11100110;
+    assign char_0x68_12 = 8'b00000000;
+    assign char_0x68_13 = 8'b00000000;
+    assign char_0x68_14 = 8'b00000000;
+    assign char_0x68_15 = 8'b00000000;
+
+    wire [0:7] char_0x69_0;
+    wire [0:7] char_0x69_1;
+    wire [0:7] char_0x69_2;
+    wire [0:7] char_0x69_3;
+    wire [0:7] char_0x69_4;
+    wire [0:7] char_0x69_5;
+    wire [0:7] char_0x69_6;
+    wire [0:7] char_0x69_7;
+    wire [0:7] char_0x69_8;
+    wire [0:7] char_0x69_9;
+    wire [0:7] char_0x69_10;
+    wire [0:7] char_0x69_11;
+    wire [0:7] char_0x69_12;
+    wire [0:7] char_0x69_13;
+    wire [0:7] char_0x69_14;
+    wire [0:7] char_0x69_15;
+
+    assign char_0x69_0 = 8'b00000000;
+    assign char_0x69_1 = 8'b00000000;
+    assign char_0x69_2 = 8'b00011000;
+    assign char_0x69_3 = 8'b00011000;
+    assign char_0x69_4 = 8'b00000000;
+    assign char_0x69_5 = 8'b00111000;
+    assign char_0x69_6 = 8'b00011000;
+    assign char_0x69_7 = 8'b00011000;
+    assign char_0x69_8 = 8'b00011000;
+    assign char_0x69_9 = 8'b00011000;
+    assign char_0x69_10 = 8'b00011000;
+    assign char_0x69_11 = 8'b00111100;
+    assign char_0x69_12 = 8'b00000000;
+    assign char_0x69_13 = 8'b00000000;
+    assign char_0x69_14 = 8'b00000000;
+    assign char_0x69_15 = 8'b00000000;
+
+    wire [0:7] char_0x6a_0;
+    wire [0:7] char_0x6a_1;
+    wire [0:7] char_0x6a_2;
+    wire [0:7] char_0x6a_3;
+    wire [0:7] char_0x6a_4;
+    wire [0:7] char_0x6a_5;
+    wire [0:7] char_0x6a_6;
+    wire [0:7] char_0x6a_7;
+    wire [0:7] char_0x6a_8;
+    wire [0:7] char_0x6a_9;
+    wire [0:7] char_0x6a_10;
+    wire [0:7] char_0x6a_11;
+    wire [0:7] char_0x6a_12;
+    wire [0:7] char_0x6a_13;
+    wire [0:7] char_0x6a_14;
+    wire [0:7] char_0x6a_15;
+
+    assign char_0x6a_0 = 8'b00000000;
+    assign char_0x6a_1 = 8'b00000000;
+    assign char_0x6a_2 = 8'b00000110;
+    assign char_0x6a_3 = 8'b00000110;
+    assign char_0x6a_4 = 8'b00000000;
+    assign char_0x6a_5 = 8'b00001110;
+    assign char_0x6a_6 = 8'b00000110;
+    assign char_0x6a_7 = 8'b00000110;
+    assign char_0x6a_8 = 8'b00000110;
+    assign char_0x6a_9 = 8'b00000110;
+    assign char_0x6a_10 = 8'b00000110;
+    assign char_0x6a_11 = 8'b00000110;
+    assign char_0x6a_12 = 8'b01100110;
+    assign char_0x6a_13 = 8'b01100110;
+    assign char_0x6a_14 = 8'b00111100;
+    assign char_0x6a_15 = 8'b00000000;
+
+    wire [0:7] char_0x6b_0;
+    wire [0:7] char_0x6b_1;
+    wire [0:7] char_0x6b_2;
+    wire [0:7] char_0x6b_3;
+    wire [0:7] char_0x6b_4;
+    wire [0:7] char_0x6b_5;
+    wire [0:7] char_0x6b_6;
+    wire [0:7] char_0x6b_7;
+    wire [0:7] char_0x6b_8;
+    wire [0:7] char_0x6b_9;
+    wire [0:7] char_0x6b_10;
+    wire [0:7] char_0x6b_11;
+    wire [0:7] char_0x6b_12;
+    wire [0:7] char_0x6b_13;
+    wire [0:7] char_0x6b_14;
+    wire [0:7] char_0x6b_15;
+
+    assign char_0x6b_0 = 8'b00000000;
+    assign char_0x6b_1 = 8'b00000000;
+    assign char_0x6b_2 = 8'b11100000;
+    assign char_0x6b_3 = 8'b01100000;
+    assign char_0x6b_4 = 8'b01100000;
+    assign char_0x6b_5 = 8'b01100110;
+    assign char_0x6b_6 = 8'b01101100;
+    assign char_0x6b_7 = 8'b01111000;
+    assign char_0x6b_8 = 8'b01111000;
+    assign char_0x6b_9 = 8'b01101100;
+    assign char_0x6b_10 = 8'b01100110;
+    assign char_0x6b_11 = 8'b11100110;
+    assign char_0x6b_12 = 8'b00000000;
+    assign char_0x6b_13 = 8'b00000000;
+    assign char_0x6b_14 = 8'b00000000;
+    assign char_0x6b_15 = 8'b00000000;
+
+    wire [0:7] char_0x6c_0;
+    wire [0:7] char_0x6c_1;
+    wire [0:7] char_0x6c_2;
+    wire [0:7] char_0x6c_3;
+    wire [0:7] char_0x6c_4;
+    wire [0:7] char_0x6c_5;
+    wire [0:7] char_0x6c_6;
+    wire [0:7] char_0x6c_7;
+    wire [0:7] char_0x6c_8;
+    wire [0:7] char_0x6c_9;
+    wire [0:7] char_0x6c_10;
+    wire [0:7] char_0x6c_11;
+    wire [0:7] char_0x6c_12;
+    wire [0:7] char_0x6c_13;
+    wire [0:7] char_0x6c_14;
+    wire [0:7] char_0x6c_15;
+
+    assign char_0x6c_0 = 8'b00000000;
+    assign char_0x6c_1 = 8'b00000000;
+    assign char_0x6c_2 = 8'b00111000;
+    assign char_0x6c_3 = 8'b00011000;
+    assign char_0x6c_4 = 8'b00011000;
+    assign char_0x6c_5 = 8'b00011000;
+    assign char_0x6c_6 = 8'b00011000;
+    assign char_0x6c_7 = 8'b00011000;
+    assign char_0x6c_8 = 8'b00011000;
+    assign char_0x6c_9 = 8'b00011000;
+    assign char_0x6c_10 = 8'b00011000;
+    assign char_0x6c_11 = 8'b00111100;
+    assign char_0x6c_12 = 8'b00000000;
+    assign char_0x6c_13 = 8'b00000000;
+    assign char_0x6c_14 = 8'b00000000;
+    assign char_0x6c_15 = 8'b00000000;
+
+    wire [0:7] char_0x6d_0;
+    wire [0:7] char_0x6d_1;
+    wire [0:7] char_0x6d_2;
+    wire [0:7] char_0x6d_3;
+    wire [0:7] char_0x6d_4;
+    wire [0:7] char_0x6d_5;
+    wire [0:7] char_0x6d_6;
+    wire [0:7] char_0x6d_7;
+    wire [0:7] char_0x6d_8;
+    wire [0:7] char_0x6d_9;
+    wire [0:7] char_0x6d_10;
+    wire [0:7] char_0x6d_11;
+    wire [0:7] char_0x6d_12;
+    wire [0:7] char_0x6d_13;
+    wire [0:7] char_0x6d_14;
+    wire [0:7] char_0x6d_15;
+
+    assign char_0x6d_0 = 8'b00000000;
+    assign char_0x6d_1 = 8'b00000000;
+    assign char_0x6d_2 = 8'b00000000;
+    assign char_0x6d_3 = 8'b00000000;
+    assign char_0x6d_4 = 8'b00000000;
+    assign char_0x6d_5 = 8'b11101100;
+    assign char_0x6d_6 = 8'b11111110;
+    assign char_0x6d_7 = 8'b11010110;
+    assign char_0x6d_8 = 8'b11010110;
+    assign char_0x6d_9 = 8'b11010110;
+    assign char_0x6d_10 = 8'b11010110;
+    assign char_0x6d_11 = 8'b11000110;
+    assign char_0x6d_12 = 8'b00000000;
+    assign char_0x6d_13 = 8'b00000000;
+    assign char_0x6d_14 = 8'b00000000;
+    assign char_0x6d_15 = 8'b00000000;
+
+    wire [0:7] char_0x6e_0;
+    wire [0:7] char_0x6e_1;
+    wire [0:7] char_0x6e_2;
+    wire [0:7] char_0x6e_3;
+    wire [0:7] char_0x6e_4;
+    wire [0:7] char_0x6e_5;
+    wire [0:7] char_0x6e_6;
+    wire [0:7] char_0x6e_7;
+    wire [0:7] char_0x6e_8;
+    wire [0:7] char_0x6e_9;
+    wire [0:7] char_0x6e_10;
+    wire [0:7] char_0x6e_11;
+    wire [0:7] char_0x6e_12;
+    wire [0:7] char_0x6e_13;
+    wire [0:7] char_0x6e_14;
+    wire [0:7] char_0x6e_15;
+
+    assign char_0x6e_0 = 8'b00000000;
+    assign char_0x6e_1 = 8'b00000000;
+    assign char_0x6e_2 = 8'b00000000;
+    assign char_0x6e_3 = 8'b00000000;
+    assign char_0x6e_4 = 8'b00000000;
+    assign char_0x6e_5 = 8'b11011100;
+    assign char_0x6e_6 = 8'b01100110;
+    assign char_0x6e_7 = 8'b01100110;
+    assign char_0x6e_8 = 8'b01100110;
+    assign char_0x6e_9 = 8'b01100110;
+    assign char_0x6e_10 = 8'b01100110;
+    assign char_0x6e_11 = 8'b01100110;
+    assign char_0x6e_12 = 8'b00000000;
+    assign char_0x6e_13 = 8'b00000000;
+    assign char_0x6e_14 = 8'b00000000;
+    assign char_0x6e_15 = 8'b00000000;
+
+    wire [0:7] char_0x6f_0;
+    wire [0:7] char_0x6f_1;
+    wire [0:7] char_0x6f_2;
+    wire [0:7] char_0x6f_3;
+    wire [0:7] char_0x6f_4;
+    wire [0:7] char_0x6f_5;
+    wire [0:7] char_0x6f_6;
+    wire [0:7] char_0x6f_7;
+    wire [0:7] char_0x6f_8;
+    wire [0:7] char_0x6f_9;
+    wire [0:7] char_0x6f_10;
+    wire [0:7] char_0x6f_11;
+    wire [0:7] char_0x6f_12;
+    wire [0:7] char_0x6f_13;
+    wire [0:7] char_0x6f_14;
+    wire [0:7] char_0x6f_15;
+
+    assign char_0x6f_0 = 8'b00000000;
+    assign char_0x6f_1 = 8'b00000000;
+    assign char_0x6f_2 = 8'b00000000;
+    assign char_0x6f_3 = 8'b00000000;
+    assign char_0x6f_4 = 8'b00000000;
+    assign char_0x6f_5 = 8'b01111100;
+    assign char_0x6f_6 = 8'b11000110;
+    assign char_0x6f_7 = 8'b11000110;
+    assign char_0x6f_8 = 8'b11000110;
+    assign char_0x6f_9 = 8'b11000110;
+    assign char_0x6f_10 = 8'b11000110;
+    assign char_0x6f_11 = 8'b01111100;
+    assign char_0x6f_12 = 8'b00000000;
+    assign char_0x6f_13 = 8'b00000000;
+    assign char_0x6f_14 = 8'b00000000;
+    assign char_0x6f_15 = 8'b00000000;
+
+    wire [0:7] char_0x70_0;
+    wire [0:7] char_0x70_1;
+    wire [0:7] char_0x70_2;
+    wire [0:7] char_0x70_3;
+    wire [0:7] char_0x70_4;
+    wire [0:7] char_0x70_5;
+    wire [0:7] char_0x70_6;
+    wire [0:7] char_0x70_7;
+    wire [0:7] char_0x70_8;
+    wire [0:7] char_0x70_9;
+    wire [0:7] char_0x70_10;
+    wire [0:7] char_0x70_11;
+    wire [0:7] char_0x70_12;
+    wire [0:7] char_0x70_13;
+    wire [0:7] char_0x70_14;
+    wire [0:7] char_0x70_15;
+
+    assign char_0x70_0 = 8'b00000000;
+    assign char_0x70_1 = 8'b00000000;
+    assign char_0x70_2 = 8'b00000000;
+    assign char_0x70_3 = 8'b00000000;
+    assign char_0x70_4 = 8'b00000000;
+    assign char_0x70_5 = 8'b11011100;
+    assign char_0x70_6 = 8'b01100110;
+    assign char_0x70_7 = 8'b01100110;
+    assign char_0x70_8 = 8'b01100110;
+    assign char_0x70_9 = 8'b01100110;
+    assign char_0x70_10 = 8'b01100110;
+    assign char_0x70_11 = 8'b01111100;
+    assign char_0x70_12 = 8'b01100000;
+    assign char_0x70_13 = 8'b01100000;
+    assign char_0x70_14 = 8'b11110000;
+    assign char_0x70_15 = 8'b00000000;
+
+    wire [0:7] char_0x71_0;
+    wire [0:7] char_0x71_1;
+    wire [0:7] char_0x71_2;
+    wire [0:7] char_0x71_3;
+    wire [0:7] char_0x71_4;
+    wire [0:7] char_0x71_5;
+    wire [0:7] char_0x71_6;
+    wire [0:7] char_0x71_7;
+    wire [0:7] char_0x71_8;
+    wire [0:7] char_0x71_9;
+    wire [0:7] char_0x71_10;
+    wire [0:7] char_0x71_11;
+    wire [0:7] char_0x71_12;
+    wire [0:7] char_0x71_13;
+    wire [0:7] char_0x71_14;
+    wire [0:7] char_0x71_15;
+
+    assign char_0x71_0 = 8'b00000000;
+    assign char_0x71_1 = 8'b00000000;
+    assign char_0x71_2 = 8'b00000000;
+    assign char_0x71_3 = 8'b00000000;
+    assign char_0x71_4 = 8'b00000000;
+    assign char_0x71_5 = 8'b01110110;
+    assign char_0x71_6 = 8'b11001100;
+    assign char_0x71_7 = 8'b11001100;
+    assign char_0x71_8 = 8'b11001100;
+    assign char_0x71_9 = 8'b11001100;
+    assign char_0x71_10 = 8'b11001100;
+    assign char_0x71_11 = 8'b01111100;
+    assign char_0x71_12 = 8'b00001100;
+    assign char_0x71_13 = 8'b00001100;
+    assign char_0x71_14 = 8'b00011110;
+    assign char_0x71_15 = 8'b00000000;
+
+    wire [0:7] char_0x72_0;
+    wire [0:7] char_0x72_1;
+    wire [0:7] char_0x72_2;
+    wire [0:7] char_0x72_3;
+    wire [0:7] char_0x72_4;
+    wire [0:7] char_0x72_5;
+    wire [0:7] char_0x72_6;
+    wire [0:7] char_0x72_7;
+    wire [0:7] char_0x72_8;
+    wire [0:7] char_0x72_9;
+    wire [0:7] char_0x72_10;
+    wire [0:7] char_0x72_11;
+    wire [0:7] char_0x72_12;
+    wire [0:7] char_0x72_13;
+    wire [0:7] char_0x72_14;
+    wire [0:7] char_0x72_15;
+
+    assign char_0x72_0 = 8'b00000000;
+    assign char_0x72_1 = 8'b00000000;
+    assign char_0x72_2 = 8'b00000000;
+    assign char_0x72_3 = 8'b00000000;
+    assign char_0x72_4 = 8'b00000000;
+    assign char_0x72_5 = 8'b11011100;
+    assign char_0x72_6 = 8'b01110110;
+    assign char_0x72_7 = 8'b01100110;
+    assign char_0x72_8 = 8'b01100000;
+    assign char_0x72_9 = 8'b01100000;
+    assign char_0x72_10 = 8'b01100000;
+    assign char_0x72_11 = 8'b11110000;
+    assign char_0x72_12 = 8'b00000000;
+    assign char_0x72_13 = 8'b00000000;
+    assign char_0x72_14 = 8'b00000000;
+    assign char_0x72_15 = 8'b00000000;
+
+    wire [0:7] char_0x73_0;
+    wire [0:7] char_0x73_1;
+    wire [0:7] char_0x73_2;
+    wire [0:7] char_0x73_3;
+    wire [0:7] char_0x73_4;
+    wire [0:7] char_0x73_5;
+    wire [0:7] char_0x73_6;
+    wire [0:7] char_0x73_7;
+    wire [0:7] char_0x73_8;
+    wire [0:7] char_0x73_9;
+    wire [0:7] char_0x73_10;
+    wire [0:7] char_0x73_11;
+    wire [0:7] char_0x73_12;
+    wire [0:7] char_0x73_13;
+    wire [0:7] char_0x73_14;
+    wire [0:7] char_0x73_15;
+
+    assign char_0x73_0 = 8'b00000000;
+    assign char_0x73_1 = 8'b00000000;
+    assign char_0x73_2 = 8'b00000000;
+    assign char_0x73_3 = 8'b00000000;
+    assign char_0x73_4 = 8'b00000000;
+    assign char_0x73_5 = 8'b01111100;
+    assign char_0x73_6 = 8'b11000110;
+    assign char_0x73_7 = 8'b01100000;
+    assign char_0x73_8 = 8'b00111000;
+    assign char_0x73_9 = 8'b00001100;
+    assign char_0x73_10 = 8'b11000110;
+    assign char_0x73_11 = 8'b01111100;
+    assign char_0x73_12 = 8'b00000000;
+    assign char_0x73_13 = 8'b00000000;
+    assign char_0x73_14 = 8'b00000000;
+    assign char_0x73_15 = 8'b00000000;
+
+    wire [0:7] char_0x74_0;
+    wire [0:7] char_0x74_1;
+    wire [0:7] char_0x74_2;
+    wire [0:7] char_0x74_3;
+    wire [0:7] char_0x74_4;
+    wire [0:7] char_0x74_5;
+    wire [0:7] char_0x74_6;
+    wire [0:7] char_0x74_7;
+    wire [0:7] char_0x74_8;
+    wire [0:7] char_0x74_9;
+    wire [0:7] char_0x74_10;
+    wire [0:7] char_0x74_11;
+    wire [0:7] char_0x74_12;
+    wire [0:7] char_0x74_13;
+    wire [0:7] char_0x74_14;
+    wire [0:7] char_0x74_15;
+
+    assign char_0x74_0 = 8'b00000000;
+    assign char_0x74_1 = 8'b00000000;
+    assign char_0x74_2 = 8'b00010000;
+    assign char_0x74_3 = 8'b00110000;
+    assign char_0x74_4 = 8'b00110000;
+    assign char_0x74_5 = 8'b11111100;
+    assign char_0x74_6 = 8'b00110000;
+    assign char_0x74_7 = 8'b00110000;
+    assign char_0x74_8 = 8'b00110000;
+    assign char_0x74_9 = 8'b00110000;
+    assign char_0x74_10 = 8'b00110110;
+    assign char_0x74_11 = 8'b00011100;
+    assign char_0x74_12 = 8'b00000000;
+    assign char_0x74_13 = 8'b00000000;
+    assign char_0x74_14 = 8'b00000000;
+    assign char_0x74_15 = 8'b00000000;
+
+    wire [0:7] char_0x75_0;
+    wire [0:7] char_0x75_1;
+    wire [0:7] char_0x75_2;
+    wire [0:7] char_0x75_3;
+    wire [0:7] char_0x75_4;
+    wire [0:7] char_0x75_5;
+    wire [0:7] char_0x75_6;
+    wire [0:7] char_0x75_7;
+    wire [0:7] char_0x75_8;
+    wire [0:7] char_0x75_9;
+    wire [0:7] char_0x75_10;
+    wire [0:7] char_0x75_11;
+    wire [0:7] char_0x75_12;
+    wire [0:7] char_0x75_13;
+    wire [0:7] char_0x75_14;
+    wire [0:7] char_0x75_15;
+
+    assign char_0x75_0 = 8'b00000000;
+    assign char_0x75_1 = 8'b00000000;
+    assign char_0x75_2 = 8'b00000000;
+    assign char_0x75_3 = 8'b00000000;
+    assign char_0x75_4 = 8'b00000000;
+    assign char_0x75_5 = 8'b11001100;
+    assign char_0x75_6 = 8'b11001100;
+    assign char_0x75_7 = 8'b11001100;
+    assign char_0x75_8 = 8'b11001100;
+    assign char_0x75_9 = 8'b11001100;
+    assign char_0x75_10 = 8'b11001100;
+    assign char_0x75_11 = 8'b01110110;
+    assign char_0x75_12 = 8'b00000000;
+    assign char_0x75_13 = 8'b00000000;
+    assign char_0x75_14 = 8'b00000000;
+    assign char_0x75_15 = 8'b00000000;
+
+    wire [0:7] char_0x76_0;
+    wire [0:7] char_0x76_1;
+    wire [0:7] char_0x76_2;
+    wire [0:7] char_0x76_3;
+    wire [0:7] char_0x76_4;
+    wire [0:7] char_0x76_5;
+    wire [0:7] char_0x76_6;
+    wire [0:7] char_0x76_7;
+    wire [0:7] char_0x76_8;
+    wire [0:7] char_0x76_9;
+    wire [0:7] char_0x76_10;
+    wire [0:7] char_0x76_11;
+    wire [0:7] char_0x76_12;
+    wire [0:7] char_0x76_13;
+    wire [0:7] char_0x76_14;
+    wire [0:7] char_0x76_15;
+
+    assign char_0x76_0 = 8'b00000000;
+    assign char_0x76_1 = 8'b00000000;
+    assign char_0x76_2 = 8'b00000000;
+    assign char_0x76_3 = 8'b00000000;
+    assign char_0x76_4 = 8'b00000000;
+    assign char_0x76_5 = 8'b01100110;
+    assign char_0x76_6 = 8'b01100110;
+    assign char_0x76_7 = 8'b01100110;
+    assign char_0x76_8 = 8'b01100110;
+    assign char_0x76_9 = 8'b00111100;
+    assign char_0x76_10 = 8'b00011000;
+    assign char_0x76_11 = 8'b00000000;
+    assign char_0x76_12 = 8'b00000000;
+    assign char_0x76_13 = 8'b00000000;
+    assign char_0x76_14 = 8'b00000000;
+    assign char_0x76_15 = 8'b00000000;
+
+    wire [0:7] char_0x77_0;
+    wire [0:7] char_0x77_1;
+    wire [0:7] char_0x77_2;
+    wire [0:7] char_0x77_3;
+    wire [0:7] char_0x77_4;
+    wire [0:7] char_0x77_5;
+    wire [0:7] char_0x77_6;
+    wire [0:7] char_0x77_7;
+    wire [0:7] char_0x77_8;
+    wire [0:7] char_0x77_9;
+    wire [0:7] char_0x77_10;
+    wire [0:7] char_0x77_11;
+    wire [0:7] char_0x77_12;
+    wire [0:7] char_0x77_13;
+    wire [0:7] char_0x77_14;
+    wire [0:7] char_0x77_15;
+
+    assign char_0x77_0 = 8'b00000000;
+    assign char_0x77_1 = 8'b00000000;
+    assign char_0x77_2 = 8'b00000000;
+    assign char_0x77_3 = 8'b00000000;
+    assign char_0x77_4 = 8'b00000000;
+    assign char_0x77_5 = 8'b11000110;
+    assign char_0x77_6 = 8'b11000110;
+    assign char_0x77_7 = 8'b11010110;
+    assign char_0x77_8 = 8'b11010110;
+    assign char_0x77_9 = 8'b11010110;
+    assign char_0x77_10 = 8'b11111110;
+    assign char_0x77_11 = 8'b01101100;
+    assign char_0x77_12 = 8'b00000000;
+    assign char_0x77_13 = 8'b00000000;
+    assign char_0x77_14 = 8'b00000000;
+    assign char_0x77_15 = 8'b00000000;
+
+    wire [0:7] char_0x78_0;
+    wire [0:7] char_0x78_1;
+    wire [0:7] char_0x78_2;
+    wire [0:7] char_0x78_3;
+    wire [0:7] char_0x78_4;
+    wire [0:7] char_0x78_5;
+    wire [0:7] char_0x78_6;
+    wire [0:7] char_0x78_7;
+    wire [0:7] char_0x78_8;
+    wire [0:7] char_0x78_9;
+    wire [0:7] char_0x78_10;
+    wire [0:7] char_0x78_11;
+    wire [0:7] char_0x78_12;
+    wire [0:7] char_0x78_13;
+    wire [0:7] char_0x78_14;
+    wire [0:7] char_0x78_15;
+
+    assign char_0x78_0 = 8'b00000000;
+    assign char_0x78_1 = 8'b00000000;
+    assign char_0x78_2 = 8'b00000000;
+    assign char_0x78_3 = 8'b00000000;
+    assign char_0x78_4 = 8'b00000000;
+    assign char_0x78_5 = 8'b11000110;
+    assign char_0x78_6 = 8'b01101100;
+    assign char_0x78_7 = 8'b00111000;
+    assign char_0x78_8 = 8'b00111000;
+    assign char_0x78_9 = 8'b00111000;
+    assign char_0x78_10 = 8'b01101100;
+    assign char_0x78_11 = 8'b11000110;
+    assign char_0x78_12 = 8'b00000000;
+    assign char_0x78_13 = 8'b00000000;
+    assign char_0x78_14 = 8'b00000000;
+    assign char_0x78_15 = 8'b00000000;
+
+    wire [0:7] char_0x79_0;
+    wire [0:7] char_0x79_1;
+    wire [0:7] char_0x79_2;
+    wire [0:7] char_0x79_3;
+    wire [0:7] char_0x79_4;
+    wire [0:7] char_0x79_5;
+    wire [0:7] char_0x79_6;
+    wire [0:7] char_0x79_7;
+    wire [0:7] char_0x79_8;
+    wire [0:7] char_0x79_9;
+    wire [0:7] char_0x79_10;
+    wire [0:7] char_0x79_11;
+    wire [0:7] char_0x79_12;
+    wire [0:7] char_0x79_13;
+    wire [0:7] char_0x79_14;
+    wire [0:7] char_0x79_15;
+
+    assign char_0x79_0 = 8'b00000000;
+    assign char_0x79_1 = 8'b00000000;
+    assign char_0x79_2 = 8'b00000000;
+    assign char_0x79_3 = 8'b00000000;
+    assign char_0x79_4 = 8'b00000000;
+    assign char_0x79_5 = 8'b11000110;
+    assign char_0x79_6 = 8'b11000110;
+    assign char_0x79_7 = 8'b11000110;
+    assign char_0x79_8 = 8'b11000110;
+    assign char_0x79_9 = 8'b11000110;
+    assign char_0x79_10 = 8'b11000110;
+    assign char_0x79_11 = 8'b01111110;
+    assign char_0x79_12 = 8'b00000110;
+    assign char_0x79_13 = 8'b00001100;
+    assign char_0x79_14 = 8'b11111000;
+    assign char_0x79_15 = 8'b00000000;
+
+    wire [0:7] char_0x7a_0;
+    wire [0:7] char_0x7a_1;
+    wire [0:7] char_0x7a_2;
+    wire [0:7] char_0x7a_3;
+    wire [0:7] char_0x7a_4;
+    wire [0:7] char_0x7a_5;
+    wire [0:7] char_0x7a_6;
+    wire [0:7] char_0x7a_7;
+    wire [0:7] char_0x7a_8;
+    wire [0:7] char_0x7a_9;
+    wire [0:7] char_0x7a_10;
+    wire [0:7] char_0x7a_11;
+    wire [0:7] char_0x7a_12;
+    wire [0:7] char_0x7a_13;
+    wire [0:7] char_0x7a_14;
+    wire [0:7] char_0x7a_15;
+
+    assign char_0x7a_0 = 8'b00000000;
+    assign char_0x7a_1 = 8'b00000000;
+    assign char_0x7a_2 = 8'b00000000;
+    assign char_0x7a_3 = 8'b00000000;
+    assign char_0x7a_4 = 8'b00000000;
+    assign char_0x7a_5 = 8'b11111110;
+    assign char_0x7a_6 = 8'b11001100;
+    assign char_0x7a_7 = 8'b00011000;
+    assign char_0x7a_8 = 8'b00110000;
+    assign char_0x7a_9 = 8'b01100000;
+    assign char_0x7a_10 = 8'b11000110;
+    assign char_0x7a_11 = 8'b11111110;
+    assign char_0x7a_12 = 8'b00000000;
+    assign char_0x7a_13 = 8'b00000000;
+    assign char_0x7a_14 = 8'b00000000;
+    assign char_0x7a_15 = 8'b00000000;
+
+    wire [0:7] char_0x7b_0;
+    wire [0:7] char_0x7b_1;
+    wire [0:7] char_0x7b_2;
+    wire [0:7] char_0x7b_3;
+    wire [0:7] char_0x7b_4;
+    wire [0:7] char_0x7b_5;
+    wire [0:7] char_0x7b_6;
+    wire [0:7] char_0x7b_7;
+    wire [0:7] char_0x7b_8;
+    wire [0:7] char_0x7b_9;
+    wire [0:7] char_0x7b_10;
+    wire [0:7] char_0x7b_11;
+    wire [0:7] char_0x7b_12;
+    wire [0:7] char_0x7b_13;
+    wire [0:7] char_0x7b_14;
+    wire [0:7] char_0x7b_15;
+
+    assign char_0x7b_0 = 8'b00000000;
+    assign char_0x7b_1 = 8'b00000000;
+    assign char_0x7b_2 = 8'b00001110;
+    assign char_0x7b_3 = 8'b00011000;
+    assign char_0x7b_4 = 8'b00011000;
+    assign char_0x7b_5 = 8'b00011000;
+    assign char_0x7b_6 = 8'b01110000;
+    assign char_0x7b_7 = 8'b00011000;
+    assign char_0x7b_8 = 8'b00011000;
+    assign char_0x7b_9 = 8'b00011000;
+    assign char_0x7b_10 = 8'b00011000;
+    assign char_0x7b_11 = 8'b00001110;
+    assign char_0x7b_12 = 8'b00000000;
+    assign char_0x7b_13 = 8'b00000000;
+    assign char_0x7b_14 = 8'b00000000;
+    assign char_0x7b_15 = 8'b00000000;
+
+    wire [0:7] char_0x7c_0;
+    wire [0:7] char_0x7c_1;
+    wire [0:7] char_0x7c_2;
+    wire [0:7] char_0x7c_3;
+    wire [0:7] char_0x7c_4;
+    wire [0:7] char_0x7c_5;
+    wire [0:7] char_0x7c_6;
+    wire [0:7] char_0x7c_7;
+    wire [0:7] char_0x7c_8;
+    wire [0:7] char_0x7c_9;
+    wire [0:7] char_0x7c_10;
+    wire [0:7] char_0x7c_11;
+    wire [0:7] char_0x7c_12;
+    wire [0:7] char_0x7c_13;
+    wire [0:7] char_0x7c_14;
+    wire [0:7] char_0x7c_15;
+
+    assign char_0x7c_0 = 8'b00000000;
+    assign char_0x7c_1 = 8'b00000000;
+    assign char_0x7c_2 = 8'b00011000;
+    assign char_0x7c_3 = 8'b00011000;
+    assign char_0x7c_4 = 8'b00011000;
+    assign char_0x7c_5 = 8'b00011000;
+    assign char_0x7c_6 = 8'b00000000;
+    assign char_0x7c_7 = 8'b00011000;
+    assign char_0x7c_8 = 8'b00011000;
+    assign char_0x7c_9 = 8'b00011000;
+    assign char_0x7c_10 = 8'b00011000;
+    assign char_0x7c_11 = 8'b00011000;
+    assign char_0x7c_12 = 8'b00000000;
+    assign char_0x7c_13 = 8'b00000000;
+    assign char_0x7c_14 = 8'b00000000;
+    assign char_0x7c_15 = 8'b00000000;
+
+    wire [0:7] char_0x7d_0;
+    wire [0:7] char_0x7d_1;
+    wire [0:7] char_0x7d_2;
+    wire [0:7] char_0x7d_3;
+    wire [0:7] char_0x7d_4;
+    wire [0:7] char_0x7d_5;
+    wire [0:7] char_0x7d_6;
+    wire [0:7] char_0x7d_7;
+    wire [0:7] char_0x7d_8;
+    wire [0:7] char_0x7d_9;
+    wire [0:7] char_0x7d_10;
+    wire [0:7] char_0x7d_11;
+    wire [0:7] char_0x7d_12;
+    wire [0:7] char_0x7d_13;
+    wire [0:7] char_0x7d_14;
+    wire [0:7] char_0x7d_15;
+
+    assign char_0x7d_0 = 8'b00000000;
+    assign char_0x7d_1 = 8'b00000000;
+    assign char_0x7d_2 = 8'b01110000;
+    assign char_0x7d_3 = 8'b00011000;
+    assign char_0x7d_4 = 8'b00011000;
+    assign char_0x7d_5 = 8'b00011000;
+    assign char_0x7d_6 = 8'b00001110;
+    assign char_0x7d_7 = 8'b00011000;
+    assign char_0x7d_8 = 8'b00011000;
+    assign char_0x7d_9 = 8'b00011000;
+    assign char_0x7d_10 = 8'b00011000;
+    assign char_0x7d_11 = 8'b01110000;
+    assign char_0x7d_12 = 8'b00000000;
+    assign char_0x7d_13 = 8'b00000000;
+    assign char_0x7d_14 = 8'b00000000;
+    assign char_0x7d_15 = 8'b00000000;
+
+    wire [0:7] char_0x7e_0;
+    wire [0:7] char_0x7e_1;
+    wire [0:7] char_0x7e_2;
+    wire [0:7] char_0x7e_3;
+    wire [0:7] char_0x7e_4;
+    wire [0:7] char_0x7e_5;
+    wire [0:7] char_0x7e_6;
+    wire [0:7] char_0x7e_7;
+    wire [0:7] char_0x7e_8;
+    wire [0:7] char_0x7e_9;
+    wire [0:7] char_0x7e_10;
+    wire [0:7] char_0x7e_11;
+    wire [0:7] char_0x7e_12;
+    wire [0:7] char_0x7e_13;
+    wire [0:7] char_0x7e_14;
+    wire [0:7] char_0x7e_15;
+
+    assign char_0x7e_0 = 8'b00000000;
+    assign char_0x7e_1 = 8'b00000000;
+    assign char_0x7e_2 = 8'b01110110;
+    assign char_0x7e_3 = 8'b11011100;
+    assign char_0x7e_4 = 8'b00000000;
+    assign char_0x7e_5 = 8'b00000000;
+    assign char_0x7e_6 = 8'b00000000;
+    assign char_0x7e_7 = 8'b00000000;
+    assign char_0x7e_8 = 8'b00000000;
+    assign char_0x7e_9 = 8'b00000000;
+    assign char_0x7e_10 = 8'b00000000;
+    assign char_0x7e_11 = 8'b00000000;
+    assign char_0x7e_12 = 8'b00000000;
+    assign char_0x7e_13 = 8'b00000000;
+    assign char_0x7e_14 = 8'b00000000;
+    assign char_0x7e_15 = 8'b00000000;
+
+    wire [0:7] char_0x7f_0;
+    wire [0:7] char_0x7f_1;
+    wire [0:7] char_0x7f_2;
+    wire [0:7] char_0x7f_3;
+    wire [0:7] char_0x7f_4;
+    wire [0:7] char_0x7f_5;
+    wire [0:7] char_0x7f_6;
+    wire [0:7] char_0x7f_7;
+    wire [0:7] char_0x7f_8;
+    wire [0:7] char_0x7f_9;
+    wire [0:7] char_0x7f_10;
+    wire [0:7] char_0x7f_11;
+    wire [0:7] char_0x7f_12;
+    wire [0:7] char_0x7f_13;
+    wire [0:7] char_0x7f_14;
+    wire [0:7] char_0x7f_15;
+
+    assign char_0x7f_0 = 8'b00000000;
+    assign char_0x7f_1 = 8'b00000000;
+    assign char_0x7f_2 = 8'b00000000;
+    assign char_0x7f_3 = 8'b00000000;
+    assign char_0x7f_4 = 8'b00010000;
+    assign char_0x7f_5 = 8'b00111000;
+    assign char_0x7f_6 = 8'b01101100;
+    assign char_0x7f_7 = 8'b11000110;
+    assign char_0x7f_8 = 8'b11000110;
+    assign char_0x7f_9 = 8'b11000110;
+    assign char_0x7f_10 = 8'b11111110;
+    assign char_0x7f_11 = 8'b00000000;
+    assign char_0x7f_12 = 8'b00000000;
+    assign char_0x7f_13 = 8'b00000000;
+    assign char_0x7f_14 = 8'b00000000;
+    assign char_0x7f_15 = 8'b00000000;
+
+    always @(*) begin
+        case (char)
+            8'h20:
+                case (char_px_row)
+                    4'h0: px = char_0x20_0[char_px_col];
+                    4'h1: px = char_0x20_1[char_px_col];
+                    4'h2: px = char_0x20_2[char_px_col];
+                    4'h3: px = char_0x20_3[char_px_col];
+                    4'h4: px = char_0x20_4[char_px_col];
+                    4'h5: px = char_0x20_5[char_px_col];
+                    4'h6: px = char_0x20_6[char_px_col];
+                    4'h7: px = char_0x20_7[char_px_col];
+                    4'h8: px = char_0x20_8[char_px_col];
+                    4'h9: px = char_0x20_9[char_px_col];
+                    4'ha: px = char_0x20_10[char_px_col];
+                    4'hb: px = char_0x20_11[char_px_col];
+                    4'hc: px = char_0x20_12[char_px_col];
+                    4'hd: px = char_0x20_13[char_px_col];
+                    4'he: px = char_0x20_14[char_px_col];
+                    4'hf: px = char_0x20_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h21:
+                case (char_px_row)
+                    4'h0: px = char_0x21_0[char_px_col];
+                    4'h1: px = char_0x21_1[char_px_col];
+                    4'h2: px = char_0x21_2[char_px_col];
+                    4'h3: px = char_0x21_3[char_px_col];
+                    4'h4: px = char_0x21_4[char_px_col];
+                    4'h5: px = char_0x21_5[char_px_col];
+                    4'h6: px = char_0x21_6[char_px_col];
+                    4'h7: px = char_0x21_7[char_px_col];
+                    4'h8: px = char_0x21_8[char_px_col];
+                    4'h9: px = char_0x21_9[char_px_col];
+                    4'ha: px = char_0x21_10[char_px_col];
+                    4'hb: px = char_0x21_11[char_px_col];
+                    4'hc: px = char_0x21_12[char_px_col];
+                    4'hd: px = char_0x21_13[char_px_col];
+                    4'he: px = char_0x21_14[char_px_col];
+                    4'hf: px = char_0x21_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h22:
+                case (char_px_row)
+                    4'h0: px = char_0x22_0[char_px_col];
+                    4'h1: px = char_0x22_1[char_px_col];
+                    4'h2: px = char_0x22_2[char_px_col];
+                    4'h3: px = char_0x22_3[char_px_col];
+                    4'h4: px = char_0x22_4[char_px_col];
+                    4'h5: px = char_0x22_5[char_px_col];
+                    4'h6: px = char_0x22_6[char_px_col];
+                    4'h7: px = char_0x22_7[char_px_col];
+                    4'h8: px = char_0x22_8[char_px_col];
+                    4'h9: px = char_0x22_9[char_px_col];
+                    4'ha: px = char_0x22_10[char_px_col];
+                    4'hb: px = char_0x22_11[char_px_col];
+                    4'hc: px = char_0x22_12[char_px_col];
+                    4'hd: px = char_0x22_13[char_px_col];
+                    4'he: px = char_0x22_14[char_px_col];
+                    4'hf: px = char_0x22_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h23:
+                case (char_px_row)
+                    4'h0: px = char_0x23_0[char_px_col];
+                    4'h1: px = char_0x23_1[char_px_col];
+                    4'h2: px = char_0x23_2[char_px_col];
+                    4'h3: px = char_0x23_3[char_px_col];
+                    4'h4: px = char_0x23_4[char_px_col];
+                    4'h5: px = char_0x23_5[char_px_col];
+                    4'h6: px = char_0x23_6[char_px_col];
+                    4'h7: px = char_0x23_7[char_px_col];
+                    4'h8: px = char_0x23_8[char_px_col];
+                    4'h9: px = char_0x23_9[char_px_col];
+                    4'ha: px = char_0x23_10[char_px_col];
+                    4'hb: px = char_0x23_11[char_px_col];
+                    4'hc: px = char_0x23_12[char_px_col];
+                    4'hd: px = char_0x23_13[char_px_col];
+                    4'he: px = char_0x23_14[char_px_col];
+                    4'hf: px = char_0x23_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h24:
+                case (char_px_row)
+                    4'h0: px = char_0x24_0[char_px_col];
+                    4'h1: px = char_0x24_1[char_px_col];
+                    4'h2: px = char_0x24_2[char_px_col];
+                    4'h3: px = char_0x24_3[char_px_col];
+                    4'h4: px = char_0x24_4[char_px_col];
+                    4'h5: px = char_0x24_5[char_px_col];
+                    4'h6: px = char_0x24_6[char_px_col];
+                    4'h7: px = char_0x24_7[char_px_col];
+                    4'h8: px = char_0x24_8[char_px_col];
+                    4'h9: px = char_0x24_9[char_px_col];
+                    4'ha: px = char_0x24_10[char_px_col];
+                    4'hb: px = char_0x24_11[char_px_col];
+                    4'hc: px = char_0x24_12[char_px_col];
+                    4'hd: px = char_0x24_13[char_px_col];
+                    4'he: px = char_0x24_14[char_px_col];
+                    4'hf: px = char_0x24_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h25:
+                case (char_px_row)
+                    4'h0: px = char_0x25_0[char_px_col];
+                    4'h1: px = char_0x25_1[char_px_col];
+                    4'h2: px = char_0x25_2[char_px_col];
+                    4'h3: px = char_0x25_3[char_px_col];
+                    4'h4: px = char_0x25_4[char_px_col];
+                    4'h5: px = char_0x25_5[char_px_col];
+                    4'h6: px = char_0x25_6[char_px_col];
+                    4'h7: px = char_0x25_7[char_px_col];
+                    4'h8: px = char_0x25_8[char_px_col];
+                    4'h9: px = char_0x25_9[char_px_col];
+                    4'ha: px = char_0x25_10[char_px_col];
+                    4'hb: px = char_0x25_11[char_px_col];
+                    4'hc: px = char_0x25_12[char_px_col];
+                    4'hd: px = char_0x25_13[char_px_col];
+                    4'he: px = char_0x25_14[char_px_col];
+                    4'hf: px = char_0x25_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h26:
+                case (char_px_row)
+                    4'h0: px = char_0x26_0[char_px_col];
+                    4'h1: px = char_0x26_1[char_px_col];
+                    4'h2: px = char_0x26_2[char_px_col];
+                    4'h3: px = char_0x26_3[char_px_col];
+                    4'h4: px = char_0x26_4[char_px_col];
+                    4'h5: px = char_0x26_5[char_px_col];
+                    4'h6: px = char_0x26_6[char_px_col];
+                    4'h7: px = char_0x26_7[char_px_col];
+                    4'h8: px = char_0x26_8[char_px_col];
+                    4'h9: px = char_0x26_9[char_px_col];
+                    4'ha: px = char_0x26_10[char_px_col];
+                    4'hb: px = char_0x26_11[char_px_col];
+                    4'hc: px = char_0x26_12[char_px_col];
+                    4'hd: px = char_0x26_13[char_px_col];
+                    4'he: px = char_0x26_14[char_px_col];
+                    4'hf: px = char_0x26_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h27:
+                case (char_px_row)
+                    4'h0: px = char_0x27_0[char_px_col];
+                    4'h1: px = char_0x27_1[char_px_col];
+                    4'h2: px = char_0x27_2[char_px_col];
+                    4'h3: px = char_0x27_3[char_px_col];
+                    4'h4: px = char_0x27_4[char_px_col];
+                    4'h5: px = char_0x27_5[char_px_col];
+                    4'h6: px = char_0x27_6[char_px_col];
+                    4'h7: px = char_0x27_7[char_px_col];
+                    4'h8: px = char_0x27_8[char_px_col];
+                    4'h9: px = char_0x27_9[char_px_col];
+                    4'ha: px = char_0x27_10[char_px_col];
+                    4'hb: px = char_0x27_11[char_px_col];
+                    4'hc: px = char_0x27_12[char_px_col];
+                    4'hd: px = char_0x27_13[char_px_col];
+                    4'he: px = char_0x27_14[char_px_col];
+                    4'hf: px = char_0x27_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h28:
+                case (char_px_row)
+                    4'h0: px = char_0x28_0[char_px_col];
+                    4'h1: px = char_0x28_1[char_px_col];
+                    4'h2: px = char_0x28_2[char_px_col];
+                    4'h3: px = char_0x28_3[char_px_col];
+                    4'h4: px = char_0x28_4[char_px_col];
+                    4'h5: px = char_0x28_5[char_px_col];
+                    4'h6: px = char_0x28_6[char_px_col];
+                    4'h7: px = char_0x28_7[char_px_col];
+                    4'h8: px = char_0x28_8[char_px_col];
+                    4'h9: px = char_0x28_9[char_px_col];
+                    4'ha: px = char_0x28_10[char_px_col];
+                    4'hb: px = char_0x28_11[char_px_col];
+                    4'hc: px = char_0x28_12[char_px_col];
+                    4'hd: px = char_0x28_13[char_px_col];
+                    4'he: px = char_0x28_14[char_px_col];
+                    4'hf: px = char_0x28_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h29:
+                case (char_px_row)
+                    4'h0: px = char_0x29_0[char_px_col];
+                    4'h1: px = char_0x29_1[char_px_col];
+                    4'h2: px = char_0x29_2[char_px_col];
+                    4'h3: px = char_0x29_3[char_px_col];
+                    4'h4: px = char_0x29_4[char_px_col];
+                    4'h5: px = char_0x29_5[char_px_col];
+                    4'h6: px = char_0x29_6[char_px_col];
+                    4'h7: px = char_0x29_7[char_px_col];
+                    4'h8: px = char_0x29_8[char_px_col];
+                    4'h9: px = char_0x29_9[char_px_col];
+                    4'ha: px = char_0x29_10[char_px_col];
+                    4'hb: px = char_0x29_11[char_px_col];
+                    4'hc: px = char_0x29_12[char_px_col];
+                    4'hd: px = char_0x29_13[char_px_col];
+                    4'he: px = char_0x29_14[char_px_col];
+                    4'hf: px = char_0x29_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h2a:
+                case (char_px_row)
+                    4'h0: px = char_0x2a_0[char_px_col];
+                    4'h1: px = char_0x2a_1[char_px_col];
+                    4'h2: px = char_0x2a_2[char_px_col];
+                    4'h3: px = char_0x2a_3[char_px_col];
+                    4'h4: px = char_0x2a_4[char_px_col];
+                    4'h5: px = char_0x2a_5[char_px_col];
+                    4'h6: px = char_0x2a_6[char_px_col];
+                    4'h7: px = char_0x2a_7[char_px_col];
+                    4'h8: px = char_0x2a_8[char_px_col];
+                    4'h9: px = char_0x2a_9[char_px_col];
+                    4'ha: px = char_0x2a_10[char_px_col];
+                    4'hb: px = char_0x2a_11[char_px_col];
+                    4'hc: px = char_0x2a_12[char_px_col];
+                    4'hd: px = char_0x2a_13[char_px_col];
+                    4'he: px = char_0x2a_14[char_px_col];
+                    4'hf: px = char_0x2a_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h2b:
+                case (char_px_row)
+                    4'h0: px = char_0x2b_0[char_px_col];
+                    4'h1: px = char_0x2b_1[char_px_col];
+                    4'h2: px = char_0x2b_2[char_px_col];
+                    4'h3: px = char_0x2b_3[char_px_col];
+                    4'h4: px = char_0x2b_4[char_px_col];
+                    4'h5: px = char_0x2b_5[char_px_col];
+                    4'h6: px = char_0x2b_6[char_px_col];
+                    4'h7: px = char_0x2b_7[char_px_col];
+                    4'h8: px = char_0x2b_8[char_px_col];
+                    4'h9: px = char_0x2b_9[char_px_col];
+                    4'ha: px = char_0x2b_10[char_px_col];
+                    4'hb: px = char_0x2b_11[char_px_col];
+                    4'hc: px = char_0x2b_12[char_px_col];
+                    4'hd: px = char_0x2b_13[char_px_col];
+                    4'he: px = char_0x2b_14[char_px_col];
+                    4'hf: px = char_0x2b_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h2c:
+                case (char_px_row)
+                    4'h0: px = char_0x2c_0[char_px_col];
+                    4'h1: px = char_0x2c_1[char_px_col];
+                    4'h2: px = char_0x2c_2[char_px_col];
+                    4'h3: px = char_0x2c_3[char_px_col];
+                    4'h4: px = char_0x2c_4[char_px_col];
+                    4'h5: px = char_0x2c_5[char_px_col];
+                    4'h6: px = char_0x2c_6[char_px_col];
+                    4'h7: px = char_0x2c_7[char_px_col];
+                    4'h8: px = char_0x2c_8[char_px_col];
+                    4'h9: px = char_0x2c_9[char_px_col];
+                    4'ha: px = char_0x2c_10[char_px_col];
+                    4'hb: px = char_0x2c_11[char_px_col];
+                    4'hc: px = char_0x2c_12[char_px_col];
+                    4'hd: px = char_0x2c_13[char_px_col];
+                    4'he: px = char_0x2c_14[char_px_col];
+                    4'hf: px = char_0x2c_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h2d:
+                case (char_px_row)
+                    4'h0: px = char_0x2d_0[char_px_col];
+                    4'h1: px = char_0x2d_1[char_px_col];
+                    4'h2: px = char_0x2d_2[char_px_col];
+                    4'h3: px = char_0x2d_3[char_px_col];
+                    4'h4: px = char_0x2d_4[char_px_col];
+                    4'h5: px = char_0x2d_5[char_px_col];
+                    4'h6: px = char_0x2d_6[char_px_col];
+                    4'h7: px = char_0x2d_7[char_px_col];
+                    4'h8: px = char_0x2d_8[char_px_col];
+                    4'h9: px = char_0x2d_9[char_px_col];
+                    4'ha: px = char_0x2d_10[char_px_col];
+                    4'hb: px = char_0x2d_11[char_px_col];
+                    4'hc: px = char_0x2d_12[char_px_col];
+                    4'hd: px = char_0x2d_13[char_px_col];
+                    4'he: px = char_0x2d_14[char_px_col];
+                    4'hf: px = char_0x2d_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h2e:
+                case (char_px_row)
+                    4'h0: px = char_0x2e_0[char_px_col];
+                    4'h1: px = char_0x2e_1[char_px_col];
+                    4'h2: px = char_0x2e_2[char_px_col];
+                    4'h3: px = char_0x2e_3[char_px_col];
+                    4'h4: px = char_0x2e_4[char_px_col];
+                    4'h5: px = char_0x2e_5[char_px_col];
+                    4'h6: px = char_0x2e_6[char_px_col];
+                    4'h7: px = char_0x2e_7[char_px_col];
+                    4'h8: px = char_0x2e_8[char_px_col];
+                    4'h9: px = char_0x2e_9[char_px_col];
+                    4'ha: px = char_0x2e_10[char_px_col];
+                    4'hb: px = char_0x2e_11[char_px_col];
+                    4'hc: px = char_0x2e_12[char_px_col];
+                    4'hd: px = char_0x2e_13[char_px_col];
+                    4'he: px = char_0x2e_14[char_px_col];
+                    4'hf: px = char_0x2e_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h2f:
+                case (char_px_row)
+                    4'h0: px = char_0x2f_0[char_px_col];
+                    4'h1: px = char_0x2f_1[char_px_col];
+                    4'h2: px = char_0x2f_2[char_px_col];
+                    4'h3: px = char_0x2f_3[char_px_col];
+                    4'h4: px = char_0x2f_4[char_px_col];
+                    4'h5: px = char_0x2f_5[char_px_col];
+                    4'h6: px = char_0x2f_6[char_px_col];
+                    4'h7: px = char_0x2f_7[char_px_col];
+                    4'h8: px = char_0x2f_8[char_px_col];
+                    4'h9: px = char_0x2f_9[char_px_col];
+                    4'ha: px = char_0x2f_10[char_px_col];
+                    4'hb: px = char_0x2f_11[char_px_col];
+                    4'hc: px = char_0x2f_12[char_px_col];
+                    4'hd: px = char_0x2f_13[char_px_col];
+                    4'he: px = char_0x2f_14[char_px_col];
+                    4'hf: px = char_0x2f_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h30:
+                case (char_px_row)
+                    4'h0: px = char_0x30_0[char_px_col];
+                    4'h1: px = char_0x30_1[char_px_col];
+                    4'h2: px = char_0x30_2[char_px_col];
+                    4'h3: px = char_0x30_3[char_px_col];
+                    4'h4: px = char_0x30_4[char_px_col];
+                    4'h5: px = char_0x30_5[char_px_col];
+                    4'h6: px = char_0x30_6[char_px_col];
+                    4'h7: px = char_0x30_7[char_px_col];
+                    4'h8: px = char_0x30_8[char_px_col];
+                    4'h9: px = char_0x30_9[char_px_col];
+                    4'ha: px = char_0x30_10[char_px_col];
+                    4'hb: px = char_0x30_11[char_px_col];
+                    4'hc: px = char_0x30_12[char_px_col];
+                    4'hd: px = char_0x30_13[char_px_col];
+                    4'he: px = char_0x30_14[char_px_col];
+                    4'hf: px = char_0x30_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h31:
+                case (char_px_row)
+                    4'h0: px = char_0x31_0[char_px_col];
+                    4'h1: px = char_0x31_1[char_px_col];
+                    4'h2: px = char_0x31_2[char_px_col];
+                    4'h3: px = char_0x31_3[char_px_col];
+                    4'h4: px = char_0x31_4[char_px_col];
+                    4'h5: px = char_0x31_5[char_px_col];
+                    4'h6: px = char_0x31_6[char_px_col];
+                    4'h7: px = char_0x31_7[char_px_col];
+                    4'h8: px = char_0x31_8[char_px_col];
+                    4'h9: px = char_0x31_9[char_px_col];
+                    4'ha: px = char_0x31_10[char_px_col];
+                    4'hb: px = char_0x31_11[char_px_col];
+                    4'hc: px = char_0x31_12[char_px_col];
+                    4'hd: px = char_0x31_13[char_px_col];
+                    4'he: px = char_0x31_14[char_px_col];
+                    4'hf: px = char_0x31_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h32:
+                case (char_px_row)
+                    4'h0: px = char_0x32_0[char_px_col];
+                    4'h1: px = char_0x32_1[char_px_col];
+                    4'h2: px = char_0x32_2[char_px_col];
+                    4'h3: px = char_0x32_3[char_px_col];
+                    4'h4: px = char_0x32_4[char_px_col];
+                    4'h5: px = char_0x32_5[char_px_col];
+                    4'h6: px = char_0x32_6[char_px_col];
+                    4'h7: px = char_0x32_7[char_px_col];
+                    4'h8: px = char_0x32_8[char_px_col];
+                    4'h9: px = char_0x32_9[char_px_col];
+                    4'ha: px = char_0x32_10[char_px_col];
+                    4'hb: px = char_0x32_11[char_px_col];
+                    4'hc: px = char_0x32_12[char_px_col];
+                    4'hd: px = char_0x32_13[char_px_col];
+                    4'he: px = char_0x32_14[char_px_col];
+                    4'hf: px = char_0x32_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h33:
+                case (char_px_row)
+                    4'h0: px = char_0x33_0[char_px_col];
+                    4'h1: px = char_0x33_1[char_px_col];
+                    4'h2: px = char_0x33_2[char_px_col];
+                    4'h3: px = char_0x33_3[char_px_col];
+                    4'h4: px = char_0x33_4[char_px_col];
+                    4'h5: px = char_0x33_5[char_px_col];
+                    4'h6: px = char_0x33_6[char_px_col];
+                    4'h7: px = char_0x33_7[char_px_col];
+                    4'h8: px = char_0x33_8[char_px_col];
+                    4'h9: px = char_0x33_9[char_px_col];
+                    4'ha: px = char_0x33_10[char_px_col];
+                    4'hb: px = char_0x33_11[char_px_col];
+                    4'hc: px = char_0x33_12[char_px_col];
+                    4'hd: px = char_0x33_13[char_px_col];
+                    4'he: px = char_0x33_14[char_px_col];
+                    4'hf: px = char_0x33_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h34:
+                case (char_px_row)
+                    4'h0: px = char_0x34_0[char_px_col];
+                    4'h1: px = char_0x34_1[char_px_col];
+                    4'h2: px = char_0x34_2[char_px_col];
+                    4'h3: px = char_0x34_3[char_px_col];
+                    4'h4: px = char_0x34_4[char_px_col];
+                    4'h5: px = char_0x34_5[char_px_col];
+                    4'h6: px = char_0x34_6[char_px_col];
+                    4'h7: px = char_0x34_7[char_px_col];
+                    4'h8: px = char_0x34_8[char_px_col];
+                    4'h9: px = char_0x34_9[char_px_col];
+                    4'ha: px = char_0x34_10[char_px_col];
+                    4'hb: px = char_0x34_11[char_px_col];
+                    4'hc: px = char_0x34_12[char_px_col];
+                    4'hd: px = char_0x34_13[char_px_col];
+                    4'he: px = char_0x34_14[char_px_col];
+                    4'hf: px = char_0x34_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h35:
+                case (char_px_row)
+                    4'h0: px = char_0x35_0[char_px_col];
+                    4'h1: px = char_0x35_1[char_px_col];
+                    4'h2: px = char_0x35_2[char_px_col];
+                    4'h3: px = char_0x35_3[char_px_col];
+                    4'h4: px = char_0x35_4[char_px_col];
+                    4'h5: px = char_0x35_5[char_px_col];
+                    4'h6: px = char_0x35_6[char_px_col];
+                    4'h7: px = char_0x35_7[char_px_col];
+                    4'h8: px = char_0x35_8[char_px_col];
+                    4'h9: px = char_0x35_9[char_px_col];
+                    4'ha: px = char_0x35_10[char_px_col];
+                    4'hb: px = char_0x35_11[char_px_col];
+                    4'hc: px = char_0x35_12[char_px_col];
+                    4'hd: px = char_0x35_13[char_px_col];
+                    4'he: px = char_0x35_14[char_px_col];
+                    4'hf: px = char_0x35_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h36:
+                case (char_px_row)
+                    4'h0: px = char_0x36_0[char_px_col];
+                    4'h1: px = char_0x36_1[char_px_col];
+                    4'h2: px = char_0x36_2[char_px_col];
+                    4'h3: px = char_0x36_3[char_px_col];
+                    4'h4: px = char_0x36_4[char_px_col];
+                    4'h5: px = char_0x36_5[char_px_col];
+                    4'h6: px = char_0x36_6[char_px_col];
+                    4'h7: px = char_0x36_7[char_px_col];
+                    4'h8: px = char_0x36_8[char_px_col];
+                    4'h9: px = char_0x36_9[char_px_col];
+                    4'ha: px = char_0x36_10[char_px_col];
+                    4'hb: px = char_0x36_11[char_px_col];
+                    4'hc: px = char_0x36_12[char_px_col];
+                    4'hd: px = char_0x36_13[char_px_col];
+                    4'he: px = char_0x36_14[char_px_col];
+                    4'hf: px = char_0x36_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h37:
+                case (char_px_row)
+                    4'h0: px = char_0x37_0[char_px_col];
+                    4'h1: px = char_0x37_1[char_px_col];
+                    4'h2: px = char_0x37_2[char_px_col];
+                    4'h3: px = char_0x37_3[char_px_col];
+                    4'h4: px = char_0x37_4[char_px_col];
+                    4'h5: px = char_0x37_5[char_px_col];
+                    4'h6: px = char_0x37_6[char_px_col];
+                    4'h7: px = char_0x37_7[char_px_col];
+                    4'h8: px = char_0x37_8[char_px_col];
+                    4'h9: px = char_0x37_9[char_px_col];
+                    4'ha: px = char_0x37_10[char_px_col];
+                    4'hb: px = char_0x37_11[char_px_col];
+                    4'hc: px = char_0x37_12[char_px_col];
+                    4'hd: px = char_0x37_13[char_px_col];
+                    4'he: px = char_0x37_14[char_px_col];
+                    4'hf: px = char_0x37_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h38:
+                case (char_px_row)
+                    4'h0: px = char_0x38_0[char_px_col];
+                    4'h1: px = char_0x38_1[char_px_col];
+                    4'h2: px = char_0x38_2[char_px_col];
+                    4'h3: px = char_0x38_3[char_px_col];
+                    4'h4: px = char_0x38_4[char_px_col];
+                    4'h5: px = char_0x38_5[char_px_col];
+                    4'h6: px = char_0x38_6[char_px_col];
+                    4'h7: px = char_0x38_7[char_px_col];
+                    4'h8: px = char_0x38_8[char_px_col];
+                    4'h9: px = char_0x38_9[char_px_col];
+                    4'ha: px = char_0x38_10[char_px_col];
+                    4'hb: px = char_0x38_11[char_px_col];
+                    4'hc: px = char_0x38_12[char_px_col];
+                    4'hd: px = char_0x38_13[char_px_col];
+                    4'he: px = char_0x38_14[char_px_col];
+                    4'hf: px = char_0x38_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h39:
+                case (char_px_row)
+                    4'h0: px = char_0x39_0[char_px_col];
+                    4'h1: px = char_0x39_1[char_px_col];
+                    4'h2: px = char_0x39_2[char_px_col];
+                    4'h3: px = char_0x39_3[char_px_col];
+                    4'h4: px = char_0x39_4[char_px_col];
+                    4'h5: px = char_0x39_5[char_px_col];
+                    4'h6: px = char_0x39_6[char_px_col];
+                    4'h7: px = char_0x39_7[char_px_col];
+                    4'h8: px = char_0x39_8[char_px_col];
+                    4'h9: px = char_0x39_9[char_px_col];
+                    4'ha: px = char_0x39_10[char_px_col];
+                    4'hb: px = char_0x39_11[char_px_col];
+                    4'hc: px = char_0x39_12[char_px_col];
+                    4'hd: px = char_0x39_13[char_px_col];
+                    4'he: px = char_0x39_14[char_px_col];
+                    4'hf: px = char_0x39_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h3a:
+                case (char_px_row)
+                    4'h0: px = char_0x3a_0[char_px_col];
+                    4'h1: px = char_0x3a_1[char_px_col];
+                    4'h2: px = char_0x3a_2[char_px_col];
+                    4'h3: px = char_0x3a_3[char_px_col];
+                    4'h4: px = char_0x3a_4[char_px_col];
+                    4'h5: px = char_0x3a_5[char_px_col];
+                    4'h6: px = char_0x3a_6[char_px_col];
+                    4'h7: px = char_0x3a_7[char_px_col];
+                    4'h8: px = char_0x3a_8[char_px_col];
+                    4'h9: px = char_0x3a_9[char_px_col];
+                    4'ha: px = char_0x3a_10[char_px_col];
+                    4'hb: px = char_0x3a_11[char_px_col];
+                    4'hc: px = char_0x3a_12[char_px_col];
+                    4'hd: px = char_0x3a_13[char_px_col];
+                    4'he: px = char_0x3a_14[char_px_col];
+                    4'hf: px = char_0x3a_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h3b:
+                case (char_px_row)
+                    4'h0: px = char_0x3b_0[char_px_col];
+                    4'h1: px = char_0x3b_1[char_px_col];
+                    4'h2: px = char_0x3b_2[char_px_col];
+                    4'h3: px = char_0x3b_3[char_px_col];
+                    4'h4: px = char_0x3b_4[char_px_col];
+                    4'h5: px = char_0x3b_5[char_px_col];
+                    4'h6: px = char_0x3b_6[char_px_col];
+                    4'h7: px = char_0x3b_7[char_px_col];
+                    4'h8: px = char_0x3b_8[char_px_col];
+                    4'h9: px = char_0x3b_9[char_px_col];
+                    4'ha: px = char_0x3b_10[char_px_col];
+                    4'hb: px = char_0x3b_11[char_px_col];
+                    4'hc: px = char_0x3b_12[char_px_col];
+                    4'hd: px = char_0x3b_13[char_px_col];
+                    4'he: px = char_0x3b_14[char_px_col];
+                    4'hf: px = char_0x3b_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h3c:
+                case (char_px_row)
+                    4'h0: px = char_0x3c_0[char_px_col];
+                    4'h1: px = char_0x3c_1[char_px_col];
+                    4'h2: px = char_0x3c_2[char_px_col];
+                    4'h3: px = char_0x3c_3[char_px_col];
+                    4'h4: px = char_0x3c_4[char_px_col];
+                    4'h5: px = char_0x3c_5[char_px_col];
+                    4'h6: px = char_0x3c_6[char_px_col];
+                    4'h7: px = char_0x3c_7[char_px_col];
+                    4'h8: px = char_0x3c_8[char_px_col];
+                    4'h9: px = char_0x3c_9[char_px_col];
+                    4'ha: px = char_0x3c_10[char_px_col];
+                    4'hb: px = char_0x3c_11[char_px_col];
+                    4'hc: px = char_0x3c_12[char_px_col];
+                    4'hd: px = char_0x3c_13[char_px_col];
+                    4'he: px = char_0x3c_14[char_px_col];
+                    4'hf: px = char_0x3c_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h3d:
+                case (char_px_row)
+                    4'h0: px = char_0x3d_0[char_px_col];
+                    4'h1: px = char_0x3d_1[char_px_col];
+                    4'h2: px = char_0x3d_2[char_px_col];
+                    4'h3: px = char_0x3d_3[char_px_col];
+                    4'h4: px = char_0x3d_4[char_px_col];
+                    4'h5: px = char_0x3d_5[char_px_col];
+                    4'h6: px = char_0x3d_6[char_px_col];
+                    4'h7: px = char_0x3d_7[char_px_col];
+                    4'h8: px = char_0x3d_8[char_px_col];
+                    4'h9: px = char_0x3d_9[char_px_col];
+                    4'ha: px = char_0x3d_10[char_px_col];
+                    4'hb: px = char_0x3d_11[char_px_col];
+                    4'hc: px = char_0x3d_12[char_px_col];
+                    4'hd: px = char_0x3d_13[char_px_col];
+                    4'he: px = char_0x3d_14[char_px_col];
+                    4'hf: px = char_0x3d_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h3e:
+                case (char_px_row)
+                    4'h0: px = char_0x3e_0[char_px_col];
+                    4'h1: px = char_0x3e_1[char_px_col];
+                    4'h2: px = char_0x3e_2[char_px_col];
+                    4'h3: px = char_0x3e_3[char_px_col];
+                    4'h4: px = char_0x3e_4[char_px_col];
+                    4'h5: px = char_0x3e_5[char_px_col];
+                    4'h6: px = char_0x3e_6[char_px_col];
+                    4'h7: px = char_0x3e_7[char_px_col];
+                    4'h8: px = char_0x3e_8[char_px_col];
+                    4'h9: px = char_0x3e_9[char_px_col];
+                    4'ha: px = char_0x3e_10[char_px_col];
+                    4'hb: px = char_0x3e_11[char_px_col];
+                    4'hc: px = char_0x3e_12[char_px_col];
+                    4'hd: px = char_0x3e_13[char_px_col];
+                    4'he: px = char_0x3e_14[char_px_col];
+                    4'hf: px = char_0x3e_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h3f:
+                case (char_px_row)
+                    4'h0: px = char_0x3f_0[char_px_col];
+                    4'h1: px = char_0x3f_1[char_px_col];
+                    4'h2: px = char_0x3f_2[char_px_col];
+                    4'h3: px = char_0x3f_3[char_px_col];
+                    4'h4: px = char_0x3f_4[char_px_col];
+                    4'h5: px = char_0x3f_5[char_px_col];
+                    4'h6: px = char_0x3f_6[char_px_col];
+                    4'h7: px = char_0x3f_7[char_px_col];
+                    4'h8: px = char_0x3f_8[char_px_col];
+                    4'h9: px = char_0x3f_9[char_px_col];
+                    4'ha: px = char_0x3f_10[char_px_col];
+                    4'hb: px = char_0x3f_11[char_px_col];
+                    4'hc: px = char_0x3f_12[char_px_col];
+                    4'hd: px = char_0x3f_13[char_px_col];
+                    4'he: px = char_0x3f_14[char_px_col];
+                    4'hf: px = char_0x3f_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h40:
+                case (char_px_row)
+                    4'h0: px = char_0x40_0[char_px_col];
+                    4'h1: px = char_0x40_1[char_px_col];
+                    4'h2: px = char_0x40_2[char_px_col];
+                    4'h3: px = char_0x40_3[char_px_col];
+                    4'h4: px = char_0x40_4[char_px_col];
+                    4'h5: px = char_0x40_5[char_px_col];
+                    4'h6: px = char_0x40_6[char_px_col];
+                    4'h7: px = char_0x40_7[char_px_col];
+                    4'h8: px = char_0x40_8[char_px_col];
+                    4'h9: px = char_0x40_9[char_px_col];
+                    4'ha: px = char_0x40_10[char_px_col];
+                    4'hb: px = char_0x40_11[char_px_col];
+                    4'hc: px = char_0x40_12[char_px_col];
+                    4'hd: px = char_0x40_13[char_px_col];
+                    4'he: px = char_0x40_14[char_px_col];
+                    4'hf: px = char_0x40_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h41:
+                case (char_px_row)
+                    4'h0: px = char_0x41_0[char_px_col];
+                    4'h1: px = char_0x41_1[char_px_col];
+                    4'h2: px = char_0x41_2[char_px_col];
+                    4'h3: px = char_0x41_3[char_px_col];
+                    4'h4: px = char_0x41_4[char_px_col];
+                    4'h5: px = char_0x41_5[char_px_col];
+                    4'h6: px = char_0x41_6[char_px_col];
+                    4'h7: px = char_0x41_7[char_px_col];
+                    4'h8: px = char_0x41_8[char_px_col];
+                    4'h9: px = char_0x41_9[char_px_col];
+                    4'ha: px = char_0x41_10[char_px_col];
+                    4'hb: px = char_0x41_11[char_px_col];
+                    4'hc: px = char_0x41_12[char_px_col];
+                    4'hd: px = char_0x41_13[char_px_col];
+                    4'he: px = char_0x41_14[char_px_col];
+                    4'hf: px = char_0x41_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h42:
+                case (char_px_row)
+                    4'h0: px = char_0x42_0[char_px_col];
+                    4'h1: px = char_0x42_1[char_px_col];
+                    4'h2: px = char_0x42_2[char_px_col];
+                    4'h3: px = char_0x42_3[char_px_col];
+                    4'h4: px = char_0x42_4[char_px_col];
+                    4'h5: px = char_0x42_5[char_px_col];
+                    4'h6: px = char_0x42_6[char_px_col];
+                    4'h7: px = char_0x42_7[char_px_col];
+                    4'h8: px = char_0x42_8[char_px_col];
+                    4'h9: px = char_0x42_9[char_px_col];
+                    4'ha: px = char_0x42_10[char_px_col];
+                    4'hb: px = char_0x42_11[char_px_col];
+                    4'hc: px = char_0x42_12[char_px_col];
+                    4'hd: px = char_0x42_13[char_px_col];
+                    4'he: px = char_0x42_14[char_px_col];
+                    4'hf: px = char_0x42_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h43:
+                case (char_px_row)
+                    4'h0: px = char_0x43_0[char_px_col];
+                    4'h1: px = char_0x43_1[char_px_col];
+                    4'h2: px = char_0x43_2[char_px_col];
+                    4'h3: px = char_0x43_3[char_px_col];
+                    4'h4: px = char_0x43_4[char_px_col];
+                    4'h5: px = char_0x43_5[char_px_col];
+                    4'h6: px = char_0x43_6[char_px_col];
+                    4'h7: px = char_0x43_7[char_px_col];
+                    4'h8: px = char_0x43_8[char_px_col];
+                    4'h9: px = char_0x43_9[char_px_col];
+                    4'ha: px = char_0x43_10[char_px_col];
+                    4'hb: px = char_0x43_11[char_px_col];
+                    4'hc: px = char_0x43_12[char_px_col];
+                    4'hd: px = char_0x43_13[char_px_col];
+                    4'he: px = char_0x43_14[char_px_col];
+                    4'hf: px = char_0x43_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h44:
+                case (char_px_row)
+                    4'h0: px = char_0x44_0[char_px_col];
+                    4'h1: px = char_0x44_1[char_px_col];
+                    4'h2: px = char_0x44_2[char_px_col];
+                    4'h3: px = char_0x44_3[char_px_col];
+                    4'h4: px = char_0x44_4[char_px_col];
+                    4'h5: px = char_0x44_5[char_px_col];
+                    4'h6: px = char_0x44_6[char_px_col];
+                    4'h7: px = char_0x44_7[char_px_col];
+                    4'h8: px = char_0x44_8[char_px_col];
+                    4'h9: px = char_0x44_9[char_px_col];
+                    4'ha: px = char_0x44_10[char_px_col];
+                    4'hb: px = char_0x44_11[char_px_col];
+                    4'hc: px = char_0x44_12[char_px_col];
+                    4'hd: px = char_0x44_13[char_px_col];
+                    4'he: px = char_0x44_14[char_px_col];
+                    4'hf: px = char_0x44_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h45:
+                case (char_px_row)
+                    4'h0: px = char_0x45_0[char_px_col];
+                    4'h1: px = char_0x45_1[char_px_col];
+                    4'h2: px = char_0x45_2[char_px_col];
+                    4'h3: px = char_0x45_3[char_px_col];
+                    4'h4: px = char_0x45_4[char_px_col];
+                    4'h5: px = char_0x45_5[char_px_col];
+                    4'h6: px = char_0x45_6[char_px_col];
+                    4'h7: px = char_0x45_7[char_px_col];
+                    4'h8: px = char_0x45_8[char_px_col];
+                    4'h9: px = char_0x45_9[char_px_col];
+                    4'ha: px = char_0x45_10[char_px_col];
+                    4'hb: px = char_0x45_11[char_px_col];
+                    4'hc: px = char_0x45_12[char_px_col];
+                    4'hd: px = char_0x45_13[char_px_col];
+                    4'he: px = char_0x45_14[char_px_col];
+                    4'hf: px = char_0x45_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h46:
+                case (char_px_row)
+                    4'h0: px = char_0x46_0[char_px_col];
+                    4'h1: px = char_0x46_1[char_px_col];
+                    4'h2: px = char_0x46_2[char_px_col];
+                    4'h3: px = char_0x46_3[char_px_col];
+                    4'h4: px = char_0x46_4[char_px_col];
+                    4'h5: px = char_0x46_5[char_px_col];
+                    4'h6: px = char_0x46_6[char_px_col];
+                    4'h7: px = char_0x46_7[char_px_col];
+                    4'h8: px = char_0x46_8[char_px_col];
+                    4'h9: px = char_0x46_9[char_px_col];
+                    4'ha: px = char_0x46_10[char_px_col];
+                    4'hb: px = char_0x46_11[char_px_col];
+                    4'hc: px = char_0x46_12[char_px_col];
+                    4'hd: px = char_0x46_13[char_px_col];
+                    4'he: px = char_0x46_14[char_px_col];
+                    4'hf: px = char_0x46_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h47:
+                case (char_px_row)
+                    4'h0: px = char_0x47_0[char_px_col];
+                    4'h1: px = char_0x47_1[char_px_col];
+                    4'h2: px = char_0x47_2[char_px_col];
+                    4'h3: px = char_0x47_3[char_px_col];
+                    4'h4: px = char_0x47_4[char_px_col];
+                    4'h5: px = char_0x47_5[char_px_col];
+                    4'h6: px = char_0x47_6[char_px_col];
+                    4'h7: px = char_0x47_7[char_px_col];
+                    4'h8: px = char_0x47_8[char_px_col];
+                    4'h9: px = char_0x47_9[char_px_col];
+                    4'ha: px = char_0x47_10[char_px_col];
+                    4'hb: px = char_0x47_11[char_px_col];
+                    4'hc: px = char_0x47_12[char_px_col];
+                    4'hd: px = char_0x47_13[char_px_col];
+                    4'he: px = char_0x47_14[char_px_col];
+                    4'hf: px = char_0x47_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h48:
+                case (char_px_row)
+                    4'h0: px = char_0x48_0[char_px_col];
+                    4'h1: px = char_0x48_1[char_px_col];
+                    4'h2: px = char_0x48_2[char_px_col];
+                    4'h3: px = char_0x48_3[char_px_col];
+                    4'h4: px = char_0x48_4[char_px_col];
+                    4'h5: px = char_0x48_5[char_px_col];
+                    4'h6: px = char_0x48_6[char_px_col];
+                    4'h7: px = char_0x48_7[char_px_col];
+                    4'h8: px = char_0x48_8[char_px_col];
+                    4'h9: px = char_0x48_9[char_px_col];
+                    4'ha: px = char_0x48_10[char_px_col];
+                    4'hb: px = char_0x48_11[char_px_col];
+                    4'hc: px = char_0x48_12[char_px_col];
+                    4'hd: px = char_0x48_13[char_px_col];
+                    4'he: px = char_0x48_14[char_px_col];
+                    4'hf: px = char_0x48_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h49:
+                case (char_px_row)
+                    4'h0: px = char_0x49_0[char_px_col];
+                    4'h1: px = char_0x49_1[char_px_col];
+                    4'h2: px = char_0x49_2[char_px_col];
+                    4'h3: px = char_0x49_3[char_px_col];
+                    4'h4: px = char_0x49_4[char_px_col];
+                    4'h5: px = char_0x49_5[char_px_col];
+                    4'h6: px = char_0x49_6[char_px_col];
+                    4'h7: px = char_0x49_7[char_px_col];
+                    4'h8: px = char_0x49_8[char_px_col];
+                    4'h9: px = char_0x49_9[char_px_col];
+                    4'ha: px = char_0x49_10[char_px_col];
+                    4'hb: px = char_0x49_11[char_px_col];
+                    4'hc: px = char_0x49_12[char_px_col];
+                    4'hd: px = char_0x49_13[char_px_col];
+                    4'he: px = char_0x49_14[char_px_col];
+                    4'hf: px = char_0x49_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h4a:
+                case (char_px_row)
+                    4'h0: px = char_0x4a_0[char_px_col];
+                    4'h1: px = char_0x4a_1[char_px_col];
+                    4'h2: px = char_0x4a_2[char_px_col];
+                    4'h3: px = char_0x4a_3[char_px_col];
+                    4'h4: px = char_0x4a_4[char_px_col];
+                    4'h5: px = char_0x4a_5[char_px_col];
+                    4'h6: px = char_0x4a_6[char_px_col];
+                    4'h7: px = char_0x4a_7[char_px_col];
+                    4'h8: px = char_0x4a_8[char_px_col];
+                    4'h9: px = char_0x4a_9[char_px_col];
+                    4'ha: px = char_0x4a_10[char_px_col];
+                    4'hb: px = char_0x4a_11[char_px_col];
+                    4'hc: px = char_0x4a_12[char_px_col];
+                    4'hd: px = char_0x4a_13[char_px_col];
+                    4'he: px = char_0x4a_14[char_px_col];
+                    4'hf: px = char_0x4a_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h4b:
+                case (char_px_row)
+                    4'h0: px = char_0x4b_0[char_px_col];
+                    4'h1: px = char_0x4b_1[char_px_col];
+                    4'h2: px = char_0x4b_2[char_px_col];
+                    4'h3: px = char_0x4b_3[char_px_col];
+                    4'h4: px = char_0x4b_4[char_px_col];
+                    4'h5: px = char_0x4b_5[char_px_col];
+                    4'h6: px = char_0x4b_6[char_px_col];
+                    4'h7: px = char_0x4b_7[char_px_col];
+                    4'h8: px = char_0x4b_8[char_px_col];
+                    4'h9: px = char_0x4b_9[char_px_col];
+                    4'ha: px = char_0x4b_10[char_px_col];
+                    4'hb: px = char_0x4b_11[char_px_col];
+                    4'hc: px = char_0x4b_12[char_px_col];
+                    4'hd: px = char_0x4b_13[char_px_col];
+                    4'he: px = char_0x4b_14[char_px_col];
+                    4'hf: px = char_0x4b_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h4c:
+                case (char_px_row)
+                    4'h0: px = char_0x4c_0[char_px_col];
+                    4'h1: px = char_0x4c_1[char_px_col];
+                    4'h2: px = char_0x4c_2[char_px_col];
+                    4'h3: px = char_0x4c_3[char_px_col];
+                    4'h4: px = char_0x4c_4[char_px_col];
+                    4'h5: px = char_0x4c_5[char_px_col];
+                    4'h6: px = char_0x4c_6[char_px_col];
+                    4'h7: px = char_0x4c_7[char_px_col];
+                    4'h8: px = char_0x4c_8[char_px_col];
+                    4'h9: px = char_0x4c_9[char_px_col];
+                    4'ha: px = char_0x4c_10[char_px_col];
+                    4'hb: px = char_0x4c_11[char_px_col];
+                    4'hc: px = char_0x4c_12[char_px_col];
+                    4'hd: px = char_0x4c_13[char_px_col];
+                    4'he: px = char_0x4c_14[char_px_col];
+                    4'hf: px = char_0x4c_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h4d:
+                case (char_px_row)
+                    4'h0: px = char_0x4d_0[char_px_col];
+                    4'h1: px = char_0x4d_1[char_px_col];
+                    4'h2: px = char_0x4d_2[char_px_col];
+                    4'h3: px = char_0x4d_3[char_px_col];
+                    4'h4: px = char_0x4d_4[char_px_col];
+                    4'h5: px = char_0x4d_5[char_px_col];
+                    4'h6: px = char_0x4d_6[char_px_col];
+                    4'h7: px = char_0x4d_7[char_px_col];
+                    4'h8: px = char_0x4d_8[char_px_col];
+                    4'h9: px = char_0x4d_9[char_px_col];
+                    4'ha: px = char_0x4d_10[char_px_col];
+                    4'hb: px = char_0x4d_11[char_px_col];
+                    4'hc: px = char_0x4d_12[char_px_col];
+                    4'hd: px = char_0x4d_13[char_px_col];
+                    4'he: px = char_0x4d_14[char_px_col];
+                    4'hf: px = char_0x4d_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h4e:
+                case (char_px_row)
+                    4'h0: px = char_0x4e_0[char_px_col];
+                    4'h1: px = char_0x4e_1[char_px_col];
+                    4'h2: px = char_0x4e_2[char_px_col];
+                    4'h3: px = char_0x4e_3[char_px_col];
+                    4'h4: px = char_0x4e_4[char_px_col];
+                    4'h5: px = char_0x4e_5[char_px_col];
+                    4'h6: px = char_0x4e_6[char_px_col];
+                    4'h7: px = char_0x4e_7[char_px_col];
+                    4'h8: px = char_0x4e_8[char_px_col];
+                    4'h9: px = char_0x4e_9[char_px_col];
+                    4'ha: px = char_0x4e_10[char_px_col];
+                    4'hb: px = char_0x4e_11[char_px_col];
+                    4'hc: px = char_0x4e_12[char_px_col];
+                    4'hd: px = char_0x4e_13[char_px_col];
+                    4'he: px = char_0x4e_14[char_px_col];
+                    4'hf: px = char_0x4e_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h4f:
+                case (char_px_row)
+                    4'h0: px = char_0x4f_0[char_px_col];
+                    4'h1: px = char_0x4f_1[char_px_col];
+                    4'h2: px = char_0x4f_2[char_px_col];
+                    4'h3: px = char_0x4f_3[char_px_col];
+                    4'h4: px = char_0x4f_4[char_px_col];
+                    4'h5: px = char_0x4f_5[char_px_col];
+                    4'h6: px = char_0x4f_6[char_px_col];
+                    4'h7: px = char_0x4f_7[char_px_col];
+                    4'h8: px = char_0x4f_8[char_px_col];
+                    4'h9: px = char_0x4f_9[char_px_col];
+                    4'ha: px = char_0x4f_10[char_px_col];
+                    4'hb: px = char_0x4f_11[char_px_col];
+                    4'hc: px = char_0x4f_12[char_px_col];
+                    4'hd: px = char_0x4f_13[char_px_col];
+                    4'he: px = char_0x4f_14[char_px_col];
+                    4'hf: px = char_0x4f_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h50:
+                case (char_px_row)
+                    4'h0: px = char_0x50_0[char_px_col];
+                    4'h1: px = char_0x50_1[char_px_col];
+                    4'h2: px = char_0x50_2[char_px_col];
+                    4'h3: px = char_0x50_3[char_px_col];
+                    4'h4: px = char_0x50_4[char_px_col];
+                    4'h5: px = char_0x50_5[char_px_col];
+                    4'h6: px = char_0x50_6[char_px_col];
+                    4'h7: px = char_0x50_7[char_px_col];
+                    4'h8: px = char_0x50_8[char_px_col];
+                    4'h9: px = char_0x50_9[char_px_col];
+                    4'ha: px = char_0x50_10[char_px_col];
+                    4'hb: px = char_0x50_11[char_px_col];
+                    4'hc: px = char_0x50_12[char_px_col];
+                    4'hd: px = char_0x50_13[char_px_col];
+                    4'he: px = char_0x50_14[char_px_col];
+                    4'hf: px = char_0x50_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h51:
+                case (char_px_row)
+                    4'h0: px = char_0x51_0[char_px_col];
+                    4'h1: px = char_0x51_1[char_px_col];
+                    4'h2: px = char_0x51_2[char_px_col];
+                    4'h3: px = char_0x51_3[char_px_col];
+                    4'h4: px = char_0x51_4[char_px_col];
+                    4'h5: px = char_0x51_5[char_px_col];
+                    4'h6: px = char_0x51_6[char_px_col];
+                    4'h7: px = char_0x51_7[char_px_col];
+                    4'h8: px = char_0x51_8[char_px_col];
+                    4'h9: px = char_0x51_9[char_px_col];
+                    4'ha: px = char_0x51_10[char_px_col];
+                    4'hb: px = char_0x51_11[char_px_col];
+                    4'hc: px = char_0x51_12[char_px_col];
+                    4'hd: px = char_0x51_13[char_px_col];
+                    4'he: px = char_0x51_14[char_px_col];
+                    4'hf: px = char_0x51_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h52:
+                case (char_px_row)
+                    4'h0: px = char_0x52_0[char_px_col];
+                    4'h1: px = char_0x52_1[char_px_col];
+                    4'h2: px = char_0x52_2[char_px_col];
+                    4'h3: px = char_0x52_3[char_px_col];
+                    4'h4: px = char_0x52_4[char_px_col];
+                    4'h5: px = char_0x52_5[char_px_col];
+                    4'h6: px = char_0x52_6[char_px_col];
+                    4'h7: px = char_0x52_7[char_px_col];
+                    4'h8: px = char_0x52_8[char_px_col];
+                    4'h9: px = char_0x52_9[char_px_col];
+                    4'ha: px = char_0x52_10[char_px_col];
+                    4'hb: px = char_0x52_11[char_px_col];
+                    4'hc: px = char_0x52_12[char_px_col];
+                    4'hd: px = char_0x52_13[char_px_col];
+                    4'he: px = char_0x52_14[char_px_col];
+                    4'hf: px = char_0x52_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h53:
+                case (char_px_row)
+                    4'h0: px = char_0x53_0[char_px_col];
+                    4'h1: px = char_0x53_1[char_px_col];
+                    4'h2: px = char_0x53_2[char_px_col];
+                    4'h3: px = char_0x53_3[char_px_col];
+                    4'h4: px = char_0x53_4[char_px_col];
+                    4'h5: px = char_0x53_5[char_px_col];
+                    4'h6: px = char_0x53_6[char_px_col];
+                    4'h7: px = char_0x53_7[char_px_col];
+                    4'h8: px = char_0x53_8[char_px_col];
+                    4'h9: px = char_0x53_9[char_px_col];
+                    4'ha: px = char_0x53_10[char_px_col];
+                    4'hb: px = char_0x53_11[char_px_col];
+                    4'hc: px = char_0x53_12[char_px_col];
+                    4'hd: px = char_0x53_13[char_px_col];
+                    4'he: px = char_0x53_14[char_px_col];
+                    4'hf: px = char_0x53_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h54:
+                case (char_px_row)
+                    4'h0: px = char_0x54_0[char_px_col];
+                    4'h1: px = char_0x54_1[char_px_col];
+                    4'h2: px = char_0x54_2[char_px_col];
+                    4'h3: px = char_0x54_3[char_px_col];
+                    4'h4: px = char_0x54_4[char_px_col];
+                    4'h5: px = char_0x54_5[char_px_col];
+                    4'h6: px = char_0x54_6[char_px_col];
+                    4'h7: px = char_0x54_7[char_px_col];
+                    4'h8: px = char_0x54_8[char_px_col];
+                    4'h9: px = char_0x54_9[char_px_col];
+                    4'ha: px = char_0x54_10[char_px_col];
+                    4'hb: px = char_0x54_11[char_px_col];
+                    4'hc: px = char_0x54_12[char_px_col];
+                    4'hd: px = char_0x54_13[char_px_col];
+                    4'he: px = char_0x54_14[char_px_col];
+                    4'hf: px = char_0x54_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h55:
+                case (char_px_row)
+                    4'h0: px = char_0x55_0[char_px_col];
+                    4'h1: px = char_0x55_1[char_px_col];
+                    4'h2: px = char_0x55_2[char_px_col];
+                    4'h3: px = char_0x55_3[char_px_col];
+                    4'h4: px = char_0x55_4[char_px_col];
+                    4'h5: px = char_0x55_5[char_px_col];
+                    4'h6: px = char_0x55_6[char_px_col];
+                    4'h7: px = char_0x55_7[char_px_col];
+                    4'h8: px = char_0x55_8[char_px_col];
+                    4'h9: px = char_0x55_9[char_px_col];
+                    4'ha: px = char_0x55_10[char_px_col];
+                    4'hb: px = char_0x55_11[char_px_col];
+                    4'hc: px = char_0x55_12[char_px_col];
+                    4'hd: px = char_0x55_13[char_px_col];
+                    4'he: px = char_0x55_14[char_px_col];
+                    4'hf: px = char_0x55_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h56:
+                case (char_px_row)
+                    4'h0: px = char_0x56_0[char_px_col];
+                    4'h1: px = char_0x56_1[char_px_col];
+                    4'h2: px = char_0x56_2[char_px_col];
+                    4'h3: px = char_0x56_3[char_px_col];
+                    4'h4: px = char_0x56_4[char_px_col];
+                    4'h5: px = char_0x56_5[char_px_col];
+                    4'h6: px = char_0x56_6[char_px_col];
+                    4'h7: px = char_0x56_7[char_px_col];
+                    4'h8: px = char_0x56_8[char_px_col];
+                    4'h9: px = char_0x56_9[char_px_col];
+                    4'ha: px = char_0x56_10[char_px_col];
+                    4'hb: px = char_0x56_11[char_px_col];
+                    4'hc: px = char_0x56_12[char_px_col];
+                    4'hd: px = char_0x56_13[char_px_col];
+                    4'he: px = char_0x56_14[char_px_col];
+                    4'hf: px = char_0x56_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h57:
+                case (char_px_row)
+                    4'h0: px = char_0x57_0[char_px_col];
+                    4'h1: px = char_0x57_1[char_px_col];
+                    4'h2: px = char_0x57_2[char_px_col];
+                    4'h3: px = char_0x57_3[char_px_col];
+                    4'h4: px = char_0x57_4[char_px_col];
+                    4'h5: px = char_0x57_5[char_px_col];
+                    4'h6: px = char_0x57_6[char_px_col];
+                    4'h7: px = char_0x57_7[char_px_col];
+                    4'h8: px = char_0x57_8[char_px_col];
+                    4'h9: px = char_0x57_9[char_px_col];
+                    4'ha: px = char_0x57_10[char_px_col];
+                    4'hb: px = char_0x57_11[char_px_col];
+                    4'hc: px = char_0x57_12[char_px_col];
+                    4'hd: px = char_0x57_13[char_px_col];
+                    4'he: px = char_0x57_14[char_px_col];
+                    4'hf: px = char_0x57_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h58:
+                case (char_px_row)
+                    4'h0: px = char_0x58_0[char_px_col];
+                    4'h1: px = char_0x58_1[char_px_col];
+                    4'h2: px = char_0x58_2[char_px_col];
+                    4'h3: px = char_0x58_3[char_px_col];
+                    4'h4: px = char_0x58_4[char_px_col];
+                    4'h5: px = char_0x58_5[char_px_col];
+                    4'h6: px = char_0x58_6[char_px_col];
+                    4'h7: px = char_0x58_7[char_px_col];
+                    4'h8: px = char_0x58_8[char_px_col];
+                    4'h9: px = char_0x58_9[char_px_col];
+                    4'ha: px = char_0x58_10[char_px_col];
+                    4'hb: px = char_0x58_11[char_px_col];
+                    4'hc: px = char_0x58_12[char_px_col];
+                    4'hd: px = char_0x58_13[char_px_col];
+                    4'he: px = char_0x58_14[char_px_col];
+                    4'hf: px = char_0x58_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h59:
+                case (char_px_row)
+                    4'h0: px = char_0x59_0[char_px_col];
+                    4'h1: px = char_0x59_1[char_px_col];
+                    4'h2: px = char_0x59_2[char_px_col];
+                    4'h3: px = char_0x59_3[char_px_col];
+                    4'h4: px = char_0x59_4[char_px_col];
+                    4'h5: px = char_0x59_5[char_px_col];
+                    4'h6: px = char_0x59_6[char_px_col];
+                    4'h7: px = char_0x59_7[char_px_col];
+                    4'h8: px = char_0x59_8[char_px_col];
+                    4'h9: px = char_0x59_9[char_px_col];
+                    4'ha: px = char_0x59_10[char_px_col];
+                    4'hb: px = char_0x59_11[char_px_col];
+                    4'hc: px = char_0x59_12[char_px_col];
+                    4'hd: px = char_0x59_13[char_px_col];
+                    4'he: px = char_0x59_14[char_px_col];
+                    4'hf: px = char_0x59_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h5a:
+                case (char_px_row)
+                    4'h0: px = char_0x5a_0[char_px_col];
+                    4'h1: px = char_0x5a_1[char_px_col];
+                    4'h2: px = char_0x5a_2[char_px_col];
+                    4'h3: px = char_0x5a_3[char_px_col];
+                    4'h4: px = char_0x5a_4[char_px_col];
+                    4'h5: px = char_0x5a_5[char_px_col];
+                    4'h6: px = char_0x5a_6[char_px_col];
+                    4'h7: px = char_0x5a_7[char_px_col];
+                    4'h8: px = char_0x5a_8[char_px_col];
+                    4'h9: px = char_0x5a_9[char_px_col];
+                    4'ha: px = char_0x5a_10[char_px_col];
+                    4'hb: px = char_0x5a_11[char_px_col];
+                    4'hc: px = char_0x5a_12[char_px_col];
+                    4'hd: px = char_0x5a_13[char_px_col];
+                    4'he: px = char_0x5a_14[char_px_col];
+                    4'hf: px = char_0x5a_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h5b:
+                case (char_px_row)
+                    4'h0: px = char_0x5b_0[char_px_col];
+                    4'h1: px = char_0x5b_1[char_px_col];
+                    4'h2: px = char_0x5b_2[char_px_col];
+                    4'h3: px = char_0x5b_3[char_px_col];
+                    4'h4: px = char_0x5b_4[char_px_col];
+                    4'h5: px = char_0x5b_5[char_px_col];
+                    4'h6: px = char_0x5b_6[char_px_col];
+                    4'h7: px = char_0x5b_7[char_px_col];
+                    4'h8: px = char_0x5b_8[char_px_col];
+                    4'h9: px = char_0x5b_9[char_px_col];
+                    4'ha: px = char_0x5b_10[char_px_col];
+                    4'hb: px = char_0x5b_11[char_px_col];
+                    4'hc: px = char_0x5b_12[char_px_col];
+                    4'hd: px = char_0x5b_13[char_px_col];
+                    4'he: px = char_0x5b_14[char_px_col];
+                    4'hf: px = char_0x5b_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h5c:
+                case (char_px_row)
+                    4'h0: px = char_0x5c_0[char_px_col];
+                    4'h1: px = char_0x5c_1[char_px_col];
+                    4'h2: px = char_0x5c_2[char_px_col];
+                    4'h3: px = char_0x5c_3[char_px_col];
+                    4'h4: px = char_0x5c_4[char_px_col];
+                    4'h5: px = char_0x5c_5[char_px_col];
+                    4'h6: px = char_0x5c_6[char_px_col];
+                    4'h7: px = char_0x5c_7[char_px_col];
+                    4'h8: px = char_0x5c_8[char_px_col];
+                    4'h9: px = char_0x5c_9[char_px_col];
+                    4'ha: px = char_0x5c_10[char_px_col];
+                    4'hb: px = char_0x5c_11[char_px_col];
+                    4'hc: px = char_0x5c_12[char_px_col];
+                    4'hd: px = char_0x5c_13[char_px_col];
+                    4'he: px = char_0x5c_14[char_px_col];
+                    4'hf: px = char_0x5c_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h5d:
+                case (char_px_row)
+                    4'h0: px = char_0x5d_0[char_px_col];
+                    4'h1: px = char_0x5d_1[char_px_col];
+                    4'h2: px = char_0x5d_2[char_px_col];
+                    4'h3: px = char_0x5d_3[char_px_col];
+                    4'h4: px = char_0x5d_4[char_px_col];
+                    4'h5: px = char_0x5d_5[char_px_col];
+                    4'h6: px = char_0x5d_6[char_px_col];
+                    4'h7: px = char_0x5d_7[char_px_col];
+                    4'h8: px = char_0x5d_8[char_px_col];
+                    4'h9: px = char_0x5d_9[char_px_col];
+                    4'ha: px = char_0x5d_10[char_px_col];
+                    4'hb: px = char_0x5d_11[char_px_col];
+                    4'hc: px = char_0x5d_12[char_px_col];
+                    4'hd: px = char_0x5d_13[char_px_col];
+                    4'he: px = char_0x5d_14[char_px_col];
+                    4'hf: px = char_0x5d_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h5e:
+                case (char_px_row)
+                    4'h0: px = char_0x5e_0[char_px_col];
+                    4'h1: px = char_0x5e_1[char_px_col];
+                    4'h2: px = char_0x5e_2[char_px_col];
+                    4'h3: px = char_0x5e_3[char_px_col];
+                    4'h4: px = char_0x5e_4[char_px_col];
+                    4'h5: px = char_0x5e_5[char_px_col];
+                    4'h6: px = char_0x5e_6[char_px_col];
+                    4'h7: px = char_0x5e_7[char_px_col];
+                    4'h8: px = char_0x5e_8[char_px_col];
+                    4'h9: px = char_0x5e_9[char_px_col];
+                    4'ha: px = char_0x5e_10[char_px_col];
+                    4'hb: px = char_0x5e_11[char_px_col];
+                    4'hc: px = char_0x5e_12[char_px_col];
+                    4'hd: px = char_0x5e_13[char_px_col];
+                    4'he: px = char_0x5e_14[char_px_col];
+                    4'hf: px = char_0x5e_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h5f:
+                case (char_px_row)
+                    4'h0: px = char_0x5f_0[char_px_col];
+                    4'h1: px = char_0x5f_1[char_px_col];
+                    4'h2: px = char_0x5f_2[char_px_col];
+                    4'h3: px = char_0x5f_3[char_px_col];
+                    4'h4: px = char_0x5f_4[char_px_col];
+                    4'h5: px = char_0x5f_5[char_px_col];
+                    4'h6: px = char_0x5f_6[char_px_col];
+                    4'h7: px = char_0x5f_7[char_px_col];
+                    4'h8: px = char_0x5f_8[char_px_col];
+                    4'h9: px = char_0x5f_9[char_px_col];
+                    4'ha: px = char_0x5f_10[char_px_col];
+                    4'hb: px = char_0x5f_11[char_px_col];
+                    4'hc: px = char_0x5f_12[char_px_col];
+                    4'hd: px = char_0x5f_13[char_px_col];
+                    4'he: px = char_0x5f_14[char_px_col];
+                    4'hf: px = char_0x5f_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h60:
+                case (char_px_row)
+                    4'h0: px = char_0x60_0[char_px_col];
+                    4'h1: px = char_0x60_1[char_px_col];
+                    4'h2: px = char_0x60_2[char_px_col];
+                    4'h3: px = char_0x60_3[char_px_col];
+                    4'h4: px = char_0x60_4[char_px_col];
+                    4'h5: px = char_0x60_5[char_px_col];
+                    4'h6: px = char_0x60_6[char_px_col];
+                    4'h7: px = char_0x60_7[char_px_col];
+                    4'h8: px = char_0x60_8[char_px_col];
+                    4'h9: px = char_0x60_9[char_px_col];
+                    4'ha: px = char_0x60_10[char_px_col];
+                    4'hb: px = char_0x60_11[char_px_col];
+                    4'hc: px = char_0x60_12[char_px_col];
+                    4'hd: px = char_0x60_13[char_px_col];
+                    4'he: px = char_0x60_14[char_px_col];
+                    4'hf: px = char_0x60_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h61:
+                case (char_px_row)
+                    4'h0: px = char_0x61_0[char_px_col];
+                    4'h1: px = char_0x61_1[char_px_col];
+                    4'h2: px = char_0x61_2[char_px_col];
+                    4'h3: px = char_0x61_3[char_px_col];
+                    4'h4: px = char_0x61_4[char_px_col];
+                    4'h5: px = char_0x61_5[char_px_col];
+                    4'h6: px = char_0x61_6[char_px_col];
+                    4'h7: px = char_0x61_7[char_px_col];
+                    4'h8: px = char_0x61_8[char_px_col];
+                    4'h9: px = char_0x61_9[char_px_col];
+                    4'ha: px = char_0x61_10[char_px_col];
+                    4'hb: px = char_0x61_11[char_px_col];
+                    4'hc: px = char_0x61_12[char_px_col];
+                    4'hd: px = char_0x61_13[char_px_col];
+                    4'he: px = char_0x61_14[char_px_col];
+                    4'hf: px = char_0x61_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h62:
+                case (char_px_row)
+                    4'h0: px = char_0x62_0[char_px_col];
+                    4'h1: px = char_0x62_1[char_px_col];
+                    4'h2: px = char_0x62_2[char_px_col];
+                    4'h3: px = char_0x62_3[char_px_col];
+                    4'h4: px = char_0x62_4[char_px_col];
+                    4'h5: px = char_0x62_5[char_px_col];
+                    4'h6: px = char_0x62_6[char_px_col];
+                    4'h7: px = char_0x62_7[char_px_col];
+                    4'h8: px = char_0x62_8[char_px_col];
+                    4'h9: px = char_0x62_9[char_px_col];
+                    4'ha: px = char_0x62_10[char_px_col];
+                    4'hb: px = char_0x62_11[char_px_col];
+                    4'hc: px = char_0x62_12[char_px_col];
+                    4'hd: px = char_0x62_13[char_px_col];
+                    4'he: px = char_0x62_14[char_px_col];
+                    4'hf: px = char_0x62_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h63:
+                case (char_px_row)
+                    4'h0: px = char_0x63_0[char_px_col];
+                    4'h1: px = char_0x63_1[char_px_col];
+                    4'h2: px = char_0x63_2[char_px_col];
+                    4'h3: px = char_0x63_3[char_px_col];
+                    4'h4: px = char_0x63_4[char_px_col];
+                    4'h5: px = char_0x63_5[char_px_col];
+                    4'h6: px = char_0x63_6[char_px_col];
+                    4'h7: px = char_0x63_7[char_px_col];
+                    4'h8: px = char_0x63_8[char_px_col];
+                    4'h9: px = char_0x63_9[char_px_col];
+                    4'ha: px = char_0x63_10[char_px_col];
+                    4'hb: px = char_0x63_11[char_px_col];
+                    4'hc: px = char_0x63_12[char_px_col];
+                    4'hd: px = char_0x63_13[char_px_col];
+                    4'he: px = char_0x63_14[char_px_col];
+                    4'hf: px = char_0x63_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h64:
+                case (char_px_row)
+                    4'h0: px = char_0x64_0[char_px_col];
+                    4'h1: px = char_0x64_1[char_px_col];
+                    4'h2: px = char_0x64_2[char_px_col];
+                    4'h3: px = char_0x64_3[char_px_col];
+                    4'h4: px = char_0x64_4[char_px_col];
+                    4'h5: px = char_0x64_5[char_px_col];
+                    4'h6: px = char_0x64_6[char_px_col];
+                    4'h7: px = char_0x64_7[char_px_col];
+                    4'h8: px = char_0x64_8[char_px_col];
+                    4'h9: px = char_0x64_9[char_px_col];
+                    4'ha: px = char_0x64_10[char_px_col];
+                    4'hb: px = char_0x64_11[char_px_col];
+                    4'hc: px = char_0x64_12[char_px_col];
+                    4'hd: px = char_0x64_13[char_px_col];
+                    4'he: px = char_0x64_14[char_px_col];
+                    4'hf: px = char_0x64_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h65:
+                case (char_px_row)
+                    4'h0: px = char_0x65_0[char_px_col];
+                    4'h1: px = char_0x65_1[char_px_col];
+                    4'h2: px = char_0x65_2[char_px_col];
+                    4'h3: px = char_0x65_3[char_px_col];
+                    4'h4: px = char_0x65_4[char_px_col];
+                    4'h5: px = char_0x65_5[char_px_col];
+                    4'h6: px = char_0x65_6[char_px_col];
+                    4'h7: px = char_0x65_7[char_px_col];
+                    4'h8: px = char_0x65_8[char_px_col];
+                    4'h9: px = char_0x65_9[char_px_col];
+                    4'ha: px = char_0x65_10[char_px_col];
+                    4'hb: px = char_0x65_11[char_px_col];
+                    4'hc: px = char_0x65_12[char_px_col];
+                    4'hd: px = char_0x65_13[char_px_col];
+                    4'he: px = char_0x65_14[char_px_col];
+                    4'hf: px = char_0x65_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h66:
+                case (char_px_row)
+                    4'h0: px = char_0x66_0[char_px_col];
+                    4'h1: px = char_0x66_1[char_px_col];
+                    4'h2: px = char_0x66_2[char_px_col];
+                    4'h3: px = char_0x66_3[char_px_col];
+                    4'h4: px = char_0x66_4[char_px_col];
+                    4'h5: px = char_0x66_5[char_px_col];
+                    4'h6: px = char_0x66_6[char_px_col];
+                    4'h7: px = char_0x66_7[char_px_col];
+                    4'h8: px = char_0x66_8[char_px_col];
+                    4'h9: px = char_0x66_9[char_px_col];
+                    4'ha: px = char_0x66_10[char_px_col];
+                    4'hb: px = char_0x66_11[char_px_col];
+                    4'hc: px = char_0x66_12[char_px_col];
+                    4'hd: px = char_0x66_13[char_px_col];
+                    4'he: px = char_0x66_14[char_px_col];
+                    4'hf: px = char_0x66_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h67:
+                case (char_px_row)
+                    4'h0: px = char_0x67_0[char_px_col];
+                    4'h1: px = char_0x67_1[char_px_col];
+                    4'h2: px = char_0x67_2[char_px_col];
+                    4'h3: px = char_0x67_3[char_px_col];
+                    4'h4: px = char_0x67_4[char_px_col];
+                    4'h5: px = char_0x67_5[char_px_col];
+                    4'h6: px = char_0x67_6[char_px_col];
+                    4'h7: px = char_0x67_7[char_px_col];
+                    4'h8: px = char_0x67_8[char_px_col];
+                    4'h9: px = char_0x67_9[char_px_col];
+                    4'ha: px = char_0x67_10[char_px_col];
+                    4'hb: px = char_0x67_11[char_px_col];
+                    4'hc: px = char_0x67_12[char_px_col];
+                    4'hd: px = char_0x67_13[char_px_col];
+                    4'he: px = char_0x67_14[char_px_col];
+                    4'hf: px = char_0x67_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h68:
+                case (char_px_row)
+                    4'h0: px = char_0x68_0[char_px_col];
+                    4'h1: px = char_0x68_1[char_px_col];
+                    4'h2: px = char_0x68_2[char_px_col];
+                    4'h3: px = char_0x68_3[char_px_col];
+                    4'h4: px = char_0x68_4[char_px_col];
+                    4'h5: px = char_0x68_5[char_px_col];
+                    4'h6: px = char_0x68_6[char_px_col];
+                    4'h7: px = char_0x68_7[char_px_col];
+                    4'h8: px = char_0x68_8[char_px_col];
+                    4'h9: px = char_0x68_9[char_px_col];
+                    4'ha: px = char_0x68_10[char_px_col];
+                    4'hb: px = char_0x68_11[char_px_col];
+                    4'hc: px = char_0x68_12[char_px_col];
+                    4'hd: px = char_0x68_13[char_px_col];
+                    4'he: px = char_0x68_14[char_px_col];
+                    4'hf: px = char_0x68_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h69:
+                case (char_px_row)
+                    4'h0: px = char_0x69_0[char_px_col];
+                    4'h1: px = char_0x69_1[char_px_col];
+                    4'h2: px = char_0x69_2[char_px_col];
+                    4'h3: px = char_0x69_3[char_px_col];
+                    4'h4: px = char_0x69_4[char_px_col];
+                    4'h5: px = char_0x69_5[char_px_col];
+                    4'h6: px = char_0x69_6[char_px_col];
+                    4'h7: px = char_0x69_7[char_px_col];
+                    4'h8: px = char_0x69_8[char_px_col];
+                    4'h9: px = char_0x69_9[char_px_col];
+                    4'ha: px = char_0x69_10[char_px_col];
+                    4'hb: px = char_0x69_11[char_px_col];
+                    4'hc: px = char_0x69_12[char_px_col];
+                    4'hd: px = char_0x69_13[char_px_col];
+                    4'he: px = char_0x69_14[char_px_col];
+                    4'hf: px = char_0x69_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h6a:
+                case (char_px_row)
+                    4'h0: px = char_0x6a_0[char_px_col];
+                    4'h1: px = char_0x6a_1[char_px_col];
+                    4'h2: px = char_0x6a_2[char_px_col];
+                    4'h3: px = char_0x6a_3[char_px_col];
+                    4'h4: px = char_0x6a_4[char_px_col];
+                    4'h5: px = char_0x6a_5[char_px_col];
+                    4'h6: px = char_0x6a_6[char_px_col];
+                    4'h7: px = char_0x6a_7[char_px_col];
+                    4'h8: px = char_0x6a_8[char_px_col];
+                    4'h9: px = char_0x6a_9[char_px_col];
+                    4'ha: px = char_0x6a_10[char_px_col];
+                    4'hb: px = char_0x6a_11[char_px_col];
+                    4'hc: px = char_0x6a_12[char_px_col];
+                    4'hd: px = char_0x6a_13[char_px_col];
+                    4'he: px = char_0x6a_14[char_px_col];
+                    4'hf: px = char_0x6a_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h6b:
+                case (char_px_row)
+                    4'h0: px = char_0x6b_0[char_px_col];
+                    4'h1: px = char_0x6b_1[char_px_col];
+                    4'h2: px = char_0x6b_2[char_px_col];
+                    4'h3: px = char_0x6b_3[char_px_col];
+                    4'h4: px = char_0x6b_4[char_px_col];
+                    4'h5: px = char_0x6b_5[char_px_col];
+                    4'h6: px = char_0x6b_6[char_px_col];
+                    4'h7: px = char_0x6b_7[char_px_col];
+                    4'h8: px = char_0x6b_8[char_px_col];
+                    4'h9: px = char_0x6b_9[char_px_col];
+                    4'ha: px = char_0x6b_10[char_px_col];
+                    4'hb: px = char_0x6b_11[char_px_col];
+                    4'hc: px = char_0x6b_12[char_px_col];
+                    4'hd: px = char_0x6b_13[char_px_col];
+                    4'he: px = char_0x6b_14[char_px_col];
+                    4'hf: px = char_0x6b_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h6c:
+                case (char_px_row)
+                    4'h0: px = char_0x6c_0[char_px_col];
+                    4'h1: px = char_0x6c_1[char_px_col];
+                    4'h2: px = char_0x6c_2[char_px_col];
+                    4'h3: px = char_0x6c_3[char_px_col];
+                    4'h4: px = char_0x6c_4[char_px_col];
+                    4'h5: px = char_0x6c_5[char_px_col];
+                    4'h6: px = char_0x6c_6[char_px_col];
+                    4'h7: px = char_0x6c_7[char_px_col];
+                    4'h8: px = char_0x6c_8[char_px_col];
+                    4'h9: px = char_0x6c_9[char_px_col];
+                    4'ha: px = char_0x6c_10[char_px_col];
+                    4'hb: px = char_0x6c_11[char_px_col];
+                    4'hc: px = char_0x6c_12[char_px_col];
+                    4'hd: px = char_0x6c_13[char_px_col];
+                    4'he: px = char_0x6c_14[char_px_col];
+                    4'hf: px = char_0x6c_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h6d:
+                case (char_px_row)
+                    4'h0: px = char_0x6d_0[char_px_col];
+                    4'h1: px = char_0x6d_1[char_px_col];
+                    4'h2: px = char_0x6d_2[char_px_col];
+                    4'h3: px = char_0x6d_3[char_px_col];
+                    4'h4: px = char_0x6d_4[char_px_col];
+                    4'h5: px = char_0x6d_5[char_px_col];
+                    4'h6: px = char_0x6d_6[char_px_col];
+                    4'h7: px = char_0x6d_7[char_px_col];
+                    4'h8: px = char_0x6d_8[char_px_col];
+                    4'h9: px = char_0x6d_9[char_px_col];
+                    4'ha: px = char_0x6d_10[char_px_col];
+                    4'hb: px = char_0x6d_11[char_px_col];
+                    4'hc: px = char_0x6d_12[char_px_col];
+                    4'hd: px = char_0x6d_13[char_px_col];
+                    4'he: px = char_0x6d_14[char_px_col];
+                    4'hf: px = char_0x6d_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h6e:
+                case (char_px_row)
+                    4'h0: px = char_0x6e_0[char_px_col];
+                    4'h1: px = char_0x6e_1[char_px_col];
+                    4'h2: px = char_0x6e_2[char_px_col];
+                    4'h3: px = char_0x6e_3[char_px_col];
+                    4'h4: px = char_0x6e_4[char_px_col];
+                    4'h5: px = char_0x6e_5[char_px_col];
+                    4'h6: px = char_0x6e_6[char_px_col];
+                    4'h7: px = char_0x6e_7[char_px_col];
+                    4'h8: px = char_0x6e_8[char_px_col];
+                    4'h9: px = char_0x6e_9[char_px_col];
+                    4'ha: px = char_0x6e_10[char_px_col];
+                    4'hb: px = char_0x6e_11[char_px_col];
+                    4'hc: px = char_0x6e_12[char_px_col];
+                    4'hd: px = char_0x6e_13[char_px_col];
+                    4'he: px = char_0x6e_14[char_px_col];
+                    4'hf: px = char_0x6e_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h6f:
+                case (char_px_row)
+                    4'h0: px = char_0x6f_0[char_px_col];
+                    4'h1: px = char_0x6f_1[char_px_col];
+                    4'h2: px = char_0x6f_2[char_px_col];
+                    4'h3: px = char_0x6f_3[char_px_col];
+                    4'h4: px = char_0x6f_4[char_px_col];
+                    4'h5: px = char_0x6f_5[char_px_col];
+                    4'h6: px = char_0x6f_6[char_px_col];
+                    4'h7: px = char_0x6f_7[char_px_col];
+                    4'h8: px = char_0x6f_8[char_px_col];
+                    4'h9: px = char_0x6f_9[char_px_col];
+                    4'ha: px = char_0x6f_10[char_px_col];
+                    4'hb: px = char_0x6f_11[char_px_col];
+                    4'hc: px = char_0x6f_12[char_px_col];
+                    4'hd: px = char_0x6f_13[char_px_col];
+                    4'he: px = char_0x6f_14[char_px_col];
+                    4'hf: px = char_0x6f_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h70:
+                case (char_px_row)
+                    4'h0: px = char_0x70_0[char_px_col];
+                    4'h1: px = char_0x70_1[char_px_col];
+                    4'h2: px = char_0x70_2[char_px_col];
+                    4'h3: px = char_0x70_3[char_px_col];
+                    4'h4: px = char_0x70_4[char_px_col];
+                    4'h5: px = char_0x70_5[char_px_col];
+                    4'h6: px = char_0x70_6[char_px_col];
+                    4'h7: px = char_0x70_7[char_px_col];
+                    4'h8: px = char_0x70_8[char_px_col];
+                    4'h9: px = char_0x70_9[char_px_col];
+                    4'ha: px = char_0x70_10[char_px_col];
+                    4'hb: px = char_0x70_11[char_px_col];
+                    4'hc: px = char_0x70_12[char_px_col];
+                    4'hd: px = char_0x70_13[char_px_col];
+                    4'he: px = char_0x70_14[char_px_col];
+                    4'hf: px = char_0x70_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h71:
+                case (char_px_row)
+                    4'h0: px = char_0x71_0[char_px_col];
+                    4'h1: px = char_0x71_1[char_px_col];
+                    4'h2: px = char_0x71_2[char_px_col];
+                    4'h3: px = char_0x71_3[char_px_col];
+                    4'h4: px = char_0x71_4[char_px_col];
+                    4'h5: px = char_0x71_5[char_px_col];
+                    4'h6: px = char_0x71_6[char_px_col];
+                    4'h7: px = char_0x71_7[char_px_col];
+                    4'h8: px = char_0x71_8[char_px_col];
+                    4'h9: px = char_0x71_9[char_px_col];
+                    4'ha: px = char_0x71_10[char_px_col];
+                    4'hb: px = char_0x71_11[char_px_col];
+                    4'hc: px = char_0x71_12[char_px_col];
+                    4'hd: px = char_0x71_13[char_px_col];
+                    4'he: px = char_0x71_14[char_px_col];
+                    4'hf: px = char_0x71_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h72:
+                case (char_px_row)
+                    4'h0: px = char_0x72_0[char_px_col];
+                    4'h1: px = char_0x72_1[char_px_col];
+                    4'h2: px = char_0x72_2[char_px_col];
+                    4'h3: px = char_0x72_3[char_px_col];
+                    4'h4: px = char_0x72_4[char_px_col];
+                    4'h5: px = char_0x72_5[char_px_col];
+                    4'h6: px = char_0x72_6[char_px_col];
+                    4'h7: px = char_0x72_7[char_px_col];
+                    4'h8: px = char_0x72_8[char_px_col];
+                    4'h9: px = char_0x72_9[char_px_col];
+                    4'ha: px = char_0x72_10[char_px_col];
+                    4'hb: px = char_0x72_11[char_px_col];
+                    4'hc: px = char_0x72_12[char_px_col];
+                    4'hd: px = char_0x72_13[char_px_col];
+                    4'he: px = char_0x72_14[char_px_col];
+                    4'hf: px = char_0x72_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h73:
+                case (char_px_row)
+                    4'h0: px = char_0x73_0[char_px_col];
+                    4'h1: px = char_0x73_1[char_px_col];
+                    4'h2: px = char_0x73_2[char_px_col];
+                    4'h3: px = char_0x73_3[char_px_col];
+                    4'h4: px = char_0x73_4[char_px_col];
+                    4'h5: px = char_0x73_5[char_px_col];
+                    4'h6: px = char_0x73_6[char_px_col];
+                    4'h7: px = char_0x73_7[char_px_col];
+                    4'h8: px = char_0x73_8[char_px_col];
+                    4'h9: px = char_0x73_9[char_px_col];
+                    4'ha: px = char_0x73_10[char_px_col];
+                    4'hb: px = char_0x73_11[char_px_col];
+                    4'hc: px = char_0x73_12[char_px_col];
+                    4'hd: px = char_0x73_13[char_px_col];
+                    4'he: px = char_0x73_14[char_px_col];
+                    4'hf: px = char_0x73_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h74:
+                case (char_px_row)
+                    4'h0: px = char_0x74_0[char_px_col];
+                    4'h1: px = char_0x74_1[char_px_col];
+                    4'h2: px = char_0x74_2[char_px_col];
+                    4'h3: px = char_0x74_3[char_px_col];
+                    4'h4: px = char_0x74_4[char_px_col];
+                    4'h5: px = char_0x74_5[char_px_col];
+                    4'h6: px = char_0x74_6[char_px_col];
+                    4'h7: px = char_0x74_7[char_px_col];
+                    4'h8: px = char_0x74_8[char_px_col];
+                    4'h9: px = char_0x74_9[char_px_col];
+                    4'ha: px = char_0x74_10[char_px_col];
+                    4'hb: px = char_0x74_11[char_px_col];
+                    4'hc: px = char_0x74_12[char_px_col];
+                    4'hd: px = char_0x74_13[char_px_col];
+                    4'he: px = char_0x74_14[char_px_col];
+                    4'hf: px = char_0x74_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h75:
+                case (char_px_row)
+                    4'h0: px = char_0x75_0[char_px_col];
+                    4'h1: px = char_0x75_1[char_px_col];
+                    4'h2: px = char_0x75_2[char_px_col];
+                    4'h3: px = char_0x75_3[char_px_col];
+                    4'h4: px = char_0x75_4[char_px_col];
+                    4'h5: px = char_0x75_5[char_px_col];
+                    4'h6: px = char_0x75_6[char_px_col];
+                    4'h7: px = char_0x75_7[char_px_col];
+                    4'h8: px = char_0x75_8[char_px_col];
+                    4'h9: px = char_0x75_9[char_px_col];
+                    4'ha: px = char_0x75_10[char_px_col];
+                    4'hb: px = char_0x75_11[char_px_col];
+                    4'hc: px = char_0x75_12[char_px_col];
+                    4'hd: px = char_0x75_13[char_px_col];
+                    4'he: px = char_0x75_14[char_px_col];
+                    4'hf: px = char_0x75_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h76:
+                case (char_px_row)
+                    4'h0: px = char_0x76_0[char_px_col];
+                    4'h1: px = char_0x76_1[char_px_col];
+                    4'h2: px = char_0x76_2[char_px_col];
+                    4'h3: px = char_0x76_3[char_px_col];
+                    4'h4: px = char_0x76_4[char_px_col];
+                    4'h5: px = char_0x76_5[char_px_col];
+                    4'h6: px = char_0x76_6[char_px_col];
+                    4'h7: px = char_0x76_7[char_px_col];
+                    4'h8: px = char_0x76_8[char_px_col];
+                    4'h9: px = char_0x76_9[char_px_col];
+                    4'ha: px = char_0x76_10[char_px_col];
+                    4'hb: px = char_0x76_11[char_px_col];
+                    4'hc: px = char_0x76_12[char_px_col];
+                    4'hd: px = char_0x76_13[char_px_col];
+                    4'he: px = char_0x76_14[char_px_col];
+                    4'hf: px = char_0x76_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h77:
+                case (char_px_row)
+                    4'h0: px = char_0x77_0[char_px_col];
+                    4'h1: px = char_0x77_1[char_px_col];
+                    4'h2: px = char_0x77_2[char_px_col];
+                    4'h3: px = char_0x77_3[char_px_col];
+                    4'h4: px = char_0x77_4[char_px_col];
+                    4'h5: px = char_0x77_5[char_px_col];
+                    4'h6: px = char_0x77_6[char_px_col];
+                    4'h7: px = char_0x77_7[char_px_col];
+                    4'h8: px = char_0x77_8[char_px_col];
+                    4'h9: px = char_0x77_9[char_px_col];
+                    4'ha: px = char_0x77_10[char_px_col];
+                    4'hb: px = char_0x77_11[char_px_col];
+                    4'hc: px = char_0x77_12[char_px_col];
+                    4'hd: px = char_0x77_13[char_px_col];
+                    4'he: px = char_0x77_14[char_px_col];
+                    4'hf: px = char_0x77_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h78:
+                case (char_px_row)
+                    4'h0: px = char_0x78_0[char_px_col];
+                    4'h1: px = char_0x78_1[char_px_col];
+                    4'h2: px = char_0x78_2[char_px_col];
+                    4'h3: px = char_0x78_3[char_px_col];
+                    4'h4: px = char_0x78_4[char_px_col];
+                    4'h5: px = char_0x78_5[char_px_col];
+                    4'h6: px = char_0x78_6[char_px_col];
+                    4'h7: px = char_0x78_7[char_px_col];
+                    4'h8: px = char_0x78_8[char_px_col];
+                    4'h9: px = char_0x78_9[char_px_col];
+                    4'ha: px = char_0x78_10[char_px_col];
+                    4'hb: px = char_0x78_11[char_px_col];
+                    4'hc: px = char_0x78_12[char_px_col];
+                    4'hd: px = char_0x78_13[char_px_col];
+                    4'he: px = char_0x78_14[char_px_col];
+                    4'hf: px = char_0x78_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h79:
+                case (char_px_row)
+                    4'h0: px = char_0x79_0[char_px_col];
+                    4'h1: px = char_0x79_1[char_px_col];
+                    4'h2: px = char_0x79_2[char_px_col];
+                    4'h3: px = char_0x79_3[char_px_col];
+                    4'h4: px = char_0x79_4[char_px_col];
+                    4'h5: px = char_0x79_5[char_px_col];
+                    4'h6: px = char_0x79_6[char_px_col];
+                    4'h7: px = char_0x79_7[char_px_col];
+                    4'h8: px = char_0x79_8[char_px_col];
+                    4'h9: px = char_0x79_9[char_px_col];
+                    4'ha: px = char_0x79_10[char_px_col];
+                    4'hb: px = char_0x79_11[char_px_col];
+                    4'hc: px = char_0x79_12[char_px_col];
+                    4'hd: px = char_0x79_13[char_px_col];
+                    4'he: px = char_0x79_14[char_px_col];
+                    4'hf: px = char_0x79_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h7a:
+                case (char_px_row)
+                    4'h0: px = char_0x7a_0[char_px_col];
+                    4'h1: px = char_0x7a_1[char_px_col];
+                    4'h2: px = char_0x7a_2[char_px_col];
+                    4'h3: px = char_0x7a_3[char_px_col];
+                    4'h4: px = char_0x7a_4[char_px_col];
+                    4'h5: px = char_0x7a_5[char_px_col];
+                    4'h6: px = char_0x7a_6[char_px_col];
+                    4'h7: px = char_0x7a_7[char_px_col];
+                    4'h8: px = char_0x7a_8[char_px_col];
+                    4'h9: px = char_0x7a_9[char_px_col];
+                    4'ha: px = char_0x7a_10[char_px_col];
+                    4'hb: px = char_0x7a_11[char_px_col];
+                    4'hc: px = char_0x7a_12[char_px_col];
+                    4'hd: px = char_0x7a_13[char_px_col];
+                    4'he: px = char_0x7a_14[char_px_col];
+                    4'hf: px = char_0x7a_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h7b:
+                case (char_px_row)
+                    4'h0: px = char_0x7b_0[char_px_col];
+                    4'h1: px = char_0x7b_1[char_px_col];
+                    4'h2: px = char_0x7b_2[char_px_col];
+                    4'h3: px = char_0x7b_3[char_px_col];
+                    4'h4: px = char_0x7b_4[char_px_col];
+                    4'h5: px = char_0x7b_5[char_px_col];
+                    4'h6: px = char_0x7b_6[char_px_col];
+                    4'h7: px = char_0x7b_7[char_px_col];
+                    4'h8: px = char_0x7b_8[char_px_col];
+                    4'h9: px = char_0x7b_9[char_px_col];
+                    4'ha: px = char_0x7b_10[char_px_col];
+                    4'hb: px = char_0x7b_11[char_px_col];
+                    4'hc: px = char_0x7b_12[char_px_col];
+                    4'hd: px = char_0x7b_13[char_px_col];
+                    4'he: px = char_0x7b_14[char_px_col];
+                    4'hf: px = char_0x7b_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h7c:
+                case (char_px_row)
+                    4'h0: px = char_0x7c_0[char_px_col];
+                    4'h1: px = char_0x7c_1[char_px_col];
+                    4'h2: px = char_0x7c_2[char_px_col];
+                    4'h3: px = char_0x7c_3[char_px_col];
+                    4'h4: px = char_0x7c_4[char_px_col];
+                    4'h5: px = char_0x7c_5[char_px_col];
+                    4'h6: px = char_0x7c_6[char_px_col];
+                    4'h7: px = char_0x7c_7[char_px_col];
+                    4'h8: px = char_0x7c_8[char_px_col];
+                    4'h9: px = char_0x7c_9[char_px_col];
+                    4'ha: px = char_0x7c_10[char_px_col];
+                    4'hb: px = char_0x7c_11[char_px_col];
+                    4'hc: px = char_0x7c_12[char_px_col];
+                    4'hd: px = char_0x7c_13[char_px_col];
+                    4'he: px = char_0x7c_14[char_px_col];
+                    4'hf: px = char_0x7c_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h7d:
+                case (char_px_row)
+                    4'h0: px = char_0x7d_0[char_px_col];
+                    4'h1: px = char_0x7d_1[char_px_col];
+                    4'h2: px = char_0x7d_2[char_px_col];
+                    4'h3: px = char_0x7d_3[char_px_col];
+                    4'h4: px = char_0x7d_4[char_px_col];
+                    4'h5: px = char_0x7d_5[char_px_col];
+                    4'h6: px = char_0x7d_6[char_px_col];
+                    4'h7: px = char_0x7d_7[char_px_col];
+                    4'h8: px = char_0x7d_8[char_px_col];
+                    4'h9: px = char_0x7d_9[char_px_col];
+                    4'ha: px = char_0x7d_10[char_px_col];
+                    4'hb: px = char_0x7d_11[char_px_col];
+                    4'hc: px = char_0x7d_12[char_px_col];
+                    4'hd: px = char_0x7d_13[char_px_col];
+                    4'he: px = char_0x7d_14[char_px_col];
+                    4'hf: px = char_0x7d_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h7e:
+                case (char_px_row)
+                    4'h0: px = char_0x7e_0[char_px_col];
+                    4'h1: px = char_0x7e_1[char_px_col];
+                    4'h2: px = char_0x7e_2[char_px_col];
+                    4'h3: px = char_0x7e_3[char_px_col];
+                    4'h4: px = char_0x7e_4[char_px_col];
+                    4'h5: px = char_0x7e_5[char_px_col];
+                    4'h6: px = char_0x7e_6[char_px_col];
+                    4'h7: px = char_0x7e_7[char_px_col];
+                    4'h8: px = char_0x7e_8[char_px_col];
+                    4'h9: px = char_0x7e_9[char_px_col];
+                    4'ha: px = char_0x7e_10[char_px_col];
+                    4'hb: px = char_0x7e_11[char_px_col];
+                    4'hc: px = char_0x7e_12[char_px_col];
+                    4'hd: px = char_0x7e_13[char_px_col];
+                    4'he: px = char_0x7e_14[char_px_col];
+                    4'hf: px = char_0x7e_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            8'h7f:
+                case (char_px_row)
+                    4'h0: px = char_0x7f_0[char_px_col];
+                    4'h1: px = char_0x7f_1[char_px_col];
+                    4'h2: px = char_0x7f_2[char_px_col];
+                    4'h3: px = char_0x7f_3[char_px_col];
+                    4'h4: px = char_0x7f_4[char_px_col];
+                    4'h5: px = char_0x7f_5[char_px_col];
+                    4'h6: px = char_0x7f_6[char_px_col];
+                    4'h7: px = char_0x7f_7[char_px_col];
+                    4'h8: px = char_0x7f_8[char_px_col];
+                    4'h9: px = char_0x7f_9[char_px_col];
+                    4'ha: px = char_0x7f_10[char_px_col];
+                    4'hb: px = char_0x7f_11[char_px_col];
+                    4'hc: px = char_0x7f_12[char_px_col];
+                    4'hd: px = char_0x7f_13[char_px_col];
+                    4'he: px = char_0x7f_14[char_px_col];
+                    4'hf: px = char_0x7f_15[char_px_col];
+                    default: px = 1'b0;
+                endcase
+            default: px = 1'b0;
+        endcase
+    end
+
+    assign vga_rgb = (vga_display) ? {px,px,px} : 3'b0;
+
+endmodule
