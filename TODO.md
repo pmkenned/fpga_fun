@@ -1,5 +1,7 @@
 # TODO:
 
+- Create program for outputting mem file for PROM
+- Create program for creating vga_text.v from bmp, png
 - Fix VGA text timing
 - Add registers to hold line of text
 - Finish character set (lowercase, numbers, etc)
