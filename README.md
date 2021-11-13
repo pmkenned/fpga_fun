@@ -17,7 +17,20 @@ Configuration file formats for PROM: .mcs, .isc, .bsd
 
 [Intel Hex](https://en.wikipedia.org/wiki/Intel_HEX)
 
-## Floppy Disk Resources
+## Resources
+
+- [Just Solve the File Format Problem](http://fileformats.archiveteam.org/wiki/Main_Page)
+
+### XMODEM, UART, RS-232
+
+- [RS-232 - Wikipedia](https://en.wikipedia.org/wiki/RS-232)
+- [XMODEM - Wikipedia](https://en.wikipedia.org/wiki/XMODEM)
+- [XModem Protocol with CRC](http://web.mit.edu/6.115/www/amulet/xmodem.htm)
+- [XMODEM Protocol Overview](https://techheap.packetizer.com/communication/modems/xmodem.html)
+- [XMODEM/YMODEM Protocol Reference](https://techheap.packetizer.com/communication/modems/xmodem-ymodem_reference.html)
+
+
+### Floppy Disk Resources
 
 - [Floppy Disk Drive Pinout](http://www.interfacebus.com/PC_Floppy_Drive_PinOut.html)
 - [Floppy-disk controller](https://en.wikipedia.org/wiki/Floppy-disk_controller)
