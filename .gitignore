@@ -33,6 +33,7 @@
 *.txt
 *.xml
 *.log
+.*.swp
 
 _ngo/
 _xmsgs/

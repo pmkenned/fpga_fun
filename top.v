@@ -1,177 +1,6 @@
-`timescale 1ns / 1ps
-`default_nettype none
-
-// TODO:
-// * Fix VGA text timing
-// * Add registers to hold line of text
-// * Finish character set (lowercase, numbers, etc)
-// * Add blinking cursor
-// * Allow for backspace, enter, arrow keys, insert
-// * Add attributes (background and foreground color)
-// * Finish PS/2 support (two-way communication, etc.)
-// * Add RS-232
-// * Clean up file structure
-//
-// Terminology:
-// * Interrupts (asynchronous): from hardware
-// * System calls (i.e. software interrupts; synchronous): int instruction
-// * Exceptions: illegal instruction, invalid memory access, etc.
-//
-// Questions:
-// * Should peripherals write directly to memory? Or have internal buffers and
-//   signal via interrupts that they have data?
-// * How should hardware indicate interrupts?
-// * How should memory requests be arbitrated?
-// * How to map interrupts? IDT?
-// * How are page faults implemented? TLB miss? L2 Miss?
-// * How to implement multitasking?
-//
-// * CPU:
-// * Physical addressing: segment registers?
-// * ucode?
-// * MMIO or PMIO
-// * Virtual memory
-// * Caches, TLB
-// * User Mode, Kernel Mode
-// * Interrupts (hardware, timer, etc.)
-// * Exceptions (aka trap, fault)
-// * Multi-cored, cache-coherency
-// * Graphics accelerator
-
-`define SYNTHESIS
-
-// TODO: move to header file
-`define SCAN_SET_LED        8'hed
-`define SCAN_ACK            8'hfa
-`define SCAN_ECHO           8'hee
-`define SCAN_SET_RATE       8'hf3
-`define SCAN_RESEND         8'hfe
-`define SCAN_RESET          8'hff
-`define SCAN_EXTENDED       8'he0
-`define SCAN_EXTENDED_E1    8'he1
-`define SCAN_KEY_UP         8'hf0
-
-// Non-Extended
-`define SCAN_ESC            8'h76
-`define SCAN_F1             8'h05
-`define SCAN_F2             8'h06
-`define SCAN_F3             8'h04
-`define SCAN_F4             8'h0c
-`define SCAN_F5             8'h03
-`define SCAN_F6             8'h0b
-`define SCAN_F7             8'h83
-`define SCAN_F8             8'h0a
-`define SCAN_F9             8'h01
-`define SCAN_F10            8'h09
-`define SCAN_F11            8'h78
-`define SCAN_F12            8'h07
-`define SCAN_BACKTICK       8'h0e
-`define SCAN_1              8'h16
-`define SCAN_2              8'h1e
-`define SCAN_3              8'h26
-`define SCAN_4              8'h25
-`define SCAN_5              8'h2e
-`define SCAN_6              8'h36
-`define SCAN_7              8'h3d
-`define SCAN_8              8'h3e
-`define SCAN_9              8'h46
-`define SCAN_0              8'h45
-`define SCAN_MINUS          8'h4e
-`define SCAN_EQUAL          8'h55
-`define SCAN_BACKSPACE      8'h66
-`define SCAN_TAB            8'h0d
-`define SCAN_Q              8'h15
-`define SCAN_W              8'h1d
-`define SCAN_E              8'h24
-`define SCAN_R              8'h2d
-`define SCAN_T              8'h2c
-`define SCAN_Y              8'h35
-`define SCAN_U              8'h3c
-`define SCAN_I              8'h43
-`define SCAN_O              8'h44
-`define SCAN_P              8'h4d
-`define SCAN_LBRACKET       8'h54
-`define SCAN_RBRACKET       8'h5b
-`define SCAN_BSLASH         8'h5d
-`define SCAN_CAPS           8'h58
-`define SCAN_A              8'h1c
-`define SCAN_S              8'h1b
-`define SCAN_D              8'h23
-`define SCAN_F              8'h2b
-`define SCAN_G              8'h34
-`define SCAN_H              8'h33
-`define SCAN_J              8'h3b
-`define SCAN_K              8'h42
-`define SCAN_L              8'h4b
-`define SCAN_SEMI           8'h4c
-`define SCAN_QUOTE          8'h52
-`define SCAN_ENTER          8'h5a
-`define SCAN_LSHIFT         8'h12
-`define SCAN_Z              8'h1a
-`define SCAN_X              8'h22
-`define SCAN_C              8'h21
-`define SCAN_V              8'h2a
-`define SCAN_B              8'h32
-`define SCAN_N              8'h31
-`define SCAN_M              8'h3a
-`define SCAN_COMMA          8'h41
-`define SCAN_PERIOD         8'h49
-`define SCAN_FSLASH         8'h4a
-`define SCAN_RSHIFT         8'h59
-`define SCAN_LCTRL          8'h14
-`define SCAN_LALT           8'h11
-`define SCAN_SPACE          8'h29
-`define SCAN_PAD_NUM        8'h77
-`define SCAN_PAD_TIMES      8'h7c
-`define SCAN_PAD_MINUS      8'h7b
-`define SCAN_PAD_7          8'h6c
-`define SCAN_PAD_8          8'h75
-`define SCAN_PAD_9          8'h7d
-`define SCAN_PAD_4          8'h6b
-`define SCAN_PAD_5          8'h73
-`define SCAN_PAD_6          8'h74
-`define SCAN_PAD_1          8'h69
-`define SCAN_PAD_2          8'h72
-`define SCAN_PAD_3          8'h7a
-`define SCAN_PAD_0          8'h70
-`define SCAN_PAD_PERIOD     8'h71
-`define SCAN_PAD_PLUS       8'h79
-`define SCAN_LWINDOWS       8'h8b
-`define SCAN_RWINDOWS       8'h8c
-
-// Extended
-`define EX_SCAN_PAD_ENTER   8'h5a
-`define EX_SCAN_PAD_FSLASH  8'h4a
-`define EX_SCAN_RALT        8'h11
-`define EX_SCAN_RCTRL       8'h14
-`define EX_SCAN_INS         8'h70
-`define EX_SCAN_DEL         8'h71
-`define EX_SCAN_HOME        8'h6c
-`define EX_SCAN_END         8'h69
-`define EX_SCAN_PGUP        8'h7d
-`define EX_SCAN_PGDN        8'h7a
-`define EX_SCAN_UP          8'h75
-`define EX_SCAN_RIGHT       8'h74
-`define EX_SCAN_LEFT        8'h6b
-`define EX_SCAN_DOWN        8'h72
-
-
-`define ASCII_A             8'h41
-`define ASCII_B             8'h42
-`define ASCII_C             8'h43
-`define ASCII_D             8'h44
-`define ASCII_E             8'h45
-`define ASCII_F             8'h46
-`define ASCII_G             8'h47
-
-// TODO: put these in a header file
-`ifndef SHIFT_DIR_LEFT
-`define SHIFT_DIR_LEFT    0
-`define SHIFT_DIR_RIGHT   1
-`endif
+`include "defines.vh"
 
 `ifndef SYNTHESIS
-
 module top;
 
     wire clk;
@@ -201,6 +30,24 @@ module top;
     wire rs232_txd;
     wire rs232_rxd_a;
     wire rs232_txd_a;
+    wire prom_clk;
+    wire prom_oe;
+    wire prom_data;
+    wire fd_index_l;
+    wire fd_trk00_l;
+    wire fd_wpt_l;
+    wire fd_rdata_l;
+    wire fd_dskchg_l;
+    wire fd_redwc_l;
+    wire fd_motea_l;
+    wire fd_drvsb_l;
+    wire fd_drvsa_l;
+    wire fd_moteb_l;
+    wire fd_dir_l;
+    wire fd_step_l;
+    wire fd_wdata_l;
+    wire fd_wgate_l;
+    wire fd_side1_l;
 
     testbench tb(
         .clk(clk),
@@ -229,7 +76,25 @@ module top;
         .rs232_rxd(rs232_rxd),
         .rs232_txd(rs232_txd),
         .rs232_rxd_a(rs232_rxd_a),
-        .rs232_txd_a(rs232_txd_a)
+        .rs232_txd_a(rs232_txd_a),
+        .prom_clk(prom_clk),
+        .prom_oe(prom_oe),
+        .prom_data(prom_data),
+        .fd_index_l(fd_index_l),
+        .fd_trk00_l(fd_trk00_l),
+        .fd_wpt_l(fd_wpt_l),
+        .fd_rdata_l(fd_rdata_l),
+        .fd_dskchg_l(fd_dskchg_l),
+        .fd_redwc_l(fd_redwc_l),
+        .fd_motea_l(fd_motea_l),
+        .fd_drvsb_l(fd_drvsb_l),
+        .fd_drvsa_l(fd_drvsa_l),
+        .fd_moteb_l(fd_moteb_l),
+        .fd_dir_l(fd_dir_l),
+        .fd_step_l(fd_step_l),
+        .fd_wdata_l(fd_wdata_l),
+        .fd_wgate_l(fd_wgate_l),
+        .fd_side1_l(fd_side1_l)
     );
 
     design_under_test dut(
@@ -259,7 +124,25 @@ module top;
         .rs232_rxd(rs232_rxd),
         .rs232_txd(rs232_txd),
         .rs232_rxd_a(rs232_rxd_a),
-        .rs232_txd_a(rs232_txd_a)
+        .rs232_txd_a(rs232_txd_a),
+        .prom_clk(prom_clk),
+        .prom_oe(prom_oe),
+        .prom_data(prom_data),
+        .fd_index_l(fd_index_l),
+        .fd_trk00_l(fd_trk00_l),
+        .fd_wpt_l(fd_wpt_l),
+        .fd_rdata_l(fd_rdata_l),
+        .fd_dskchg_l(fd_dskchg_l),
+        .fd_redwc_l(fd_redwc_l),
+        .fd_motea_l(fd_motea_l),
+        .fd_drvsb_l(fd_drvsb_l),
+        .fd_drvsa_l(fd_drvsa_l),
+        .fd_moteb_l(fd_moteb_l),
+        .fd_dir_l(fd_dir_l),
+        .fd_step_l(fd_step_l),
+        .fd_wdata_l(fd_wdata_l),
+        .fd_wgate_l(fd_wgate_l),
+        .fd_side1_l(fd_side1_l)
     );
 
 endmodule
@@ -291,11 +174,31 @@ module testbench (
     output wire rs232_rxd,
     input wire rs232_txd,
     output wire rs232_rxd_a,
-    input wire rs232_txd_a
+    input wire prom_clk,
+    input wire prom_oe,
+    output wire prom_data,
+    input wire rs232_txd_a,
+    output reg fd_index_l,
+    output reg fd_trk00_l,
+    output reg fd_wpt_l,
+    output reg fd_rdata_l,
+    output reg fd_dskchg_l,
+    input wire fd_redwc_l,
+    input wire fd_motea_l,
+    input wire fd_drvsb_l,
+    input wire fd_drvsa_l,
+    input wire fd_moteb_l,
+    input wire fd_dir_l,
+    input wire fd_step_l,
+    input wire fd_wdata_l,
+    input wire fd_wgate_l,
+    input wire fd_side1_l
 );
 
     reg rst;
     assign btns[3] = rst;
+
+    assign sws[7:0] = 'b00100000;
 
     always begin
         #10 clk = ~clk;
@@ -402,17 +305,207 @@ module testbench (
 
     endtask
 
+// TODO: use a function for the encoding part
+    function [15:0] mfm_encode(input [7:0] byte, input is_marker);
+
+        integer i;
+        reg last_bit = 1'b0;
+
+        begin
+            mfm_encode[15] = ~last_bit && ~byte[7]; // clock bit
+            for (i = 7; i > 0; i = i - 1) begin
+                mfm_encode[i*2]   = byte[i];                  // data bit
+                mfm_encode[i*2-1] = ~byte[i] && ~byte[i-1];   // clock bit
+            end
+            mfm_encode[0] = byte[0]; // last data bit
+            last_bit = mfm_encode[0];
+
+            // remove clock bits for address markers
+            if (is_marker) begin
+                if (byte == 8'hc2) mfm_encode[7] = 1'b0;
+                if (byte == 8'ha1) mfm_encode[5] = 1'b0;
+            end
+        end
+
+    endfunction
+
+    task mfm_transmit(input [7:0] byte, input is_marker);
+
+        integer i;
+        reg [15:0] mfm_bits;
+        reg last_bit = 1'b0;
+
+        begin
+
+            mfm_bits = mfm_encode(byte, is_marker);
+
+            for (i = 15; i >= 0; i = i - 1) begin
+                if (mfm_bits[i] == 'b1) begin
+                    fd_rdata_l <= 'b0;
+                end
+                repeat(2) @(posedge clk);
+                fd_rdata_l <= 1'b1;
+                repeat(7) @(posedge clk);
+            end
+
+        end
+
+    endtask
+
+    task mfm_transmit_data(input [7:0] byte);
+        mfm_transmit(byte, 0);
+    endtask
+
+    task mfm_transmit_marker(input [7:0] byte);
+        mfm_transmit(byte, 1);
+    endtask
+
     initial begin
         //repeat(840000) @(posedge clk);
 
-        ps2_generate_word(`SCAN_KEY_UP);
-        ps2_generate_word(`SCAN_A);
+        //ps2_generate_word(`SCAN_KEY_UP);
+        //ps2_generate_word(`SCAN_A);
+
+        fd_index_l <= 1'b1;
+        fd_trk00_l <= 1'b1;
+        fd_wpt_l <= 1'b1;
+        fd_rdata_l <= 1'b1;
+        fd_dskchg_l <= 1'b1;
+
+        repeat(10) @(posedge clk);
+
+        fd_index_l <= 1'b0;
+        repeat(10) @(posedge clk);
+        fd_index_l <= 1'b1;
+        repeat(10) @(posedge clk);
+
+        fd_index_l <= 1'b0;
+        repeat(10) @(posedge clk);
+        fd_index_l <= 1'b1;
+        repeat(10) @(posedge clk);
+
+        fd_index_l <= 1'b0;
+        repeat(10) @(posedge clk);
+        fd_index_l <= 1'b1;
+        repeat(10) @(posedge clk);
+
+//        fd_rdata_l <= 1'b1;
+//        repeat(43) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(338) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(111) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(124) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(30) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(30) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(278) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(9969) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(23) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(136) @(posedge clk);
+//        fd_rdata_l <= 1'b0;
+//        repeat(22) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//        repeat(155) @(posedge clk);
+
+        fd_rdata_l <= 1'b1;
+        repeat(31) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(111) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(125) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(125) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(339) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(86) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(113) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(125) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(125) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(340) @(posedge clk);
+        fd_rdata_l <= 1'b0;
+        repeat(22) @(posedge clk);
+        fd_rdata_l <= 1'b1;
+        repeat(110) @(posedge clk);
+
+//        mfm_transmit_data(8'h4e); // gap
+//        repeat(4) mfm_transmit_data(8'h00); // sync
+//        repeat(3) mfm_transmit_marker(8'hc2);
+        @(posedge clk);
+
+//        fd_rdata_l <= 1'b0;
+//        repeat(2) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//
+//        repeat(19) @(posedge clk);
+//
+//        fd_rdata_l <= 1'b0;
+//        repeat(2) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//
+//        repeat(28) @(posedge clk);
+//
+//        fd_rdata_l <= 1'b0;
+//        repeat(2) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//
+//        repeat(38) @(posedge clk);
+//
+//        fd_rdata_l <= 1'b0;
+//        repeat(2) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//
+//        repeat(19) @(posedge clk);
+//
+//        fd_rdata_l <= 1'b0;
+//        repeat(2) @(posedge clk);
+//        fd_rdata_l <= 1'b1;
+//
+//        repeat(38) @(posedge clk);
 
         $finish;
     end
 
 endmodule
-
 `endif
 
 `ifndef SYNTHESIS
@@ -448,11 +541,202 @@ module top(
     input wire rs232_rxd,
     output wire rs232_txd,
     input wire rs232_rxd_a,
-    output wire rs232_txd_a
+    output wire rs232_txd_a,
+    output wire prom_clk,
+    output wire prom_oe,
+    input wire prom_data,
+
+//    inout wire [1:40] gpio
+
+    // fd inputs
+    input wire fd_index_l,
+    input wire fd_trk00_l,
+    input wire fd_wpt_l,
+    input wire fd_rdata_l,
+    input wire fd_dskchg_l,
+
+    // fd outputs
+    output wire fd_redwc_l,
+    output wire fd_motea_l,
+    output wire fd_drvsb_l,
+    output wire fd_drvsa_l,
+    output wire fd_moteb_l,
+    output wire fd_dir_l,
+    output wire fd_step_l,
+    output wire fd_wdata_l,
+    output wire fd_wgate_l,
+    output wire fd_side1_l
 );
 
     wire rst;
     assign rst = btns[3];
+
+//    wire fd_redwc_l;
+//    wire fd_index_l;
+//    wire fd_motea_l;
+//    wire fd_drvsb_l;
+//    wire fd_drvsa_l;
+//    wire fd_moteb_l;
+//    wire fd_dir_l;
+//    wire fd_step_l;
+//    wire fd_wdata_l;
+//    wire fd_wgate_l;
+//    wire fd_trk00_l;
+//    wire fd_wpt_l;
+//    wire fd_rdata_l;
+//    wire fd_side1_l;
+//    wire fd_dskchg_l;
+//
+//    // fd inputs
+//    assign fd_index_l   = gpio[34];
+//    assign fd_trk00_l   = gpio[25];
+//    assign fd_wpt_l     = gpio[24];
+//    assign fd_rdata_l   = gpio[23];
+//    assign fd_dskchg_l  = gpio[21];
+//
+//    // fd outputs
+//    assign gpio[35]     = fd_redwc_l;
+//    assign gpio[33]     = fd_motea_l;
+//    assign gpio[32]     = fd_drvsb_l;
+//    assign gpio[31]     = fd_drvsa_l;
+//    assign gpio[30]     = fd_moteb_l;
+//    assign gpio[29]     = fd_dir_l;
+//    assign gpio[28]     = fd_step_l;
+//    assign gpio[27]     = fd_wdata_l;
+//    assign gpio[26]     = fd_wgate_l;
+//    assign gpio[22]     = fd_side1_l;
+
+    assign fd_redwc_l   = 1'b0; // high-density
+    assign fd_motea_l   = sws[0];
+    assign fd_drvsb_l   = 1'b1;
+    assign fd_drvsa_l   = sws[1];
+    assign fd_moteb_l   = 1'b1;
+    assign fd_dir_l     = sws[3];
+    assign fd_step_l    = sws[2];
+    assign fd_wdata_l   = 1'b1;
+    assign fd_wgate_l   = 1'b1;
+    assign fd_side1_l   = 1'b1;
+
+    assign leds[6:5] = 1'b0;
+    assign leds[4] = ~fd_rdata_l;
+    assign leds[3] = ~fd_wpt_l;
+    assign leds[2] = ~fd_trk00_l;
+    assign leds[1] = ~fd_dskchg_l;
+    assign leds[0] = ~fd_index_l;
+
+//    reg [7:0] leds_reg;
+//    assign leds = leds_reg;
+//    wire [63:0] fd_data_q;
+//    always @(*) begin
+//        case (sws[7:5])
+//            'b000: leds_reg[7:0] = fd_data_q[7:0];
+//            'b001: leds_reg[7:0] = fd_data_q[15:8];
+//            'b010: leds_reg[7:0] = fd_data_q[23:16];
+//            'b011: leds_reg[7:0] = fd_data_q[31:24];
+//            'b100: leds_reg[7:0] = fd_data_q[39:32];
+//            'b101: leds_reg[7:0] = fd_data_q[47:40];
+//            'b110: leds_reg[7:0] = fd_data_q[55:48];
+//            'b111: leds_reg[7:0] = fd_data_q[63:56];
+//        endcase
+//    end
+
+    //wire [4:0] clk_cnt;
+    //wire clk_1MHz;
+    //assign clk_1MHz = clk_cnt[4];
+    //counter #(.W(5)) clk_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(1'b1), .cnt(clk_cnt));
+
+    // index latch and pulse
+    wire fd_index_q;
+    ff_ar fd_index_ff(.clk(clk), .rst(rst), .d(fd_index_l), .q(fd_index_q));
+
+    wire fd_index_down_pulse, fd_index_up_pulse;
+    assign fd_index_down_pulse = (~fd_index_l && fd_index_q) ? 1'b1 : 1'b0;
+    assign fd_index_up_pulse   = (fd_index_l && ~fd_index_q) ? 1'b1 : 1'b0;
+
+    wire [3:0] index_cnt;
+    counter #(.W(4)) index_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(fd_index_up_pulse), .cnt(index_cnt));
+
+    wire seen_index_q, seen_index_n;
+    assign seen_index_n = seen_index_q ? 1'b1 : index_cnt >= 'd3;
+    ff_ar seen_index_ff(.clk(clk), .rst(rst), .d(seen_index_n), .q(seen_index_q));
+
+    // read data latch and pulse
+    wire fd_rdata_q, fd_rdata2_q, fd_rdata3_q;
+    ff_ar fd_rdata_ff(.clk(clk), .rst(rst), .d(fd_rdata_l), .q(fd_rdata_q));
+    ff_ar fd_rdata2_ff(.clk(clk), .rst(rst), .d(fd_rdata_q), .q(fd_rdata2_q));
+    ff_ar fd_rdata3_ff(.clk(clk), .rst(rst), .d(fd_rdata2_q), .q(fd_rdata3_q));
+
+    wire fd_rdata_down_pulse, fd_rdata_up_pulse;
+    assign fd_rdata_down_pulse = (~fd_rdata2_q && fd_rdata3_q) ? 1'b1 : 1'b0;
+    assign fd_rdata_up_pulse   = (fd_rdata2_q && ~fd_rdata3_q) ? 1'b1 : 1'b0;
+
+    wire seen_data_q, seen_data_n;
+    assign seen_data_n = seen_data_q ? 1'b1 : (~fd_rdata2_q && seen_index_q);
+    ff_ar seen_data_ff(.clk(clk), .rst(rst), .d(seen_data_n), .q(seen_data_q));
+
+    // typical number of cycles between rdata negedges: 190
+`ifdef SYNTHESIS
+    `define MAX_RDATA_CLKS 100
+`else
+    `define MAX_RDATA_CLKS 10
+`endif
+    // count clock cycles since last rdata down pulse, reset after MAX_RDATA_CLKS
+    //wire [9:0] rdata_cnt;
+    //counter #(.W(16), .FINAL_VAL(`MAX_RDATA_CLKS)) rdata_counter(.clk(clk), .rst(rst), .clr(fd_rdata_down_pulse), .x(1'b1), .cnt(rdata_cnt));
+
+    wire rdata_clk_cnt_clear;
+    assign rdata_clk_cnt_clear = fd_rdata_down_pulse && seen_index_q;
+
+    wire [2:0] clear_cnt;
+    counter #(.W(3)) clear_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(rdata_clk_cnt_clear || clear_cnt != 0), .cnt(clear_cnt));
+
+    wire [15:0] rdata_clk_cnt;
+    counter #(.W(16), .SATURATE(1)) rdata_clk_counter(.clk(clk), .rst(rst), .clr(rdata_clk_cnt_clear), .x(seen_index_q), .cnt(rdata_clk_cnt));
+
+    wire [15:0] rdata_clk_cnt_reg;
+    ff_ar #(.W(16)) rdata_clk_cnt_ff(.clk(clk), .rst(rst), .d(rdata_clk_cnt_clear ? rdata_clk_cnt : rdata_clk_cnt_reg), .q(rdata_clk_cnt_reg));
+
+    wire [15:0] rdata_cnt_cnt;
+    counter #(.W(16), .SATURATE(1)) rdata_cnt_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(rdata_clk_cnt_clear), .cnt(rdata_cnt_cnt));
+
+//    // count number of bits shifted into data register
+//    wire [4:0] rdata_bit_cnt;
+//    counter #(.W(5)) rdata_bit_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(seen_data_n && rdata_cnt == 'b0 && rdata_bit_cnt < 16), .cnt(rdata_bit_cnt));
+//
+//    // hold bits from rdata line
+//    wire [15:0] fd_data_q;
+//    shift_register #(.W(16)) fd_data_shift_reg(.clk(clk), .rst(rst), .en(rdata_cnt == 'b0 && rdata_bit_cnt < 16), .d(~fd_rdata_l), .q(fd_data_q));
+//
+//    wire index_addr_mark_c2, id_addr_mark_a1;
+//    assign index_addr_mark_c2 = fd_data_q == 'b0101001000100100 ? 'b1 : 'b0;
+//    assign id_addr_mark_a1    = fd_data_q == 'b0100010010001001 ? 'b1 : 'b0;
+//
+//    wire [7:0] c2_cnt;
+//    counter #(.W(8)) c2_counter(.clk(clk), .rst(rst), .clr(fd_index_up_pulse), .x(rdata_cnt == 'b0 && index_addr_mark_c2), .cnt(c2_cnt));
+
+
+
+//    wire [19:0] fd_index_down_q;
+//    ff_ar #(.W(20)) fd_index_down_reg(.clk(clk), .rst(rst), .d(fd_index_up_pulse ? fd_index_down_cnt : fd_index_down_q), .q(fd_index_down_q));
+
+//    wire seen_index_q;
+//    wire seen_index_n;
+//    assign seen_index_n = seen_index_q ? 1'b1 : (~fd_index_l);
+//    ff_ar seen_index_ff(.clk(clk_1MHz), .rst(rst), .d(seen_index_n), .q(seen_index_q));
+//
+//    wire seen_data_q;
+//    wire seen_data_n;
+//    assign seen_data_n = seen_data_q ? 1'b1 : (~fd_rdata_l && seen_index_q);
+//    ff_ar seen_data_ff(.clk(clk_1MHz), .rst(rst), .d(seen_data_n), .q(seen_data_q));
+//
+//    wire [5:0] clks_after_data;
+//    counter #(.W(5)) clk_data_counter(.clk(clk_1MHz), .rst(rst), .clr(1'b0), .x(seen_data_q), .cnt(clks_after_data));
+//    wire clks_lt_32_n;
+//    wire clks_lt_32_q;
+//    assign clks_lt_32_n = ~clks_after_data[5] && ~clks_lt_32_q;
+//    ff_ar clks_lt_32_ff(.clk(clk_1MHz), .rst(rst), .d(clks_lt_32_n), .q(clks_lt_32_q));
+
+//    shift_register #(.W(64)) fd_data_shift_reg(.clk(clk_1MHz), .rst(rst), .en(seen_data_n && clks_lt_32_n), .d(fd_rdata_l), .q(fd_data_q));
 
     // TODO: see if this can be made to be an array of modules
     //       use replaced with a generate statement
@@ -466,6 +750,36 @@ module top(
     assign btns_pulse[1] = (~btns_q[1] && btns[1]) ? 1'b1 : 1'b0;
     assign btns_pulse[2] = (~btns_q[2] && btns[2]) ? 1'b1 : 1'b0;
     assign btns_pulse[3] = (~btns_q[3] && btns[3]) ? 1'b1 : 1'b0;
+
+    assign prom_clk = 1'bz;
+    assign prom_oe = 1'bz;
+
+// START PROM
+//    wire seen_sig;
+//    wire seen_sig_n;
+//    wire [7:0] prom_bit_cnt;
+//    wire [15:0] prom_num_bytes;
+//    wire [15:0] prom_num_bytes_n;
+//    wire [15:0] prom_reg;
+//
+//    assign prom_num_bytes_n = (prom_bit_cnt == 15) ? prom_reg : prom_num_bytes;
+//
+//    assign prom_oe = 1'b1;
+//    assign leds = prom_reg[7:0];
+//    shift_register #(.W(16)) prom_shift_reg(.clk(prom_clk), .rst(rst), .en(1'b1), .d(prom_data), .q(prom_reg));
+//    wire [28:0] prom_clk_cnt;
+//    assign prom_clk = prom_clk_cnt[24];
+//
+//    counter #(.W(29)) prom_clk_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(1'b1), .cnt(prom_clk_cnt));
+//
+//    counter #(.W(8)) prom_bit_counter(.clk(prom_clk), .rst(rst), .clr(1'b0), .x(seen_sig), .cnt(prom_bit_cnt));
+//
+//    assign seen_sig_n = seen_sig ? 1'b1 : (prom_reg == `PROM_SIG);
+//
+//    ff_ar seen_sig_ff(.clk(prom_clk), .rst(rst), .d(seen_sig_n), .q(seen_sig));
+//
+//    ff_ar #(.W(16)) prom_num_bytes_reg(.clk(prom_clk), .rst(rst), .d(prom_num_bytes_n), .q(prom_num_bytes));
+// END PROM
 
     //assign oe_l = 1'b1;
     //assign we_l = 1'b1;
@@ -484,9 +798,9 @@ module top(
     assign data1 = (~ce1_l && ~we_l) ? data1_out : 16'bz;
     assign data2 = (~ce2_l && ~we_l) ? data2_out : 16'bz;
 
-    assign rs232_txd = 1'b0;
+    //assign rs232_txd = 1'b0;
     assign rs232_txd_a = 1'b0;
-    
+
     //assign leds = 8'b00000000;
 
     wire [8:0] vga_row;
@@ -503,11 +817,11 @@ module top(
     ff_ar #(.W(8)) scan_code_reg(.clk(clk), .rst(rst), .d(scan_code_n), .q(scan_code_q));
 
     wire [7:0] key_down_cnt_q;
-    counter #(.W(8)) key_down_counter(.clk(clk), .rst(rst), .x(key_down), .cnt(key_down_cnt_q));
+    counter #(.W(8)) key_down_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(key_down), .cnt(key_down_cnt_q));
     wire [7:0] key_up_cnt_q;
-    counter #(.W(8)) key_up_counter(.clk(clk), .rst(rst), .x(key_up), .cnt(key_up_cnt_q));
+    counter #(.W(8)) key_up_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(key_up), .cnt(key_up_cnt_q));
 
-    assign leds = (sws[0]) ? scan_code_q : {key_down_cnt_q[3:0], key_up_cnt_q[3:0]};
+    //assign leds = (sws[0]) ? scan_code_q : {key_down_cnt_q[3:0], key_up_cnt_q[3:0]};
 
     wire [17:0] vga_addr;
     wire vga_oe_l;
@@ -520,7 +834,6 @@ module top(
     wire vga_ce2_l;
     wire vga_ub2_l;
     wire vga_lb2_l;
-    wire vga_done;
 
     wire sram_init_en;
     wire [7:0] sram_init_byte;
@@ -546,14 +859,29 @@ module top(
         .ascii(ascii)
     );
 
+    // TODO: convert 4 hex digits to ascii characters and store in SRAM
+    wire [7:0] hex_ascii [0:3];
+    hex_to_ascii h2a0(.hex(rdata_clk_cnt_reg[15:12]), .ascii(hex_ascii[0]));
+    hex_to_ascii h2a1(.hex(rdata_clk_cnt_reg[11:8]),  .ascii(hex_ascii[1]));
+    hex_to_ascii h2a2(.hex(rdata_clk_cnt_reg[7:4]),   .ascii(hex_ascii[2]));
+    hex_to_ascii h2a3(.hex(rdata_clk_cnt_reg[3:0]),   .ascii(hex_ascii[3]));
+    //hex_to_ascii h2a0(.hex('d0), .ascii(hex_ascii[0]));
+    //hex_to_ascii h2a1(.hex('d1), .ascii(hex_ascii[1]));
+    //hex_to_ascii h2a2(.hex('d2), .ascii(hex_ascii[2]));
+    //hex_to_ascii h2a3(.hex('d3), .ascii(hex_ascii[3]));
+
     assign sram_init_en = btns_pulse[0];
     assign sram_init_byte = sws[7:0]; // 8'h00; // ascii;
 
     wire key_down_q;
     ff_ar key_down_ff(.clk(clk), .rst(rst), .d(key_down), .q(key_down_q));
 
-    assign data1_out = ~sram_init_done ? sram_init_data1 : {ascii, ascii};
-    assign data2_out = ~sram_init_done ? sram_init_data2 : {ascii, ascii};
+    //assign data1_out = ~sram_init_done ? sram_init_data1 : {ascii, ascii};
+    //assign data2_out = ~sram_init_done ? sram_init_data2 : {ascii, ascii};
+    assign data1_out = ~sram_init_done ? sram_init_data1 : {hex_ascii[0], hex_ascii[1]};
+    assign data2_out = ~sram_init_done ? sram_init_data2 : {hex_ascii[2], hex_ascii[3]};
+    //assign data1_out = ~sram_init_done ? sram_init_data1 : {prom_reg[15:8], prom_reg[7:0]};
+    //assign data2_out = ~sram_init_done ? sram_init_data2 : {prom_reg[15:8], prom_reg[7:0]};
 
     // TODO: create byte-addressable interface
     //assign addr = addr_20[19:2]; 
@@ -567,8 +895,8 @@ module top(
     wire [6:0] char_col_cnt;
     wire [5:0] char_row_cnt;
     assign addr_20 = {7'b0, char_row_cnt, char_col_cnt};
-    counter #(.W(7), .FINAL_VAL(79)) char_col_counter(.clk(clk), .rst(rst), .x(key_down_q), .cnt(char_col_cnt));
-    counter #(.W(6), .FINAL_VAL(29)) char_row_counter(.clk(clk), .rst(rst), .x(key_down_q && (char_col_cnt == 79)), .cnt(char_row_cnt));
+    counter #(.W(7), .FINAL_VAL(79)) char_col_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(key_down_q), .cnt(char_col_cnt));
+    counter #(.W(6), .FINAL_VAL(29)) char_row_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(key_down_q && (char_col_cnt == 79)), .cnt(char_row_cnt));
 
     always @(*) begin
         if (~sram_init_done) begin
@@ -581,6 +909,36 @@ module top(
             ce2_l = sram_init_ce2_l;
             ub2_l = sram_init_ub2_l;
             lb2_l = sram_init_lb2_l;
+//        end else if (prom_bit_cnt == 31) begin
+//            addr = 'b0;
+//            oe_l = 1'b1;
+//            we_l = 1'b0;
+//            ce1_l = 1'b0;
+//            ub1_l = 1'b0;
+//            lb1_l = 1'b0;
+//            ce2_l = 1'b1;
+//            ub2_l = 1'b1;
+//            lb2_l = 1'b1;
+//        end else if (prom_bit_cnt == 47) begin
+//            addr = 'b0;
+//            oe_l = 1'b1;
+//            we_l = 1'b0;
+//            ce1_l = 1'b1;
+//            ub1_l = 1'b1;
+//            lb1_l = 1'b1;
+//            ce2_l = 1'b0;
+//            ub2_l = 1'b0;
+//            lb2_l = 1'b0;
+        end else if (rdata_clk_cnt_clear || clear_cnt != 0) begin
+            addr = {2'b0, rdata_cnt_cnt[15:0]};
+            oe_l = 1'b1;
+            we_l = 1'b0;
+            ce1_l = clear_cnt[2];
+            ub1_l = clear_cnt[1];
+            lb1_l = ~clear_cnt[1];
+            ce2_l = ~clear_cnt[2];
+            ub2_l = clear_cnt[1];
+            lb2_l = ~clear_cnt[1];
         end else if (key_down_q) begin
             addr = addr_20[19:2]; 
             oe_l = 1'b1;
@@ -615,6 +973,39 @@ module top(
 
     assign vga_data1 = data1;
     assign vga_data2 = data2;
+
+    wire xmodem_done;
+    wire xmodem_saw_valid_block;
+    wire xmodem_saw_invalid_block;
+    wire xmodem_receiving_repeat_block;
+    wire xmodem_saw_valid_msg_byte;
+    wire [7:0] xmodem_data_byte;
+    wire tx;
+    wire xmodem_start;
+    wire rx_pin;
+
+    assign xmodem_start = btns_pulse[1];
+
+    assign rx_pin = rs232_rxd;
+    assign rs232_txd = tx;
+
+    wire xmodem_done_q;
+    ff_ar xmodem_done_ff(.clk(clk), .rst(rst), .d(xmodem_done ? 1'b1 : xmodem_done_q), .q(xmodem_done_q));
+    assign leds[7] = xmodem_done_q;
+
+    xmodem xm(
+        .xmodem_done(xmodem_done),
+        .xmodem_saw_valid_block(xmodem_saw_valid_block),
+        .xmodem_saw_invalid_block(xmodem_saw_invalid_block),
+        .xmodem_receiving_repeat_block(xmodem_receiving_repeat_block),
+        .xmodem_saw_valid_msg_byte(xmodem_saw_valid_msg_byte),
+        .xmodem_data_byte(xmodem_data_byte),
+        .tx(tx),
+        .start(xmodem_start),
+        .rx_pin(rx_pin),
+        .clk(clk),
+        .rst(rst)
+    );
 
     sram_init si(
         .clk(clk),
@@ -664,16 +1055,34 @@ module top(
         .lb2_l(vga_lb2_l)
     );
 
-    ss_driver ss_d(
+    ss_driver_4digits ss_d(
         .clk(clk),
         .rst(rst),
-        .hex_digit(sws[3:0]),
-        .en(sws[7:4]),
+        //.hex_digits({fd_index_down_cnt[19:12], fd_rdata_down_cnt[7:0]}),
+        //.hex_digits(fd_rdata2_down_cnt[15:0]),
+        //.hex_digits(sws[7] ? index_to_data_cnt[19:4] : index_to_data_cnt[15:0]),
+        //.hex_digits(clks_first_n_data_cnt[15:0]),
+        //.hex_digits(fd_data_q),
+        .hex_digits('b0),
         .ss_abcdefg_l(ss_abcdefg_l),
         .ss_dp_l(ss_dp_l),
         .ss_sel_l(ss_sel_l)
     );
-    
+
+//    ss_driver ss_d(
+//        .clk(clk),
+//        .rst(rst),
+//        //.hex_digit(sws[3:0]),
+//        //.hex_digit(prom_clk_cnt[27:24]),
+//        //.hex_digit(prom_num_bytes[7:0]),
+//        .hex_digit(fd_index_cnt),
+//        //.en(sws[7:4]),
+//        .en(4'h8),
+//        .ss_abcdefg_l(ss_abcdefg_l),
+//        .ss_dp_l(ss_dp_l),
+//        .ss_sel_l(ss_sel_l)
+//    );
+
     vga_driver vga_d(
         .clk(clk),
         .rst(rst),
@@ -715,11 +1124,10 @@ module hex_to_ss(
 
 endmodule
 
-module ss_driver(
+module ss_driver_4digits(
     input wire clk,
     input wire rst,
-    input wire [3:0] hex_digit,
-    input wire [3:0] en,
+    input wire [15:0] hex_digits,
     output reg [6:0] ss_abcdefg_l,
     output wire ss_dp_l,
     output wire [3:0] ss_sel_l
@@ -739,14 +1147,13 @@ module ss_driver(
 
     reg [3:0] cnt;
     wire [3:0] cnt_n;
-    reg [3:0] hex_digits [3:0];
     wire [6:0] ss_array_l [3:0];
 
     assign cnt_n[1] = cnt[0];
     assign cnt_n[2] = cnt[1];
     assign cnt_n[3] = cnt[2];
     assign cnt_n[0] = cnt[3];
-    
+
     assign ss_sel_l = ~cnt;
 
     always @(posedge clk_191Hz, posedge rst) begin
@@ -756,29 +1163,7 @@ module ss_driver(
             cnt <= cnt_n;
         end
     end
-    
-    always @(posedge clk, posedge rst) begin
-        if (rst) begin
-            hex_digits[0] <= 4'b0;
-            hex_digits[1] <= 4'b0;
-            hex_digits[2] <= 4'b0;
-            hex_digits[3] <= 4'b0;
-        end else begin
-            if (en[0]) begin
-                hex_digits[0] <= hex_digit;
-            end
-            if (en[1]) begin
-                hex_digits[1] <= hex_digit;
-            end
-            if (en[2]) begin
-                hex_digits[2] <= hex_digit;
-            end
-            if (en[3]) begin
-                hex_digits[3] <= hex_digit;
-            end
-        end
-    end
-    
+
     always @(cnt, ss_array_l[0], ss_array_l[1], ss_array_l[2], ss_array_l[3]) begin
         case (cnt)
             4'b0001: ss_abcdefg_l = ss_array_l[0];
@@ -790,13 +1175,96 @@ module ss_driver(
     end
 
     assign ss_dp_l = 1'b1;
-    
-    hex_to_ss hts0(.hex(hex_digits[0]), .ss_abcdefg_l(ss_array_l[0]));
-    hex_to_ss hts1(.hex(hex_digits[1]), .ss_abcdefg_l(ss_array_l[1]));
-    hex_to_ss hts2(.hex(hex_digits[2]), .ss_abcdefg_l(ss_array_l[2]));
-    hex_to_ss hts3(.hex(hex_digits[3]), .ss_abcdefg_l(ss_array_l[3]));
+
+    hex_to_ss hts0(.hex(hex_digits[3:0]),   .ss_abcdefg_l(ss_array_l[0]));
+    hex_to_ss hts1(.hex(hex_digits[7:4]),   .ss_abcdefg_l(ss_array_l[1]));
+    hex_to_ss hts2(.hex(hex_digits[11:8]),  .ss_abcdefg_l(ss_array_l[2]));
+    hex_to_ss hts3(.hex(hex_digits[15:12]), .ss_abcdefg_l(ss_array_l[3]));
 
 endmodule
+
+//module ss_driver(
+//    input wire clk,
+//    input wire rst,
+//    input wire [3:0] hex_digit,
+//    input wire [3:0] en,
+//    output reg [6:0] ss_abcdefg_l,
+//    output wire ss_dp_l,
+//    output wire [3:0] ss_sel_l
+//);
+//
+//    reg [19:0] clk_cnt;
+//    wire clk_191Hz;
+//    assign clk_191Hz = clk_cnt[17];
+//
+//    always @(posedge clk, posedge rst) begin
+//        if (rst) begin
+//            clk_cnt <= 20'b0;
+//        end else begin
+//            clk_cnt <= clk_cnt + 20'b1;
+//        end
+//    end
+//
+//    reg [3:0] cnt;
+//    wire [3:0] cnt_n;
+//    reg [3:0] hex_digits [3:0];
+//    wire [6:0] ss_array_l [3:0];
+//
+//    assign cnt_n[1] = cnt[0];
+//    assign cnt_n[2] = cnt[1];
+//    assign cnt_n[3] = cnt[2];
+//    assign cnt_n[0] = cnt[3];
+//
+//    assign ss_sel_l = ~cnt;
+//
+//    always @(posedge clk_191Hz, posedge rst) begin
+//        if (rst) begin
+//            cnt <= 4'b1;
+//        end else begin
+//            cnt <= cnt_n;
+//        end
+//    end
+//
+//    always @(posedge clk, posedge rst) begin
+//        if (rst) begin
+//            hex_digits[0] <= 4'b0;
+//            hex_digits[1] <= 4'b0;
+//            hex_digits[2] <= 4'b0;
+//            hex_digits[3] <= 4'b0;
+//        end else begin
+//            if (en[0]) begin
+//                hex_digits[0] <= hex_digit;
+//            end
+//            if (en[1]) begin
+//                hex_digits[1] <= hex_digit;
+//            end
+//            if (en[2]) begin
+//                hex_digits[2] <= hex_digit;
+//            end
+//            if (en[3]) begin
+//                hex_digits[3] <= hex_digit;
+//            end
+//        end
+//    end
+//
+//    always @(cnt, ss_array_l[0], ss_array_l[1], ss_array_l[2], ss_array_l[3]) begin
+//        case (cnt)
+//            4'b0001: ss_abcdefg_l = ss_array_l[0];
+//            4'b0010: ss_abcdefg_l = ss_array_l[1];
+//            4'b0100: ss_abcdefg_l = ss_array_l[2];
+//            4'b1000: ss_abcdefg_l = ss_array_l[3];
+//            default: ss_abcdefg_l = 7'b1111111;
+//        endcase
+//    end
+//
+//    assign ss_dp_l = 1'b1;
+//
+//    hex_to_ss hts0(.hex(hex_digits[0]), .ss_abcdefg_l(ss_array_l[0]));
+//    hex_to_ss hts1(.hex(hex_digits[1]), .ss_abcdefg_l(ss_array_l[1]));
+//    hex_to_ss hts2(.hex(hex_digits[2]), .ss_abcdefg_l(ss_array_l[2]));
+//    hex_to_ss hts3(.hex(hex_digits[3]), .ss_abcdefg_l(ss_array_l[3]));
+//
+//endmodule
 
 //`define TEST_VGA
 
@@ -847,17 +1315,18 @@ module vga_driver(
 );
     wire clk_25MHz;
     ff_ar clk_25MHz_ff(.clk(clk), .rst(rst), .d(~clk_25MHz), .q(clk_25MHz));
-    
+
     wire [9:0] clk_cnt_q;
     wire [9:0] clk_cnt_n;
     wire [9:0] row_cnt_q;
     wire [9:0] row_cnt_n;
-    
+
     assign clk_cnt_n = (clk_cnt_q == `VGA_HTOTAL-1) ? 10'b0 : clk_cnt_q + 10'b1;
     assign row_cnt_n = (row_cnt_q == `VGA_VTOTAL-1) ? 10'b0 : (clk_cnt_q == `VGA_HTOTAL-1) ? row_cnt_q + 10'b1 : row_cnt_q;
 
-    ff_ar #(.W(11)) clk_cnt_ff(.clk(clk_25MHz), .rst(rst), .d(clk_cnt_n), .q(clk_cnt_q));
-    ff_ar #(.W(11)) row_cnt_ff(.clk(clk_25MHz), .rst(rst), .d(row_cnt_n), .q(row_cnt_q));
+    // TODO: should these widths be only 10?
+    ff_ar #(.W(10)) clk_cnt_ff(.clk(clk_25MHz), .rst(rst), .d(clk_cnt_n), .q(clk_cnt_q));
+    ff_ar #(.W(10)) row_cnt_ff(.clk(clk_25MHz), .rst(rst), .d(row_cnt_n), .q(row_cnt_q));
 
     // outputs
 
@@ -930,14 +1399,14 @@ module ps2_receiver(
     // TODO: if necessary, may use shift register to get stable ps2_clk transition
 
     wire ps2_clk_stable;
-    ff_ar #(.W(8)) ps2_clk_stable_ff(.clk(clk), .rst(rst), .d(~ps2_clk), .q(ps2_clk_stable));
+    ff_ar ps2_clk_stable_ff(.clk(clk), .rst(rst), .d(~ps2_clk), .q(ps2_clk_stable));
 
     wire [9:0] ps2_data_reg_q; // don't store stop bit
-    shift_register #(.W(10), .SHIFT_DIR(`SHIFT_DIR_RIGHT)) ps2_data_shift_reg(.clk(ps2_clk_stable), .rst(rst), .d(ps2_data), .q(ps2_data_reg_q));
+    shift_register #(.W(10), .SHIFT_DIR(`SHIFT_DIR_RIGHT)) ps2_data_shift_reg(.clk(ps2_clk_stable), .rst(rst), .en(1'b1), .d(ps2_data), .q(ps2_data_reg_q));
 
     // NOTE: final value is 10 so that the stop bit cycle resets the counter to 0 to start over
     wire [3:0] ps2_clk_cnt_q;
-    counter #(.W(4), .START_VAL(0), .FINAL_VAL(10)) ps2_clk_counter(.clk(ps2_clk_stable), .rst(rst), .x(1'b1), .cnt(ps2_clk_cnt_q));
+    counter #(.W(4), .START_VAL(0), .FINAL_VAL(10)) ps2_clk_counter(.clk(ps2_clk_stable), .rst(rst), .clr(1'b0), .x(1'b1), .cnt(ps2_clk_cnt_q));
 
     wire ps2_done_flag_q, ps2_done_flag_n;
     assign ps2_done_flag_n = (ps2_clk_cnt_q == 'd10) ? 1'b1 : 1'b0;
@@ -988,6 +1457,35 @@ module ps2_parser(
 
 endmodule
 
+module hex_to_ascii(
+    input wire [3:0] hex,
+    output reg [7:0] ascii
+);
+
+    always @(*) begin
+        case (hex)
+            4'h0: ascii = "0";
+            4'h1: ascii = "1";
+            4'h2: ascii = "2";
+            4'h3: ascii = "3";
+            4'h4: ascii = "4";
+            4'h5: ascii = "5";
+            4'h6: ascii = "6";
+            4'h7: ascii = "7";
+            4'h8: ascii = "8";
+            4'h9: ascii = "9";
+            4'ha: ascii = "a";
+            4'hb: ascii = "b";
+            4'hc: ascii = "c";
+            4'hd: ascii = "d";
+            4'he: ascii = "e";
+            4'hf: ascii = "f";
+            default: ascii = " ";
+        endcase
+    end
+
+endmodule
+
 module scan_code_to_ascii(
     input wire [7:0] scan_code,
     input wire caps_lock,
@@ -1015,7 +1513,8 @@ module scan_code_to_ascii(
             `SCAN_EQUAL:    ascii = shift ? "+" : "=";
             `SCAN_LBRACKET: ascii = shift ? "{" : "[";
             `SCAN_RBRACKET: ascii = shift ? "}" : "]";
-            `SCAN_FSLASH:   ascii = shift ? "|" : "\\";
+            `SCAN_BSLASH:   ascii = shift ? "|" : "\\";
+            `SCAN_FSLASH:   ascii = shift ? "/" : "?";
             `SCAN_SEMI:     ascii = shift ? ":" : ";";
             `SCAN_QUOTE:    ascii = shift ? "\"" : "'";
             `SCAN_COMMA:    ascii = shift ? "<" : ",";
@@ -1070,7 +1569,6 @@ module sram_init(
     output wire done
 );
 
-    wire [17:0] addr_n;
     wire done_n;
     wire done_q;
 
@@ -1090,7 +1588,7 @@ module sram_init(
     wire en_cnt;
     assign en_cnt = (en || ~done);
 
-    counter #(.W(18), .FINAL_VAL(18'h3ffff)) addr_counter(.clk(clk), .rst(rst), .x(en_cnt), .cnt(addr));
+    counter #(.W(18), .FINAL_VAL(18'h3ffff)) addr_counter(.clk(clk), .rst(rst), .clr(1'b0), .x(en_cnt), .cnt(addr));
 
     assign done_n = en ? 1'b0 : (done_q ? 1'b1 : (addr ==  18'h3ffff));
     ff_ar #(.RESET_VAL(1)) done_ff(.clk(clk), .rst(rst), .d(done_n), .q(done_q));

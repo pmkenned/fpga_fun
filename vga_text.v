@@ -1,5 +1,4 @@
-`timescale 1ns / 1ps
-`default_nettype none
+`include "defines.vh"
 
 module vga_text(
     input wire clk,
